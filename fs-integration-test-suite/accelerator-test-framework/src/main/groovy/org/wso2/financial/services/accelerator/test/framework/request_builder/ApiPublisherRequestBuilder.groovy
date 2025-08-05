@@ -61,6 +61,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
         policyList.each { policy ->
             String policyName = policy.get("policyName")
             List<Map> policyAttributes = (List<Map>) policy.get("policyAttribute")
+            String applicableFlow = policy.get("applicableFlow")
 
             String workingDir = new File(".").getCanonicalPath()
             String policyPath = policy.get("policyFilePath").toString()
@@ -70,7 +71,8 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                     .contentType(ConnectorTestConstants.CONTENT_TYPE_MULTIPART)
                     .multiPart("synapsePolicyDefinitionFile", file)
-                    .multiPart("policySpecFile", new Gson().toJson(buildAllPolicyPayloads(policyName, policyAttributes)))
+                    .multiPart("policySpecFile", new Gson().toJson(buildAllPolicyPayloads(policyName, policyAttributes,
+                            applicableFlow)))
                     .post(publisherUrl + "/operation-policies")
 
             String policyId = TestUtil.parseResponseBody(publisherResponse, "id")
@@ -84,7 +86,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      * Build all policy payloads based on the api-config-provisioning.yaml.
      * @return
      */
-    static JsonObject buildAllPolicyPayloads(String policyName, List<Map> policyAttributes) {
+    static JsonObject buildAllPolicyPayloads(String policyName, List<Map> policyAttributes, String applicableFlow) {
 
         JsonObject payload = new JsonObject()
         payload.addProperty("category", "Mediation")
@@ -94,7 +96,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
         payload.addProperty("description", policyName)
 
         JsonArray applicableFlows = new JsonArray()
-        applicableFlows.add("request")
+        applicableFlows.add(applicableFlow)
         payload.add("applicableFlows", applicableFlows)
 
         JsonArray supportedApiTypes = new JsonArray()
@@ -159,8 +161,14 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .post(publisherUrl + "/apis/import-openapi")
 
         } else {
-            String productionEndpoint = apiInfo.get("productionEndpoint").toString()
-            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString()
+
+            //Extract IS Server Hostname]
+            URI isUri = new URI(configurationService.getISServerUrl())
+            String isHostName = isUri.getHost()
+
+            //Replace the hostname of the endpoint url with IS HostName
+            String productionEndpoint = apiInfo.get("productionEndpoint").toString().replace("localhost", isHostName)
+            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString().replace("localhost", isHostName)
 
             response = FSRestAsRequestBuilder.buildRequest()
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
@@ -202,13 +210,16 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      */
     void deployRevision(String accessToken, String apiID, String revisionID) {
 
+        URL url = new URL(publisherUrl);
+        String host = url.getHost()
+
         URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiID + "/deploy-revision")
         String apimHostname = apiEndpoint.getHost()
         def response = FSRestAsRequestBuilder.buildRequest()
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .queryParam("revisionId", revisionID)
-                .body(getDeployRevisionPayload("localhost", revisionID))
+                .body(getDeployRevisionPayload(host, revisionID))
                 .post(apiEndpoint)
 
         Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
@@ -277,57 +288,100 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                                 String isSchemaEnabled, List<Map> apiProperties, String scope,
                                 String sandbox_endpoints = "default", String production_endpoints = "default") {
 
+        String payload
+
         // Generate operations JSON string
         String operationsJson = new Gson().toJson(generateOperations(apiProperties, scope))
 
-        if (!api_endpoint_type.equalsIgnoreCase("default")) {
-            sandbox_endpoints = configurationService.getISServerUrl() + sandbox_endpoints
-            production_endpoints = configurationService.getISServerUrl() + production_endpoints
-        }
+        if(api_name.contains("DynamicClientRegistrationAPI")) {
 
-        String payload = """
-            {
-                "name": "$api_name",
-                "context": "$api_context",
-                "version": "$api_version",
-                "gatewayType": "wso2/synapse",
-                "gatewayVendor": "wso2",
-                "policies":["Unlimited"],
-                "enableSchemaValidation": $isSchemaEnabled,
-                "apiThrottlingPolicy": "Unlimited",
-                "endpointConfig": {
-                  "endpoint_type": "$api_endpoint_type",
-                  "sandbox_endpoints": {
-                    "url": "$sandbox_endpoints"
-                  },
-                  "production_endpoints": {
-                    "url": "$production_endpoints"
-                  }
-                },
-                "apiPolicies": {
-                    "request": [{
-                        "policyName": "MTLSEnforcement",
-                        "parameters": {
-                            "transportCertHeaderName": "x-wso2-client-certificate"
+            def userName = configurationService.getUserKeyManagerAdminName()
+            def password = configurationService.getUserKeyManagerAdminPWD()
+
+            payload = """
+                {
+                    "name": "$api_name",
+                    "context": "$api_context",
+                    "version": "$api_version",
+                    "gatewayType": "wso2/synapse",
+                    "gatewayVendor": "wso2",
+                    "policies":["DefaultSubscriptionless"],
+                    "enableSchemaValidation": $isSchemaEnabled,
+                    "apiThrottlingPolicy": "Unlimited",
+                    "endpointConfig": {
+                      "endpoint_security": {
+                        "production": {
+                            "enabled": true,
+                            "type": "BASIC",
+                            "username": "$userName",
+                            "password": "$password"
+                        },
+                        "sandbox": {
+                            "enabled": true,
+                            "type": "BASIC",
+                            "username": "$userName",
+                            "password": "$password"
                         }
-                    }]
-                },
-                "scopes":[{
-                    "scope":{
-                        "id":null,
-                        "name":"$scope",
-                        "displayName":"$scope",
-                        "description":"$scope",
-                        "bindings":["Internal/consumer"],
-                        "usageCount":null
+                      },
+                      "endpoint_type": "$api_endpoint_type",
+                      "sandbox_endpoints": {
+                        "url": "$sandbox_endpoints"
+                      },
+                      "production_endpoints": {
+                        "url": "$production_endpoints"
+                      }
                     },
-                    "shared":false
-                }],
-                "operations": $operationsJson,
-                "lifeCycleStatus": "CREATED",
-                "visibility": "PUBLIC"
-              }
-            """.stripIndent()
+                    "operations": $operationsJson,
+                    "lifeCycleStatus": "CREATED",
+                    "visibility": "PUBLIC"
+                  }
+                """.stripIndent()
+
+        } else {
+            payload = """
+                {
+                    "name": "$api_name",
+                    "context": "$api_context",
+                    "version": "$api_version",
+                    "gatewayType": "wso2/synapse",
+                    "gatewayVendor": "wso2",
+                    "policies":["DefaultSubscriptionless"],
+                    "enableSchemaValidation": $isSchemaEnabled,
+                    "apiThrottlingPolicy": "Unlimited",
+                    "endpointConfig": {
+                      "endpoint_type": "$api_endpoint_type",
+                      "sandbox_endpoints": {
+                        "url": "$sandbox_endpoints"
+                      },
+                      "production_endpoints": {
+                        "url": "$production_endpoints"
+                      }
+                    },
+                    "apiPolicies": {
+                        "request": [{
+                            "policyName": "MTLSEnforcement",
+                            "parameters": {
+                                "transportCertHeaderName": "x-wso2-client-certificate"
+                            }
+                        }]
+                    },
+                    "scopes":[{
+                        "scope":{
+                            "id":null,
+                            "name":"$scope",
+                            "displayName":"$scope",
+                            "description":"$scope",
+                            "bindings":["Internal/consumer"],
+                            "usageCount":null
+                        },
+                        "shared":false
+                    }],
+                    "operations": $operationsJson,
+                    "lifeCycleStatus": "CREATED",
+                    "visibility": "PUBLIC"
+                  }
+                """.stripIndent()
+        }
 
         return payload
     }
@@ -340,6 +394,8 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
     static JsonArray generateOperations(List<Map> apiProperties, String scope) {
         JsonArray operations = new JsonArray()
 
+        String authType
+
         apiProperties.each { resource ->
             String apiResource = resource['api-resource']
             String requestType = resource['requestType']
@@ -349,30 +405,47 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
             operation.addProperty("target", apiResource)
             operation.addProperty("verb", requestType.toUpperCase())
 
-            JsonArray scopesArray = new JsonArray()
-            scopesArray.add(scope)
-            operation.add("scopes", scopesArray)
+            if(!scope.contains("[]")) {
+                JsonArray scopesArray = new JsonArray()
+                scopesArray.add(scope)
+                operation.add("scopes", scopesArray)
+            }
+            if(apiResource.contains("register")) {
+
+                authType = resource['authType']
+                operation.addProperty("authType", authType)
+                operation.addProperty("throttlingPolicy", "Unlimited")
+            }
 
             JsonObject operationPolicies = new JsonObject()
             JsonArray requestPolicyArray = new JsonArray()
+            JsonArray responsePolicyArray = new JsonArray()
 
             policies.each { policy ->
                 JsonObject policyJson = new JsonObject()
-                policyJson.addProperty("policyName", policy["name"])
-
+                policyJson.addProperty("policyName", policy["name"].toString())
+                policyJson.addProperty("policyVersion", "v1")
                 JsonObject parameters = new JsonObject()
-                List<Map> attributes = (List<Map>) policy["policyAttributes"]
-                attributes.each { attr ->
-                    String attrName = attr["attribute"]
-                    String attrValue = attr["attributeValue"]
-                    parameters.addProperty(attrName, "null".equals(attrValue) ? null : attrValue)
-                }
 
-                policyJson.add("parameters", parameters)
-                requestPolicyArray.add(policyJson)
+                if(!policy["name"].toString().contains("Response")) {
+
+                    List<Map> attributes = (List<Map>) policy["policyAttributes"]
+                    attributes.each { attr ->
+                        String attrName = attr["attribute"]
+                        String attrValue = attr["attributeValue"]
+                        parameters.addProperty(attrName, "null".equals(attrValue) ? null : attrValue)
+                    }
+
+                    policyJson.add("parameters", parameters)
+                    requestPolicyArray.add(policyJson)
+
+                } else {
+                    responsePolicyArray.add(policyJson)
+                }
             }
 
             operationPolicies.add("request", requestPolicyArray)
+            operationPolicies.add("response", responsePolicyArray)
             operation.add("operationPolicies", operationPolicies)
             operations.add(operation)
         }
@@ -410,8 +483,13 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     .put(publisherUrl + "/apis/$apiId")
 
         } else {
-            String productionEndpoint = apiInfo.get("productionEndpoint").toString()
-            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString()
+            //Extract IS Server Hostname]
+            URI isUri = new URI(configurationService.getISServerUrl())
+            String isHostName = isUri.getHost()
+
+            //Replace the hostname of the endpoint url with IS HostName
+            String productionEndpoint = apiInfo.get("productionEndpoint").toString().replace("localhost", isHostName)
+            String sandboxEndpoint = apiInfo.get("sandboxEndpoint").toString().replace("localhost", isHostName)
 
             response = FSRestAsRequestBuilder.buildRequest()
                     .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")

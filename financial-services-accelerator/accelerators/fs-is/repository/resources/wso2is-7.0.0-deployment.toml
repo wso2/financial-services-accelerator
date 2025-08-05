@@ -576,6 +576,9 @@ allowed_api_resources=["payment-consents"]
 [financial_services.consent.preserve_consent_link]
 enabled=false
 
+[financial_services.consent.authorize_jsp]
+path="fs_default.jsp"
+
 [financial_services.identity]
 consent_id_claim_name="consent_id"
 append_consent_id_to_token_id_token=false
