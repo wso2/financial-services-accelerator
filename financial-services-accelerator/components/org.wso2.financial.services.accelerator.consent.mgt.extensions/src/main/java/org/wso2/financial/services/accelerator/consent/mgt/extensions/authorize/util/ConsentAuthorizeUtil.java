@@ -205,7 +205,8 @@ public class ConsentAuthorizeUtil {
             if (keyValue.length == 2) {
                 json.put(keyValue[0], keyValue[1]);
             } else if (keyValue.length == 1) {
-                log.debug(String.format("Query parameter '%s' has no value", keyValue[0]));
+                log.debug(String.format("Query parameter '%s' has no value", keyValue[0].replaceAll(
+                        "\n\r", "")));
                 json.put(keyValue[0], "");
             }
         }

@@ -230,7 +230,6 @@ public class ConsentManageUtils {
      * @param resourcePath      addressed resource path
      * @param consentOperation  consent operation using this method
      * @return  consent id
-     * @throws ConsentException if a valid consent id doesn't exist in path
      */
     public static String extractConsentIdFromPath(String resourcePath, ConsentOperationEnum consentOperation) {
         // Retrieve first UUID in request path as consent id
