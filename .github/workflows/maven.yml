@@ -92,7 +92,6 @@ jobs:
         run: |
           echo "Starting tests..."
           export MAVEN_OPTS="-Xmx4g
-#          -XX:MaxPermSize=512m"
           RUNNER_HOME=`pwd`
           chmod +x $RUNNER_HOME/test-automation/test.sh
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
