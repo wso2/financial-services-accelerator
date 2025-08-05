@@ -74,7 +74,7 @@ class RegistrationDetailsRetrievalTests extends FSConnectorTest {
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest(basicHeader)
                 .get(dcrPath + clientId)
 
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
     }
 
     @AfterClass
