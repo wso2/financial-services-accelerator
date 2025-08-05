@@ -61,7 +61,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
     private final boolean isPreInitiatedConsent;
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     static FinancialServicesValidator fsValidator = FinancialServicesValidator.getInstance();
@@ -71,6 +71,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -81,8 +82,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         }
 
         // Load params from request object or query
-        String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
-        log.debug("Consent ID source from config: " + authFlowConsentIdSource);
+        log.debug("Consent ID source from config: " + authFlowConsentIdSource.replaceAll(
+                "\n\r", ""));
 
         JSONObject requestParameters;
         String consentId;
