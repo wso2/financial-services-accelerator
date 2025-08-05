@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.scp.webapp.servlet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,10 +52,15 @@ public class OAuthCallbackServlet extends HttpServlet {
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
     @Override
+    @SuppressFBWarnings("SERVLET_PARAMETER")
+    // Suppressed content - req.getParameter(CODE)
+    // Suppression reason - False Positive : These endpoints are secured with access control
+    // as defined in the IS deployment.toml file
+    // Suppressed warning count - 1
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
+        final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL).replaceAll("\n\r", "");
         try {
-            final String code = req.getParameter(CODE);
+            final String code = req.getParameter(CODE).replaceAll("\n\r", "");
 
             String redirectUrl = iamBaseUrl + "/consentmgr";
 
@@ -72,17 +78,21 @@ public class OAuthCallbackServlet extends HttpServlet {
                 // add cookies to response
                 oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
             }
-            if ("access_denied".equals(req.getParameter(ERROR)) && !LOGOUT_DENY_ERROR_DESCRIPTION.equals
-                    (req.getParameter(ERROR_DESCRIPTION))) {
-                LOG.debug("User denied the consent. Error: " + req.getParameter(ERROR) +
-                        "Error Description:" + req.getParameter(ERROR_DESCRIPTION));
-                SelfCarePortalError error = new SelfCarePortalError(req.getParameter(ERROR),
-                        req.getParameter(ERROR_DESCRIPTION));
+            if ("access_denied".equals(req.getParameter(ERROR).replaceAll("\n\r", ""))
+                    && !LOGOUT_DENY_ERROR_DESCRIPTION.equals
+                    (req.getParameter(ERROR_DESCRIPTION).replaceAll("\n\r", ""))) {
+                LOG.debug(String.format("User denied the consent. Error: %s Error Description: %s",
+                        req.getParameter(ERROR).replaceAll("\n\r", ""),
+                        req.getParameter(ERROR_DESCRIPTION).replaceAll("\n\r", "")));
+                SelfCarePortalError error = new SelfCarePortalError(
+                        req.getParameter(ERROR).replaceAll("\n\r", ""),
+                        req.getParameter(ERROR_DESCRIPTION).replaceAll("\n\r", ""));
                 final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";
                 Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
                 return;
             }
-            LOG.debug("Redirecting to frontend application: " + redirectUrl);
+            LOG.debug(String.format("Redirecting to frontend application: %s",
+                    redirectUrl.replaceAll("\n\r", "")));
             resp.sendRedirect(redirectUrl);
         } catch (TokenGenerationException | IOException e) {
             LOG.error("Exception occurred while processing authorization callback request. Caused by, ", e);

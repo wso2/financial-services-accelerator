@@ -148,9 +148,11 @@ public class OAuthService {
         Cookie cookie;
         if (optCookie.isPresent()) {
             cookie = optCookie.get();
-            cookie.setValue(cookieValue);
+            cookie.setHttpOnly(true);
+            cookie.setValue(cookieValue.replaceAll("\n\r", ""));
         } else {
-            cookie = new Cookie(cookieName, cookieValue);
+            cookie = new Cookie(cookieName.replaceAll("\n\r", ""), cookieValue.replaceAll("\n\r", ""));
+            cookie.setHttpOnly(true);
         }
         cookie.setSecure(true);
         cookie.setMaxAge(maxAge);
@@ -163,8 +165,8 @@ public class OAuthService {
                                       String path, int maxAge) {
         if (StringUtils.isNotEmpty(token)) {
             final int tokenLength = token.length();
-            final String tokenPart1 = token.substring(0, tokenLength / 2);
-            final String tokenPart2 = token.substring(tokenLength / 2, tokenLength);
+            final String tokenPart1 = token.substring(0, tokenLength / 2).replaceAll("\n\r", "");
+            final String tokenPart2 = token.substring(tokenLength / 2, tokenLength).replaceAll("\n\r", "");
 
             addCookieToResponse(req, resp, cookieName + "_P1", tokenPart1, path, maxAge);
             addCookieToResponse(req, resp, cookieName + "_P2", tokenPart2, path, maxAge);

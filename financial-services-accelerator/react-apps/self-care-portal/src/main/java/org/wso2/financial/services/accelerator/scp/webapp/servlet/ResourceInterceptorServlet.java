@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.scp.webapp.servlet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
@@ -62,9 +63,14 @@ public class ResourceInterceptorServlet extends HttpServlet {
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
     @Override
+    @SuppressFBWarnings("SERVLET_QUERY_STRING")
+    // Suppressed content - req.getQueryString(), req.getRequestURI()
+    // Suppression reason - False Positive :These parameters are read only
+    // Suppressed warning count - 2
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            LOG.debug("New request received: " + req.getRequestURI() + "?" + req.getQueryString());
+            LOG.debug(String.format("New request received: %s ? %s", req.getRequestURI().replaceAll("\n\r", ""),
+                    req.getQueryString().replaceAll("\n\r", "")));
             if (resourceInterceptorService.isAccessTokenExpired(req)) {
                 // access token is expired, refreshing access token
                 Optional<String> optRefreshToken = resourceInterceptorService.constructRefreshTokenFromCookies(req);
@@ -112,7 +118,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
                     // add existing req headers to new request
                     Map<String, String> headers = Collections.list(req.getHeaderNames())
                             .stream()
-                            .filter(h -> !HttpHeaders.AUTHORIZATION.equalsIgnoreCase(h))
+                            .filter(h -> !HttpHeaders.AUTHORIZATION.equals(h))
                             .collect(Collectors.toMap(h -> h, req::getHeader));
 
                     // add authorization headers to request

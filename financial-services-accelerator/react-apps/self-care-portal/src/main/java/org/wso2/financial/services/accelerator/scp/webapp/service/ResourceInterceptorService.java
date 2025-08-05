@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.scp.webapp.service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,13 +53,19 @@ public class ResourceInterceptorService implements Serializable {
     private static final long serialVersionUID = -1968486857447834419L;
     private static final Log LOG = LogFactory.getLog(ResourceInterceptorService.class);
 
+    @SuppressFBWarnings({"COOKIE_USAGE", "SERVLET_HEADER"})
+    // Suppressed content - cookieAccessTokenPart1.get().getValue().equals(reqAccessTokenPart1)
+    // Suppressed content - req.getHeader(HttpHeaders.AUTHORIZATION)
+    // Suppression reason - False Positive : The cookie values are only read and here. No sensitive info is added to
+    //                      the cookie in this step.
+    // Suppressed warning count - 2
     public Optional<String> constructAccessTokenFromCookies(HttpServletRequest req) {
         Optional<Cookie> cookieAccessTokenPart2 = Utils
                 .getCookieFromRequest(req, Constants.ACCESS_TOKEN_COOKIE_NAME + "_P2");
 
         if (cookieAccessTokenPart2.isPresent()) {
             // access token part 2 is present as a cookie
-            final String accessTokenPart1 = req.getHeader(HttpHeaders.AUTHORIZATION);
+            final String accessTokenPart1 = req.getHeader(HttpHeaders.AUTHORIZATION).replaceAll("\n\r", "");
 
 
             if (StringUtils.isNotEmpty(accessTokenPart1)) {
@@ -78,6 +85,11 @@ public class ResourceInterceptorService implements Serializable {
         return Optional.empty();
     }
 
+    @SuppressFBWarnings("COOKIE_USAGE")
+    // Suppressed content - cookie.getName()
+    // Suppression reason - False Positive : The cookie values are only read and here. No sensitive info is added to
+    //                      the cookie in this step.
+    // Suppressed warning count - 1
     public Optional<String> constructRefreshTokenFromCookies(HttpServletRequest req) {
         Optional<Cookie> refreshTokenPart1 = Utils
                 .getCookieFromRequest(req, Constants.REFRESH_TOKEN_COOKIE_NAME + "_P1");
@@ -158,6 +170,11 @@ public class ResourceInterceptorService implements Serializable {
 
     }
 
+    @SuppressFBWarnings("COOKIE_USAGE")
+    // Suppressed content - cookie.getName()
+    // Suppression reason - False Positive : The cookie values are only read and here. No sensitive info is added to
+    //                      the cookie in this step.
+    // Suppressed warning count - 1
     public boolean isAccessTokenExpired(HttpServletRequest req) throws SessionTimeoutException {
         Optional<Cookie> optValidityCookie = Utils
                 .getCookieFromRequest(req, Constants.TOKEN_VALIDITY_COOKIE_NAME);
