@@ -61,6 +61,9 @@ public class OAuthCallbackServlet extends HttpServlet {
         final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL).replaceAll("\n\r", "");
         try {
             final String code = req.getParameter(CODE).replaceAll("\n\r", "");
+            if (StringUtils.isNotEmpty(code)) {
+                LOG.debug(String.format("Authorization callback request received with code: %s", code));
+            }
 
             String redirectUrl = iamBaseUrl + "/consentmgr";
 

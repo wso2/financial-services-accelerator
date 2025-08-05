@@ -242,6 +242,7 @@ public class Utils {
                     Constants.PATH_APP_RETRIEVAL);
             tokenReq = new HttpGet(uriBuilder.build().toString());
         } catch (URISyntaxException e) {
+            LOG.error("Error building URI for application retrieval request", e);
             throw new RuntimeException(e);
         }
         // generating basic authorization

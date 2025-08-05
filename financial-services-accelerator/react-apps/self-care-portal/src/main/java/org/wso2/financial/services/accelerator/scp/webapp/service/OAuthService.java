@@ -19,6 +19,8 @@
 package org.wso2.financial.services.accelerator.scp.webapp.service;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -55,6 +57,7 @@ import javax.servlet.http.HttpServletResponse;
 public class OAuthService {
 
     private static OAuthService oauthService;
+    private static final Log LOG = LogFactory.getLog(OAuthService.class);
 
     private OAuthService() {
         // private constructor
@@ -148,9 +151,14 @@ public class OAuthService {
         Cookie cookie;
         if (optCookie.isPresent()) {
             cookie = optCookie.get();
+            LOG.debug(String.format("Found existing cookie with cookieName %s, updating its value %s.",
+                    cookieName.replaceAll("\n\r", ""),
+                    cookieValue.replaceAll("\n\r", "")));
             cookie.setHttpOnly(true);
             cookie.setValue(cookieValue.replaceAll("\n\r", ""));
         } else {
+            LOG.debug(String.format("Creating new cookie %s with value %s.", cookieName.replaceAll("\n\r", ""),
+                    cookieValue.replaceAll("\n\r", "")));
             cookie = new Cookie(cookieName.replaceAll("\n\r", ""), cookieValue.replaceAll("\n\r", ""));
             cookie.setHttpOnly(true);
         }

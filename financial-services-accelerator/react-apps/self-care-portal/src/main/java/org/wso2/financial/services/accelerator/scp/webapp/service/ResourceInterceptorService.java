@@ -66,7 +66,7 @@ public class ResourceInterceptorService implements Serializable {
         if (cookieAccessTokenPart2.isPresent()) {
             // access token part 2 is present as a cookie
             final String accessTokenPart1 = req.getHeader(HttpHeaders.AUTHORIZATION).replaceAll("\n\r", "");
-
+            LOG.debug("Access token part 1 extracted from Authorization header.");
 
             if (StringUtils.isNotEmpty(accessTokenPart1)) {
                 // access token part 1 is present in the request
