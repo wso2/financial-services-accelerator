@@ -138,7 +138,6 @@ if [ $(get_prop "InstallGeckodriver") == true ]; then
     chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 else
         echo "Not Required to install geckodriver"
-        chmod +x ${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver
 fi
 
 #--------------Build the test framework and the project-----------------#
