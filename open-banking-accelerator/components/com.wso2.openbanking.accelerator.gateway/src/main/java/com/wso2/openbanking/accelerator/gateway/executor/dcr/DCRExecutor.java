@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2023-2025, WSO2 LLC. (https://www.wso2.com).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -923,6 +923,13 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         String jwksEndpoint = decodedSSA.getAsString(jwksEndpointName);
         SignedJWT signedJWT = SignedJWT.parse(payload);
         String alg = signedJWT.getHeader().getAlgorithm().getName();
+
+        //Throwing an exception when jwksEndpoint is not found
+        if (StringUtils.isBlank(jwksEndpoint)) {
+            throw new OpenBankingExecutorException("invalid_client_metadata", OpenBankingErrorCodes.BAD_REQUEST_CODE,
+                    "Required SSA parameter '" + jwksEndpointName + "' not found");
+        }
+
         JWTUtils.validateJWTSignature(payload, jwksEndpoint, alg);
         obapiRequestContext.setModifiedPayload(decodedRequest.toJSONString());
         Map<String, String> requestHeaders = obapiRequestContext.getMsgInfo().getHeaders();
