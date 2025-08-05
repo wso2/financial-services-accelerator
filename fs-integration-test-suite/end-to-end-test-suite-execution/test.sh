@@ -144,9 +144,6 @@ fi
 cd ${ACCELERATOR_TESTS_HOME}
 mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-sleep 30m
-
-
 ##--------------API Publish and Subscribe Step-----------------#
 cd ${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
