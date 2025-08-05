@@ -86,12 +86,12 @@ jobs:
             ]
       - name: Build with Maven
         run: |
-          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
+          export MAVEN_OPTS="-Xmx4g"
           mvn -B install --file pom.xml
       - name: Running the integration test suite
         run: |
           echo "Starting tests..."
-          export MAVEN_OPTS="-Xmx4g
+          export MAVEN_OPTS="-Xmx4g"
           RUNNER_HOME=`pwd`
           chmod +x $RUNNER_HOME/test-automation/test.sh
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
