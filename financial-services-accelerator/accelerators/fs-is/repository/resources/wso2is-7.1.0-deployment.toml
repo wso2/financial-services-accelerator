@@ -590,7 +590,7 @@ append_consent_id_to_token_introspect_response=false
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
 
 [financial_services.identity.extensions]
-# Uncomment these to get a default implementation of identity extensions
+# Uncomment these to get a default IS implementation of identity extensions ( Not required for OB scenarios)
 #request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
 #response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
 #claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
