@@ -93,12 +93,12 @@ class DynamicClientRegistrationRetrievalTest extends FSConnectorTest {
                 .get(registrationPath + "/" + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.DESCRIPTION),
                 "Access failure for API: /open-banking/v3.3.0, version: v3.3.0 status: (900901) - Invalid " +
                         "Credentials. Make sure you have provided the correct security credentials")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.MESSAGE),
                 "Invalid Credentials")
     }
 

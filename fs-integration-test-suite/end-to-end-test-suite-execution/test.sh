@@ -110,9 +110,13 @@ cp ${TEST_FRAMEWORK_HOME}/src/main/resources/SampleTestConfiguration.xml ${TEST_
 #--------------Server Configurations-----------------#
 sed -i -e "s|Common.IS_Version|7.1.0|g" $TEST_CONFIG_FILE
 
+# Get the hostname and convert it to lowercase using tr
+AM_HOSTNAME_LC=$(get_prop "ApimHostname" | tr '[:upper:]' '[:lower:]')
+IS_HOSTNAME_LC=$(get_prop "IsHostname" | tr '[:upper:]' '[:lower:]')
+
 ##----------------set hostnames for sequences -----------#
-sed -i -e "s|{AM_HOST}|$(get_prop "ApimHostname")|g" $TEST_CONFIG_FILE
-sed -i -e "s|{IS_HOST}|$(get_prop "IsHostname")|g" $TEST_CONFIG_FILE
+sed -i -e "s|{AM_HOST}|${AM_HOSTNAME_LC}|g" "$TEST_CONFIG_FILE"
+sed -i -e "s|{IS_HOST}|${IS_HOSTNAME_LC}|g" "$TEST_CONFIG_FILE"
 
 ##----------------set Directory Path-----------#
 sed -i -e "s|{TestSuiteDirectoryPath}|${ACCELERATOR_TESTS_HOME}|g" $TEST_CONFIG_FILE
