@@ -29,6 +29,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
@@ -152,15 +153,15 @@ public class OAuthService {
         if (optCookie.isPresent()) {
             cookie = optCookie.get();
             LOG.debug(String.format("Found existing cookie with cookieName %s, updating its value %s.",
-                    cookieName.replaceAll("\n\r", ""),
-                    cookieValue.replaceAll("\n\r", "")));
-            cookie.setHttpOnly(true);
-            cookie.setValue(cookieValue.replaceAll("\n\r", ""));
+                    cookieName.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                    cookieValue.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
+            cookie.setValue(cookieValue.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""));
         } else {
-            LOG.debug(String.format("Creating new cookie %s with value %s.", cookieName.replaceAll("\n\r", ""),
-                    cookieValue.replaceAll("\n\r", "")));
-            cookie = new Cookie(cookieName.replaceAll("\n\r", ""), cookieValue.replaceAll("\n\r", ""));
-            cookie.setHttpOnly(true);
+            LOG.debug(String.format("Creating new cookie %s with value %s.",
+                    cookieName.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                    cookieValue.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
+            cookie = new Cookie(cookieName.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                    cookieValue.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""));
         }
         cookie.setSecure(true);
         cookie.setMaxAge(maxAge);
@@ -173,8 +174,10 @@ public class OAuthService {
                                       String path, int maxAge) {
         if (StringUtils.isNotEmpty(token)) {
             final int tokenLength = token.length();
-            final String tokenPart1 = token.substring(0, tokenLength / 2).replaceAll("\n\r", "");
-            final String tokenPart2 = token.substring(tokenLength / 2, tokenLength).replaceAll("\n\r", "");
+            final String tokenPart1 = token.substring(0, tokenLength / 2)
+                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
+            final String tokenPart2 = token.substring(tokenLength / 2, tokenLength)
+                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
 
             addCookieToResponse(req, resp, cookieName + "_P1", tokenPart1, path, maxAge);
             addCookieToResponse(req, resp, cookieName + "_P2", tokenPart2, path, maxAge);

@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
@@ -58,9 +59,11 @@ public class OAuthCallbackServlet extends HttpServlet {
     // as defined in the IS deployment.toml file
     // Suppressed warning count - 1
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL).replaceAll("\n\r", "");
+        final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL)
+                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
         try {
-            final String code = req.getParameter(CODE).replaceAll("\n\r", "");
+            final String code = req.getParameter(CODE)
+                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
             if (StringUtils.isNotEmpty(code)) {
                 LOG.debug(String.format("Authorization callback request received with code: %s", code));
             }
@@ -81,21 +84,22 @@ public class OAuthCallbackServlet extends HttpServlet {
                 // add cookies to response
                 oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
             }
-            if ("access_denied".equals(req.getParameter(ERROR).replaceAll("\n\r", ""))
-                    && !LOGOUT_DENY_ERROR_DESCRIPTION.equals
-                    (req.getParameter(ERROR_DESCRIPTION).replaceAll("\n\r", ""))) {
+            if ("access_denied".equals(req.getParameter(ERROR))
+                    && !LOGOUT_DENY_ERROR_DESCRIPTION.equals(req.getParameter(ERROR_DESCRIPTION))) {
                 LOG.debug(String.format("User denied the consent. Error: %s Error Description: %s",
-                        req.getParameter(ERROR).replaceAll("\n\r", ""),
-                        req.getParameter(ERROR_DESCRIPTION).replaceAll("\n\r", "")));
+                        req.getParameter(ERROR).replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                        req.getParameter(ERROR_DESCRIPTION)
+                                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
                 SelfCarePortalError error = new SelfCarePortalError(
-                        req.getParameter(ERROR).replaceAll("\n\r", ""),
-                        req.getParameter(ERROR_DESCRIPTION).replaceAll("\n\r", ""));
+                        req.getParameter(ERROR).replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                        req.getParameter(ERROR_DESCRIPTION)
+                                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""));
                 final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";
                 Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
                 return;
             }
             LOG.debug(String.format("Redirecting to frontend application: %s",
-                    redirectUrl.replaceAll("\n\r", "")));
+                    redirectUrl.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
             resp.sendRedirect(redirectUrl);
         } catch (TokenGenerationException | IOException e) {
             LOG.error("Exception occurred while processing authorization callback request. Caused by, ", e);

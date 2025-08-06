@@ -31,6 +31,10 @@
         <Bug pattern="COOKIE_USAGE"/>
     </Match>
     <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService"/>
+        <Bug pattern="HTTPONLY_COOKIE"/>
+    </Match>
+    <Match>
         <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
         <Bug pattern="COOKIE_USAGE"/>
     </Match>
@@ -43,7 +47,15 @@
         <Bug pattern="HTTP_PARAMETER_POLLUTION"/>
     </Match>
     <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
         <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.OAuthCallbackServlet"/>
         <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.ResourceInterceptorServlet"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
 </FindBugsFilter>

@@ -36,8 +36,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.encoder.Encode;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
@@ -78,7 +78,8 @@ public class Utils {
     public static JSONObject sendRequest(HttpUriRequest request)
             throws TokenGenerationException {
 
-        LOG.debug(String.format("Sending request to %s", request.getURI().toString().replaceAll("\n\r", "")));
+        LOG.debug(String.format("Sending request to %s", request.getURI().toString()
+                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
         String responseStr = null;
         try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(request)) {
             HttpEntity responseEntity = response.getEntity();
@@ -88,7 +89,7 @@ public class Utils {
             if ((response.getStatusLine().getStatusCode() / 100) != 2) {
                 if (response.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     LOG.debug(String.format("Received unauthorized(401) response. body: %s",
-                            responseStr.replaceAll("\n\r", "")));
+                            responseStr.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
                     throw new TokenGenerationException("Received unauthorized Response: " + responseStr);
                 }
             } else {
@@ -119,7 +120,7 @@ public class Utils {
                 return new JSONObject(responseStr);
             }
             LOG.error(String.format("Invalid response received for token request. Error: %s",
-                    responseStr.replaceAll("\n\r", "")));
+                    responseStr.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
         } catch (IOException e) {
             LOG.error("Exception occurred while sending token request. Caused by, ", e);
         } catch (JSONException e) {
@@ -170,13 +171,13 @@ public class Utils {
     public static void returnResponse(HttpServletResponse resp, int statusCode, JSONObject payload) {
         try {
             LOG.debug(String.format("Returning response to frontend. payload: %s",
-                    payload.toString().replaceAll("\n\r", "")));
+                    payload.toString().replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
             // returning  response
             resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             resp.setStatus(statusCode);
             PrintWriter out = resp.getWriter();
-//            out.print(payload);
-            out.write(Encode.forHtml(payload.toString()));
+            out.print(payload);
+//            out.write(Encode.forHtml(payload.toString()));
             out.flush();
         } catch (IOException e) {
             LOG.error("Exception occurred while returning response. Caused by, ", e);
@@ -193,9 +194,11 @@ public class Utils {
         LOG.debug("Sending error to frontend.");
         try {
             final String errorMsg = Base64.getUrlEncoder()
-                    .encodeToString(error.getMessage().getBytes(StandardCharsets.UTF_8)).replaceAll("\n\r", "");
+                    .encodeToString(error.getMessage().getBytes(StandardCharsets.UTF_8))
+                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
             final String errorDesc = Base64.getUrlEncoder()
-                    .encodeToString((error.getDescription()).getBytes(StandardCharsets.UTF_8)).replaceAll("\n\r", "");
+                    .encodeToString((error.getDescription()).getBytes(StandardCharsets.UTF_8))
+                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
 
             final String errorUrl = String.format(errRedirectUrlFormat, errorMsg, errorDesc);
             resp.sendRedirect(errorUrl);
@@ -235,12 +238,11 @@ public class Utils {
      */
     public static JSONObject sendApplicationRetrievalRequest() {
 
-//        HttpGet tokenReq = new HttpGet(Utils.getParameter(Constants.IS_BASE_URL) + Constants.PATH_APP_RETRIEVAL);
-        HttpGet tokenReq;
+        HttpGet request;
         try {
             URIBuilder uriBuilder = new URIBuilder(Utils.getParameter(Constants.IS_BASE_URL) +
                     Constants.PATH_APP_RETRIEVAL);
-            tokenReq = new HttpGet(uriBuilder.build().toString());
+            request = new HttpGet(uriBuilder.build().toString());
         } catch (URISyntaxException e) {
             LOG.error("Error building URI for application retrieval request", e);
             throw new RuntimeException(e);
@@ -252,9 +254,9 @@ public class Utils {
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
 
         // add request headers
-        tokenReq.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
-        tokenReq.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(tokenReq)) {
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth);
+        request.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(request)) {
             String responseStr = EntityUtils.toString(response.getEntity());
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -262,7 +264,7 @@ public class Utils {
                 return new JSONObject(responseStr);
             }
             LOG.error(String.format("Invalid response received for token request. Error: %s",
-                    responseStr.replaceAll("\n\r", "")));
+                    responseStr.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
         } catch (IOException e) {
             LOG.error("Exception occurred while sending token request. Caused by, ", e);
         } catch (JSONException e) {

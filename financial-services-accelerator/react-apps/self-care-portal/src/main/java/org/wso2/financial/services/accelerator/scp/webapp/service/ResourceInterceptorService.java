@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
@@ -65,7 +66,8 @@ public class ResourceInterceptorService implements Serializable {
 
         if (cookieAccessTokenPart2.isPresent()) {
             // access token part 2 is present as a cookie
-            final String accessTokenPart1 = req.getHeader(HttpHeaders.AUTHORIZATION).replaceAll("\n\r", "");
+            final String accessTokenPart1 = req.getHeader(HttpHeaders.AUTHORIZATION)
+                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
             LOG.debug("Access token part 1 extracted from Authorization header.");
 
             if (StringUtils.isNotEmpty(accessTokenPart1)) {
