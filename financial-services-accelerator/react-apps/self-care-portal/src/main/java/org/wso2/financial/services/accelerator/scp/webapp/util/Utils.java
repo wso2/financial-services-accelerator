@@ -177,7 +177,6 @@ public class Utils {
             resp.setStatus(statusCode);
             PrintWriter out = resp.getWriter();
             out.print(payload);
-//            out.write(Encode.forHtml(payload.toString()));
             out.flush();
         } catch (IOException e) {
             LOG.error("Exception occurred while returning response. Caused by, ", e);
