@@ -186,6 +186,8 @@ find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios
 
 echo "-----------------End of IS tests----------------"
 
+sleep 2h
+
 echo "-----------------Executing Gateway tests----------------"
 echo "-----------------Executing Accelerator Scenarios with Dynamic Client Registration----------------"
 cd ${GATEWAY_INTEGRATION_TEST_HOME}/dcr
