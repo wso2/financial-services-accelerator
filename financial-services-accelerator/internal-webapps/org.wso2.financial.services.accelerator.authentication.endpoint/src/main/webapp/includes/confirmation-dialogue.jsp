@@ -28,12 +28,12 @@
     <div class="ui body col-md-12">
         <input type="button" class="btn btn-primary" id="approve" name="approve"
                 onclick="javascript: approvedConsent(); return false;"
-                value="Confirm"/>
-        <input class="btn btn-primary" type="reset" value="Deny"
+                value="${buttonOk}"/>
+        <input class="btn btn-primary" type="reset" value="${buttonDeny}"
                 onclick="javascript: denyConsent(); return false;"/>
         <input type="button" class="btn btn-primary" id="back" name="back"
                 onclick="history.back();"
-                value="Go Back"/>
+                value="${buttonGoBack}"/>
         <input type="hidden" id="hasApprovedAlways" name="hasApprovedAlways" value="false"/>
         <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
         <input type="hidden" name="consent" id="consent" value="false"/>
