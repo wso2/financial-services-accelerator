@@ -210,11 +210,11 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      */
     void deployRevision(String accessToken, String apiID, String revisionID) {
 
-        URL url = new URL(publisherUrl);
+        URL url = new URL(configurationService.getServerGatewayURL())
         String host = url.getHost()
 
         URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiID + "/deploy-revision")
-        String apimHostname = apiEndpoint.getHost()
+
         def response = FSRestAsRequestBuilder.buildRequest()
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
