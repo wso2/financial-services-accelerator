@@ -28,6 +28,7 @@ public class FinancialServicesConstants {
     public static final String FS_CONFIG_QNAME = "http://wso2.org/projects/carbon/financial-services.xml";
     public static final String DEFAULT_STATUS_FOR_EXPIRED_CONSENTS = "Expired";
     public static final String DEFAULT_MIDNIGHT_CRON = "0 0 0 * * ?";
+    public static final String SANITIZING_CHARACTERS = "\n\r";
 
     public static final String GATEWAY_CONFIG_TAG = "Gateway";
     public static final String GATEWAY_EXECUTOR_CONFIG_TAG = "FinancialServicesGatewayExecutors";
