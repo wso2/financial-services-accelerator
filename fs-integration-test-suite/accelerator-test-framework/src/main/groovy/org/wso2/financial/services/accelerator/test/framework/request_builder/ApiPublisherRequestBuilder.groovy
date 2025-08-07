@@ -210,11 +210,11 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      */
     void deployRevision(String accessToken, String apiID, String revisionID) {
 
-        URL url = new URL(publisherUrl);
+        URL url = new URL(configurationService.getServerGatewayURL())
         String host = url.getHost()
 
         URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiID + "/deploy-revision")
-        String apimHostname = apiEndpoint.getHost()
+
         def response = FSRestAsRequestBuilder.buildRequest()
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
@@ -394,6 +394,12 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
     static JsonArray generateOperations(List<Map> apiProperties, String scope) {
         JsonArray operations = new JsonArray()
 
+        //Extract IS and APIM Server Hostname
+        URI isUri = new URI(configurationService.getISServerUrl())
+        URI apimUri = new URI(configurationService.getApimServerUrl())
+        String isHostName = isUri.getHost()
+        String apimHostName = apimUri.getHost()
+
         String authType
 
         apiProperties.each { resource ->
@@ -433,6 +439,19 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                     attributes.each { attr ->
                         String attrName = attr["attribute"]
                         String attrValue = attr["attributeValue"]
+
+                        // Check if the value is not null to avoid errors.
+                        if (attrValue != null) {
+                            // If the URL contains port 9446, replace localhost with server url
+                            if (attrValue.contains(':9446')) {
+                                attrValue = attrValue.replace('localhost', isHostName)
+                            }
+                            // Else if the URL contains port 9443, replace localhost with server url
+                            else if (attrValue.contains(':9443')) {
+                                attrValue = attrValue.replace('localhost', apimHostName)
+                            }
+                        }
+
                         parameters.addProperty(attrName, "null".equals(attrValue) ? null : attrValue)
                     }
 

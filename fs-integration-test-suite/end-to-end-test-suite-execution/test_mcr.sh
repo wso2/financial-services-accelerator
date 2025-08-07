@@ -122,7 +122,8 @@ sed -i -e "s|Provisioning.Enabled|true|g" $TEST_CONFIG_FILE
 sed -i -e "s|Provisioning.ProvisionFilePath|${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps/src/test/resources/api-config-provisioning.yaml|g" $TEST_CONFIG_FILE
 
 # Set Web Browser Configuration
-sed -i -e "s|BrowserAutomation.HeadlessEnabled|$(get_prop "BrowserAutomation.HeadlessEnabled")|g" $TEST_CONFIG_FILE
+sed -i -e "s|BrowserAutomation.BrowserPreference|firefox|g" $TEST_CONFIG_FILE
+sed -i -e "s|BrowserAutomation.HeadlessEnabled|true|g" $TEST_CONFIG_FILE
 if [ $(get_prop "OSName") == "mac" ]; then
     sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/mac/geckodriver|g" $TEST_CONFIG_FILE
 else
