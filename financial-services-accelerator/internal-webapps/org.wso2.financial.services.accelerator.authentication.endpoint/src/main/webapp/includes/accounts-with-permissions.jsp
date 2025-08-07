@@ -16,12 +16,13 @@
 ~ under the License.
 --%>
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
 <c:forEach items="${permissions}" var="permission" varStatus="permissionLoop">
     <input type="hidden" name="permission-${permissionLoop.index}" value="${permission.uid}"/>
     <div class="padding" style="border:1px solid #555;">
-        <b>Requested Permissions:</b>
+        <b>${requestedPermissions}</b>
         <ul class="scopes-list padding">
             <c:forEach items="${permission.displayValues}" var="displayValue">
                 <li>${displayValue}</li>
@@ -32,7 +33,7 @@
         <c:choose>
             <c:when test="${not empty initiatedAccountsForConsent}">
                 <%-- View consent initiated accounts --%>
-                <b>On following accounts:</b>
+                <b>${onFollowingAccounts}</b>
                 <ul class="scopes-list padding">
                     <c:forEach items="${initiatedAccountsForConsent}" var="account">
                         <li>${account.displayName}</li>
@@ -41,7 +42,7 @@
             </c:when>
             <c:when test="${not empty permission.initiatedAccounts}">
                 <%-- View accounts initiated per permission --%>
-                <b>On following accounts:</b>
+                <b>${onFollowingAccounts}</b>
                 <ul class="scopes-list padding">
                     <c:forEach items="${permission.initiatedAccounts}" var="account">
                         <li>${account.displayName}</li>
@@ -52,7 +53,7 @@
                 <%-- View accounts from consumer data for selection --%>
                 <c:choose>
                     <c:when test="${not empty consumerAccounts}">
-                        <b>Select the accounts you wish to authorize:</b>
+                        <b>${selectAccounts}</b>
                         <jsp:include page="account-selection.jsp">
                             <jsp:param name="accountSelectorClass" value="padding-left padding-top"/>
                             <jsp:param name="idSuffix" value="${permissionLoop.index}"/>
@@ -60,7 +61,7 @@
                         </jsp:include>
                     </c:when>
                     <c:otherwise>
-                        <b>No consumer accounts provided for authroization.</b>
+                        <b>${noConsumerAccounts}</b>
                     </c:otherwise>
                 </c:choose>
             </c:otherwise>

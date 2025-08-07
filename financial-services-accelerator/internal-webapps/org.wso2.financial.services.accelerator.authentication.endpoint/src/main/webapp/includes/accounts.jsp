@@ -16,6 +16,7 @@
 ~ under the License.
 --%>
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
              
 <%--Display re-authentication disclaimer--%>
@@ -25,7 +26,7 @@
     <%-- View consent initiated accounts --%>
     <c:when test="${not empty initiatedAccountsForConsent}">
         <h5 class="ui body col-md-12">
-            Access to following accounts shall be authorized:
+            ${onFollowingAccounts}
         </h5>
         <b>
             <ul class="scopes-list padding padding-left-triple">
@@ -38,7 +39,7 @@
     <%-- View consumer accounts when no consent initiated accounts are found --%>
     <c:when test="${not empty consumerAccounts}">
         <h5 class="ui body col-md-12">
-            Select the accounts to which you wish to authorize access:
+            ${selectAccounts}
         </h5>
         <jsp:include page="account-selection.jsp">
             <jsp:param name="accountSelectorClass" value="col-md-12"/>
@@ -47,6 +48,6 @@
     </c:when>
     <%-- Display error --%>
     <c:otherwise>
-        <b>No consumer accounts provided for authroization.</b>
+        <b>${noConsumerAccounts}</b>
     </c:otherwise>
 </c:choose>
