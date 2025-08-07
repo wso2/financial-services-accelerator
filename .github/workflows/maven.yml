@@ -23,24 +23,22 @@ on:
       - 'main'
 
 jobs:
-
   Build-repo-check:
-
     runs-on: ubuntu-latest
     env:
       WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
       WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+      WSO2_U2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_U2_PASSWORD }}
       WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
       STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
       TEST_HOME: /home/runner/work/financial-services/financial-services
-      TEST_REPORT_RECIPIENT: sajeenthiran@wso2.com
 
     steps:
       - uses: actions/checkout@v2
       - name: Set up Adopt JDK 11
         uses: actions/setup-java@v2
         with:
-          java-version: 11.0.16+8
+          java-version: 11.0.25+9
           distribution: 'temurin'
       - uses: actions/checkout@v3
       - name: Set up Node 16
@@ -81,14 +79,30 @@ jobs:
                 "url": "http://resources.knopflerfish.org/repo/maven2/release"
               }
             ]
-      - name: Build with Maven
+      - name: Build with Maven using JDK 11
         run: |
-          export MAVEN_OPTS="-Xmx4g -XX:MaxPermSize=512m"
-          RUNNER_HOME=`pwd`          
-          chmod +x $RUNNER_HOME/test-automation/test.sh         
+          export MAVEN_OPTS="-Xmx4g"
+          mvn -B install --file pom.xml
+
+      - name: Set up Adopt JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "adopt"
+      - name: Build with Maven using JDK 17
+        run: |
+          export MAVEN_OPTS="-Xmx4g"
+          mvn -B install --file pom.xml
+      - name: Running the integration test suite
+        run: |
+          echo "Starting tests..."
+          export MAVEN_OPTS="-Xmx4g"
+          RUNNER_HOME=`pwd`
+          chmod +x $RUNNER_HOME/test-automation/test.sh
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-#uncomment this to run the tests (commenting this out since secrets cannot be accessed via
-#actions triggered from fork of public repositories
-#          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-#          bash $RUNNER_HOME/test-automation/setup.sh
-#          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
+          echo "Decrypting update script..."
+          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+          echo "Setting up..."
+          bash $RUNNER_HOME/test-automation/setup.sh
+          echo "Running test suite..."
+          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
