@@ -186,7 +186,7 @@ find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios
 
 echo "-----------------End of IS tests----------------"
 
-sleep 30m
+sleep 40m
 
 echo "-----------------Executing Gateway tests----------------"
 echo "-----------------Executing Accelerator Scenarios with Dynamic Client Registration----------------"
