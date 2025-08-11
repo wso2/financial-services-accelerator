@@ -22,4 +22,40 @@
         <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService"/>
+        <Bug pattern="COOKIE_USAGE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.service.OAuthService"/>
+        <Bug pattern="HTTPONLY_COOKIE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
+        <Bug pattern="COOKIE_USAGE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
+        <Bug pattern="HTTP_PARAMETER_POLLUTION"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.util.Utils"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.OAuthCallbackServlet"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.ResourceInterceptorServlet"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
 </FindBugsFilter>
