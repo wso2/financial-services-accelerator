@@ -329,8 +329,7 @@ public class Utils {
      * @return  fetched language property (with fallback)
      */
     public static String[] getLanguagePropertiesForLocale(Locale locale) {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("LanguageOptions.properties")) {
+        try (InputStream inputStream = getClassLoaderResourceAsStream("LanguageOptions.properties")) {
 
             if (inputStream == null) {
                 return null; // No config file
@@ -351,17 +350,23 @@ public class Utils {
                 return langOptions.getProperty(langKey).split(",");
             }
 
-            // Fallback: return first entry (assumed default)
-            for (String key : langOptions.stringPropertyNames()) {
-                if (key.startsWith("lang.switch.")) {
-                    return langOptions.getProperty(key).split(",");
-                }
-            }
+            // Return default
+            return new String[] {"English", "EN", "ltr"};
 
         } catch (IOException e) {
             log.error("Failed to load language options", e); // Log in production
         }
 
         return null;
+    }
+
+    /**
+     * Method used to load options file. Separated out for testing parent method.
+     *
+     * @param resource resource file name
+     * @return input stream of resource file data
+     */
+    protected static InputStream getClassLoaderResourceAsStream(String resource) {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
     }
 }
