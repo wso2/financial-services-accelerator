@@ -39,13 +39,14 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
     static APIConfigurationService apiConfiguration
     String revisionID
 
-    String publisherUrl
+    String publisherUrl, gatewayUrl
 
     ApiPublisherRequestBuilder() {
         configurationService = new ConfigurationService()
         apiConfiguration = new APIConfigurationService()
 
         publisherUrl = configurationService.getApimServerUrl() + ConnectorTestConstants.REST_API_PUBLISHER_ENDPOINT
+        gatewayUrl = configurationService.getServerBaseURL()
     }
 
     /**
@@ -210,7 +211,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
      */
     void deployRevision(String accessToken, String apiID, String revisionID) {
 
-        URL url = new URL(configurationService.getServerGatewayURL())
+        URL url = new URL(gatewayUrl)
         String host = url.getHost()
 
         URI apiEndpoint = new URI(publisherUrl + "/apis/" + apiID + "/deploy-revision")
