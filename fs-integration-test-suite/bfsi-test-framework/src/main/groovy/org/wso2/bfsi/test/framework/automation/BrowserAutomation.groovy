@@ -58,7 +58,8 @@ class BrowserAutomation {
     RemoteWebDriver getChromeWebDriver() {
         ChromeOptions chromeOptions = new ChromeOptions();
         if (obConfiguration.getBrowserHeadlessEnabled()) {
-            chromeOptions.addArguments(Constants.HEADLESS_TAG, "--window-size=1920,1200")
+            chromeOptions.addArguments(Constants.HEADLESS_TAG, "--window-size=1920,1200",
+            "--ignore-certificate-errors")
         }
         return new ChromeDriver(chromeOptions)
     }

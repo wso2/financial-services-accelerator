@@ -93,7 +93,7 @@ public class ExternalAPIConsentResourceResponseDTO {
     }
 
     /**
-     * Authorization
+     * Authorization.
      */
     public static class Authorization {
 
@@ -136,7 +136,7 @@ public class ExternalAPIConsentResourceResponseDTO {
     }
 
     /**
-     * Consent Mapping Resource
+     * Consent Mapping Resource.
      */
     public static class Resource {
 
@@ -170,7 +170,7 @@ public class ExternalAPIConsentResourceResponseDTO {
     }
 
     /**
-     * Amended Authorization
+     * Amended Authorization.
      */
     public static class AmendedAuthorization {
 
@@ -223,7 +223,7 @@ public class ExternalAPIConsentResourceResponseDTO {
     }
 
     /**
-     * Amended Consent Mapping Resource
+     * Amended Consent Mapping Resource.
      */
     public static class AmendedResource {
 

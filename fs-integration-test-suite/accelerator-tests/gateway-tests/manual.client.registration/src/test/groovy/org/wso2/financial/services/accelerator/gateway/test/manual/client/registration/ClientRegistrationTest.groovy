@@ -48,10 +48,6 @@ class ClientRegistrationTest extends FSAPIMConnectorTest{
                 .addStep(new ManualClientRegistrationRequestBuilder(apimDevportalUrl, "TestApplication1",
                         true))
                 .execute()
-
-        //Write Client Id and Client Secret of TTP1 to config file.
-        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
-                configuration.getTppNumber())
     }
 
     @Test
@@ -61,9 +57,5 @@ class ClientRegistrationTest extends FSAPIMConnectorTest{
                 .addStep(new ManualClientRegistrationRequestBuilder(apimDevportalUrl, "Non_Regulatory_Application1",
                         false))
                 .execute()
-
-        //Write Client Id and Client Secret of TTP1 to config file.
-        TestUtil.writeXMLContent(xmlFile.toString(), "NonRegulatoryApplication", "ClientID", clientId,
-                configuration.getTppNumber())
     }
 }

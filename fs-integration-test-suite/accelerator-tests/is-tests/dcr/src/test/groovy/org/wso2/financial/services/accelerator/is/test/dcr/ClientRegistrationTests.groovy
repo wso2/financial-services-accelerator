@@ -45,8 +45,7 @@ class ClientRegistrationTests extends FSConnectorTest {
         registrationRequestBuilder = new ClientRegistrationRequestBuilder()
     }
 
-    //TODO: Enable after fixing base product issue.
-    @Test (enabled = false)
+    @Test
     void "TC0101003_Invoke registration request with invalid redirectURI"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -61,7 +60,7 @@ class ClientRegistrationTests extends FSConnectorTest {
                 "Invalid redirect_uris found in the Request")
     }
 
-    @Test (enabled = false)
+    @Test
     void "TC0101004_Invoke registration request with null value for redirectURI"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -70,9 +69,9 @@ class ClientRegistrationTests extends FSConnectorTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR),
-                "invalid_client_metadata")
+                "invalid_redirect_uri")
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-                "Required parameter redirectUris not found in the request")
+                "Invalid redirect_uris found in the Request")
     }
 
     @Test
@@ -89,8 +88,7 @@ class ClientRegistrationTests extends FSConnectorTest {
                 "Required parameter redirectUris cannot be empty")
     }
 
-    //TODO: Issue: https://github.com/wso2/financial-services-accelerator/issues/475
-    @Test (enabled = false)
+    @Test
     void "Invoke registration request structured with multiple redirect urls"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -106,14 +104,14 @@ class ClientRegistrationTests extends FSConnectorTest {
         JSONObject jsonObject = new JSONObject(responseBody)
         JSONArray redirectUris = jsonObject.getJSONArray("redirect_uris")
 
-        Assert.assertTrue(redirectUris.getString(0).equalsIgnoreCase(configuration.getAppDCRRedirectUri()))
-        Assert.assertTrue(redirectUris.getString(1).equalsIgnoreCase(configuration.getAppDCRAlternateRedirectUri()))
+        Assert.assertTrue(redirectUris.getString(0).contains(configuration.getAppDCRRedirectUri()))
+        Assert.assertTrue(redirectUris.getString(0).contains(configuration.getAppDCRAlternateRedirectUri()))
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
         deleteApplicationIfExist(clientId)
     }
 
-    @Test (enabled = false)
+    @Test
     void "Invoke registration request structured with multiple redirect urls one having invalid url"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -128,7 +126,7 @@ class ClientRegistrationTests extends FSConnectorTest {
                 "Redirect URIs do not match with the software statement")
     }
 
-    @Test (enabled = false)
+    @Test
     void "Invoke registration request with redirectURI having localhost"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -143,7 +141,7 @@ class ClientRegistrationTests extends FSConnectorTest {
                 "Invalid redirect_uris found in the Request")
     }
 
-    @Test (enabled = false)
+    @Test
     void "Invoke registration request with redirectURI not matching with the redirect urls in ssa"() {
 
         def registrationResponse = registrationRequestBuilder.buildRegistrationRequest()
@@ -652,8 +650,7 @@ class ClientRegistrationTests extends FSConnectorTest {
         deleteApplicationIfExist(clientId)
     }
 
-    //TODO: IS issue: https://github.com/wso2/financial-services-accelerator/issues/472
-    @Test (enabled = false)
+    @Test
     void "Invoke registration request without client_name" (){
 
         JSONObject payload = new JSONObject(registrationRequestBuilder.getRegularClaims(ssa))

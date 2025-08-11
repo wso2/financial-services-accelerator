@@ -58,6 +58,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMap
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -256,8 +257,8 @@ public class ConsentUtils {
      */
     public static void setCommonDataToResponse(ConsentData consentData, JSONObject jsonObject) {
 
-        if (!jsonObject.has(ConsentExtensionConstants.TYPE)) {
-            jsonObject.put(ConsentExtensionConstants.TYPE, consentData.getType());
+        if (!jsonObject.has(ConsentAuthorizeConstants.TYPE)) {
+            jsonObject.put(ConsentAuthorizeConstants.TYPE, consentData.getType());
         }
         if (!jsonObject.has(ConsentExtensionConstants.APPLICATION)) {
             jsonObject.put(ConsentExtensionConstants.APPLICATION, consentData.getApplication());
@@ -296,7 +297,7 @@ public class ConsentUtils {
                 .get(ConsentExtensionConstants.AUTH_RESOURCE), AuthorizationResource.class);
         consentData.setAuthResource(authorizationResource);
         consentData.setMetaDataMap(gson.fromJson(consentDetails.get(ConsentExtensionConstants.META_DATA), Map.class));
-        consentData.setType(consentDetails.get(ConsentExtensionConstants.TYPE).getAsString());
+        consentData.setType(consentDetails.get(ConsentAuthorizeConstants.TYPE).getAsString());
         return consentData;
     }
 

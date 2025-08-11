@@ -56,27 +56,35 @@ public class KeyManagerTestConstants {
     public static final Map<String, Map<String, String>> KEY_MANAGER_CONFIGS = Map.of("sp_certificate",
             SP_CERTIFICATE_CONFIG, "regulatory", REGULATORY_CONFIG);
 
-    public static final String SP_CERT = "-----BEGIN CERTIFICATE-----" +
-            "MIIF0zCCBLugAwIBAgIEWccIBzANBgkqhkiG9w0BAQsFADBTMQsw" +
-            "CQYDVQQGEwJHQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFByZS1Qcm9kdWN0aW9uIElzc3Vpbmc" +
-            "gQ0EwHhcNMjQwNTI5MDMzMzU4WhcNMjUwNjI5MDQwMzU4WjBzMQswCQYDVQQGEwJHQjEaMBgGA1UEChMRV1NPMiAoVUspIExJTUlURU" +
-            "QxKzApBgNVBGETIlBTREdCLU9CLVVua25vd24wMDE1ODAwMDAxSFFRclpBQVgxGzAZBgNVBAMTEjAwMTU4MDAwMDFIUVFyWkFBWDCCA" +
-            "SIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMzQLqrJcerlPQxUlG2u2X1YDeAcLLb+agetjHKmoyF3kqn+qMg1ZWt+8iCaYB6u" +
-            "F2Kd2DPF9Z6HZu1i157nH6lcVydEDfrML+LtXNYVd5UDTBwTDW+kPZs+Hkb4AX5Gjtw/B/XXqi1caGynZbGSlkF1fX+4O7fXuPI+n4e" +
-            "91PXOcIXZN06NkMCjwggDchaj43vYxHujbos4TiwlBq3cfTetGPLCJV5ShRZfVMiyhUuvP1ViORGtzI01C52dngpZGVxxXEZXdPBVSi" +
-            "KXcyjvnWBLxRP74sDAWhY3MFzUXAQzyl3aOVoQnVFeMcvTK/b9GIa7oWOAvjBOZuxvEKsRl0ECAwEAAaOCAo0wggKJMA4GA1UdDwEB/" +
-            "wQEAwIGwDCBkQYIKwYBBQUHAQMEgYQwgYEwEwYGBACORgEGMAkGBwQAjkYBBgIwagYGBACBmCcCMGAwOTARBgcEAIGYJwECDAZQU1Bf" +
-            "UEkwEQYHBACBmCcBAwwGUFNQX0FJMBEGBwQAgZgnAQQMBlBTUF9JQwwbRmluYW5jaWFsIENvbmR1Y3QgQXV0aG9yaXR5DAZHQi1GQ0E" +
-            "wFQYDVR0lBA4wDAYKKwYBBAGCNwoDDDCB4AYDVR0gBIHYMIHVMIHSBgsrBgEEAah1gQYBZDCBwjAqBggrBgEFBQcCARYeaHR0cDovL2" +
-            "9iLnRydXN0aXMuY29tL3BvbGljaWVzMIGTBggrBgEFBQcCAjCBhgyBg1VzZSBvZiB0aGlzIENlcnRpZmljYXRlIGNvbnN0aXR1dGVzI" +
-            "GFjY2VwdGFuY2Ugb2YgdGhlIE9wZW5CYW5raW5nIFJvb3QgQ0EgQ2VydGlmaWNhdGlvbiBQb2xpY2llcyBhbmQgQ2VydGlmaWNhdGUg" +
-            "UHJhY3RpY2UgU3RhdGVtZW50MG0GCCsGAQUFBwEBBGEwXzAmBggrBgEFBQcwAYYaaHR0cDovL29iLnRydXN0aXMuY29tL29jc3AwNQY" +
-            "IKwYBBQUHMAKGKWh0dHA6Ly9vYi50cnVzdGlzLmNvbS9vYl9wcF9pc3N1aW5nY2EuY3J0MDoGA1UdHwQzMDEwL6AtoCuGKWh0dHA6Ly" +
-            "9vYi50cnVzdGlzLmNvbS9vYl9wcF9pc3N1aW5nY2EuY3JsMB8GA1UdIwQYMBaAFFBzkcYhctN39P4AEgaBXHl5bj9QMB0GA1UdDgQWB" +
-            "BTBTy2SFwZ0fgzOSSWWBJdEgGHy3TANBgkqhkiG9w0BAQsFAAOCAQEAHaXaR4IKqekWFCRQjhZTkpoyi2mkhJM15Xd0t+cxSekWENoY" +
-            "BH7ox7M7Akfoa+oEr58n0DAa/+BlJiFZ2mYScdvLzV81cQU1+LPHhxagWZW2fGV91eBRqdb1j80anF9LN4LJoLDoAObzzturt8MsSzw" +
-            "6T/iLneWKqeil85+L6M/LnDWJTY+dq8Co/qAqk239OWiduY4pnEJ/U7PCH8xz/gSPQQO7PgILAZjGrdo40S/PMzZmGmGBMwLubE8exU" +
-            "8x/Wzf3uUnSfDiPuAsRcplfXbHUb+NXK6wEJINjFw69/VZD3c/La62eTNPobl/DfqXGjPMjORtQqOiBVnF+AIWWA==" +
+    public static final String SP_CERT = "------BEGIN CERTIFICATE-----" +
+            "MIIFLTCCBBWgAwIBAgIEWcdQAzANBgkqhkiG9w0BAQsFADBTMQswCQYDVQQGEwJH" +
+            "QjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFBy" +
+            "ZS1Qcm9kdWN0aW9uIElzc3VpbmcgQ0EwHhcNMjUwNjIzMDYxNDU5WhcNMjYwNzIz" +
+            "MDY0NDU5WjBhMQswCQYDVQQGEwJHQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxGzAZ" +
+            "BgNVBAsTEjAwMTU4MDAwMDFIUVFyWkFBWDEfMB0GA1UEAxMWb1E0S29hYXZwT3Vv" +
+            "RTdydlFzWkVPVjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKf6ll7D" +
+            "m33XV80dBexvXUCkoZlnNDIGl9aS08TW40NWDKnQqyjh9okMSxLxYad67A3p1zeR" +
+            "WhezlEWbg7KJpFA/2K+ncPpS+w2y/Cy0UD875N4PbAyiuTL7ghWcDF8D7fnkhCH4" +
+            "gtWd+LITRQwBsBkDQCnvlUoIQfqiULxLvw1g5eJCr3u/EID9/lq9P7CCwU+/gUgb" +
+            "Hv+H74+gm2ISAx3zdBCzyaWTEp+v0Lio02Exs/+MAcDOBVnBbkt+hSchlgt1r+s0" +
+            "XZGwS0c8YoBa75GHzhDQPhl8zlV1O2VTSDzwMVyUVEMHPesIeNA+G58b3EIuOhj/" +
+            "1m/macR4U4U3WDsCAwEAAaOCAfkwggH1MA4GA1UdDwEB/wQEAwIGwDAVBgNVHSUE" +
+            "DjAMBgorBgEEAYI3CgMMMIHgBgNVHSAEgdgwgdUwgdIGCysGAQQBqHWBBgFkMIHC" +
+            "MCoGCCsGAQUFBwIBFh5odHRwOi8vb2IudHJ1c3Rpcy5jb20vcG9saWNpZXMwgZMG" +
+            "CCsGAQUFBwICMIGGDIGDVXNlIG9mIHRoaXMgQ2VydGlmaWNhdGUgY29uc3RpdHV0" +
+            "ZXMgYWNjZXB0YW5jZSBvZiB0aGUgT3BlbkJhbmtpbmcgUm9vdCBDQSBDZXJ0aWZp" +
+            "Y2F0aW9uIFBvbGljaWVzIGFuZCBDZXJ0aWZpY2F0ZSBQcmFjdGljZSBTdGF0ZW1l" +
+            "bnQwbQYIKwYBBQUHAQEEYTBfMCYGCCsGAQUFBzABhhpodHRwOi8vb2IudHJ1c3Rp" +
+            "cy5jb20vb2NzcDA1BggrBgEFBQcwAoYpaHR0cDovL29iLnRydXN0aXMuY29tL29i" +
+            "X3BwX2lzc3VpbmdjYS5jcnQwOgYDVR0fBDMwMTAvoC2gK4YpaHR0cDovL29iLnRy" +
+            "dXN0aXMuY29tL29iX3BwX2lzc3VpbmdjYS5jcmwwHwYDVR0jBBgwFoAUUHORxiFy" +
+            "03f0/gASBoFceXluP1AwHQYDVR0OBBYEFHRbhCo/PG1Iuu3Z7RZsoHvhhfU0MA0G" +
+            "CSqGSIb3DQEBCwUAA4IBAQBVQyBgWk+ZRPXowINWtPwUnn4o6Njzq4Bg43mVZsqu" +
+            "9QwD/FcwQOluv9WvmO38QK6a+zjkI1GoNPnBBkff9m1ItS3kXKfPb5DYwC+wMYHk" +
+            "pLDw0qSy/ruurHcG7dtp50AwN0qiSDz+m2LgNo//Bf4GX1gSmK21P1pgJesAmduh" +
+            "k1jXf5OOlWIEn7ARHiNytKa/G4kcnRN4cImwRMu3Nhr+9Me6E3Dy3V6e8gAjfYxI" +
+            "88BuLUouDewz0PD5pxs1JrfolqnzYZ+bKGM4af/lhrpJ1qVoL7UdxpXIpzWRU2cv" +
+            "KD7hrKocQpPsgrsj1FkUJHf0k0ZhYgcTw1VGxf1jCVpN" +
             "-----END CERTIFICATE-----";
 
     public static final String JSON_ADDITIONAL_PROPERTIES = "{\n" +

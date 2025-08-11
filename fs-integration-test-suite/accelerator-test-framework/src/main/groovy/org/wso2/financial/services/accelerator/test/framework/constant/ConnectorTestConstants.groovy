@@ -80,7 +80,6 @@ class ConnectorTestConstants extends Constants{
     static final String ERROR_ERRORS_MSG = "error.message"
     static final String ERROR_ERRORS_DESCRIPTION = "error.description"
     static final String ERROR_CODE = "errorCode"
-    static final String CODE = "code"
     static final String MESSAGE = "message"
     static final String DESCRIPTION = "description"
     static final String ERROR_MESSAGE = "errorMessage"
@@ -126,6 +125,7 @@ class ConnectorTestConstants extends Constants{
 
     static final String IS_CARBON_URL = configurationService.getISServerUrl() + "/carbon"
     static final String DEVPORTAL_URL = configurationService.getApimServerUrl() + "/devportal"
+    static final String PUBLISHER_URL = configurationService.getApimServerUrl() + "/publisher"
 
     //Token Payload Constants
     static final String KID = "kid"
@@ -362,6 +362,7 @@ class ConnectorTestConstants extends Constants{
 
     static final String ADMIN_PORTAL_CLIENT_NAME = "rest_api_admin"
     static final String PUBLISHER_CLIENT_NAME = "rest_api_publisher"
+    static final String DEVPORTAL_CLIENT_NAME = "rest_api_devportal"
     static final String MTLS_ENFORCEMENT_ERROR = "MTLS Enforcement Error"
 
     static final String JWS_HEADER_VALIDATION_ERROR = "JWS Header Validation Error"
