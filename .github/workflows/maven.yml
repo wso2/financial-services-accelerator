@@ -38,8 +38,8 @@ jobs:
       - name: Set up Adopt JDK 11
         uses: actions/setup-java@v2
         with:
-          java-version: "11"
-          distribution: 'adopt'
+          java-version: 11.0.4+11
+          distribution: 'temurin'
       - uses: actions/checkout@v3
       - name: Set up Node 16
         uses: actions/setup-node@v3
@@ -52,33 +52,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
-#      - name: Setup Maven settings.xml
-#        uses: whelk-io/maven-settings-xml-action@v11
-#        with:
-#          mirrors: >
-#            [
-#              {
-#                "id": "wso2-nexus",
-#                "mirrorOf": "wso2-nexus",
-#                "url": "http://maven.wso2.org/nexus/content/groups/wso2-public/"
-#              },
-#              {
-#                "id": "wso2.releases",
-#                "mirrorOf": "wso2.releases",
-#                "url": "http://maven.wso2.org/nexus/content/repositories/releases/"
-#              },
-#              {
-#                "id": "wso2.snapshots",
-#                "mirrorOf": "wso2.snapshots",
-#                "url": "http://maven.wso2.org/nexus/content/repositories/snapshots/"
-#              },
-#              {
-#                "id": "knopflerfish",
-#                "mirrorOf": "knopflerfish",
-#                "url": "http://resources.knopflerfish.org/repo/maven2/release"
-#              }
-#            ]
       - name: Build with Maven using JDK 11
         run: |
           export MAVEN_OPTS="-Xmx4g"
