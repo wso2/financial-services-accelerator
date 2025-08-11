@@ -40,6 +40,8 @@ jobs:
         with:
           java-version: 11.0.28+6
           distribution: 'temurin'
+          cache: maven
+          maven-version: 3.6.3
       - uses: actions/checkout@v3
       - name: Set up Node 16
         uses: actions/setup-node@v3
