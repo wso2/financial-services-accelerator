@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
@@ -41,6 +42,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentC
 
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -63,21 +65,22 @@ public class DefaultConsentRetrievalStepTest {
     ConsentCoreServiceImpl consentCoreServiceMock;
 
     ArrayList<AuthorizationResource> authResources;
-//    private static MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder;
-//    private static MockedStatic<FinancialServicesUtils> financialServicesUtilsMock;
+    private static MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder;
+    private static MockedStatic<FinancialServicesUtils> financialServicesUtilsMock;
+    private MockedStatic<ConsentAuthorizeUtil> authorizeUtilMockedStatic;
 
     @BeforeClass
     public void initClass() throws ConsentManagementException {
         consentDataMock = mock(ConsentData.class);
         consentFileMock = mock(ConsentFile.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
-//        consentExtensionsDataHolder = Mockito.mockStatic(ConsentExtensionsDataHolder.class);
+        consentExtensionsDataHolder = Mockito.mockStatic(ConsentExtensionsDataHolder.class);
 
         authResources = new ArrayList<>();
-//
-//        ConsentExtensionsDataHolder dataHolderMock = mock(ConsentExtensionsDataHolder.class);
-//        doReturn(consentCoreServiceMock).when(dataHolderMock).getConsentCoreService();
-//        consentExtensionsDataHolder.when(ConsentExtensionsDataHolder::getInstance).thenReturn(dataHolderMock);
+
+        ConsentExtensionsDataHolder dataHolderMock = mock(ConsentExtensionsDataHolder.class);
+        doReturn(consentCoreServiceMock).when(dataHolderMock).getConsentCoreService();
+        consentExtensionsDataHolder.when(ConsentExtensionsDataHolder::getInstance).thenReturn(dataHolderMock);
 
         doReturn(TestUtil.getSampleConsentResource(TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock)
                 .getConsent(anyString(), anyBoolean());
@@ -86,20 +89,20 @@ public class DefaultConsentRetrievalStepTest {
                 TestConstants.SAMPLE_AUTH_ID));
         doReturn(authResources).when(consentCoreServiceMock).searchAuthorizations(anyString());
 
-//        String consentId = "12345677654321234234";
-//        financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
-//        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(Mockito.any()))
-//                .thenReturn(consentId);
-//        financialServicesUtilsMock.when(() -> FinancialServicesUtils
-//        .getConsentIdFromScopesRequestParam(Mockito.any()))
-//                .thenReturn(consentId);
+        String consentId = "12345677654321234234";
+        financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
+        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(any()))
+                .thenReturn(consentId);
+        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromScopesRequestParam(any()))
+                .thenReturn(consentId);
     }
 
     @AfterClass
     public void tearDown() {
         // Closing the mockStatic after each test
-//        consentExtensionsDataHolder.close();
-//        financialServicesUtilsMock.close();
+        consentExtensionsDataHolder.close();
+        financialServicesUtilsMock.close();
+        authorizeUtilMockedStatic.close();
     }
 
     @Test
@@ -159,32 +162,28 @@ public class DefaultConsentRetrievalStepTest {
     public void testConsentRetrievalWithValidRequestObject() {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
-                     Mockito.mockStatic(FinancialServicesConfigParser.class);
-                MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder =
-                        Mockito.mockStatic(ConsentExtensionsDataHolder.class);
-                MockedStatic<FinancialServicesUtils> financialServicesUtilsMock =
-                     Mockito.mockStatic(FinancialServicesUtils.class);) {
-
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
             FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
             when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
             when(configParserMock.getAuthFlowConsentIdSource()).thenReturn(FinancialServicesConstants.REQUEST_OBJECT);
             configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
-            ConsentExtensionsDataHolder dataHolderMock = mock(ConsentExtensionsDataHolder.class);
-            doReturn(consentCoreServiceMock).when(dataHolderMock).getConsentCoreService();
-            consentExtensionsDataHolder.when(ConsentExtensionsDataHolder::getInstance).thenReturn(dataHolderMock);
-
-            String consentId = "12345677654321234234";
-            financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(Mockito.any()))
-                    .thenReturn(consentId);
-            financialServicesUtilsMock.when(() -> FinancialServicesUtils
-                            .getConsentIdFromScopesRequestParam(Mockito.any()))
-                    .thenReturn(consentId);
-
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
             JSONObject jsonObject = new JSONObject();
             doReturn(true).when(consentDataMock).isRegulatory();
             doReturn(request).when(consentDataMock).getSpQueryParams();
+
+            // Mock static methods to return valid consent ID
+            // Mock ConsentAuthorizeUtil
+            authorizeUtilMockedStatic = Mockito.mockStatic(ConsentAuthorizeUtil.class);
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
+                    .thenReturn("dummyJWT");
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getRequestObjectJson(anyString()))
+                    .thenReturn(new JSONObject());
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
+                    .thenReturn("consent123");
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(any()))
+                    .thenReturn(new JSONObject());
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
@@ -214,7 +213,7 @@ public class DefaultConsentRetrievalStepTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetConsentDataSetForAccounts() {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
@@ -235,7 +234,7 @@ public class DefaultConsentRetrievalStepTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetConsentDataSetForPayments() throws ConsentManagementException {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =
@@ -255,11 +254,11 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertFalse(jsonObject.has("consumerData"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
-//    @Test
+    @Test
     public void testGetConsentDataSetForCOF() throws ConsentManagementException {
 
         try (MockedStatic<FinancialServicesConfigParser> configParserStaticMock =

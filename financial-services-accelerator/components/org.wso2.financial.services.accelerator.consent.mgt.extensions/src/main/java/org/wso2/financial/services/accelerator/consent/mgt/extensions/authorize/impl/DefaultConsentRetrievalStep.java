@@ -44,13 +44,13 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
  */
 public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
-//    private final boolean isPreInitiatedConsent;
+    private final boolean isPreInitiatedConsent;
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
 
     public DefaultConsentRetrievalStep() {
 
-//        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
-//        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
+        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         ConsentResource consentResource;
 
         try {
-            if (FinancialServicesConfigParser.getInstance().isPreInitiatedConsent()) {
+            if (isPreInitiatedConsent) {
 
                 log.debug("Extracting consent ID from pre-initiated consent request object.");
                 String consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
@@ -117,8 +117,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
              calling accounts service */
             // Append only when consent type is accounts or no initiated account for payment consents
-            if (!FinancialServicesConfigParser.getInstance().isPreInitiatedConsent() ||
-                    ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
+            if (!isPreInitiatedConsent || ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
                     (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
                             !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {
                 JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();
