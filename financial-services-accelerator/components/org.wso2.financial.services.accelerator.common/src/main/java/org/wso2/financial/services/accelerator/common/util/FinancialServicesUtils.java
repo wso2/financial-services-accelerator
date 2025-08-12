@@ -74,6 +74,7 @@ public class FinancialServicesUtils {
      * @param classpath full class path
      * @param className  class name
      * @return new object instance
+     * @param <T> type of the class
      */
     @Generated(message = "Ignoring since method contains no logics")
     public static <T> T  getClassInstanceFromFQN(String classpath, Class<T> className) {
