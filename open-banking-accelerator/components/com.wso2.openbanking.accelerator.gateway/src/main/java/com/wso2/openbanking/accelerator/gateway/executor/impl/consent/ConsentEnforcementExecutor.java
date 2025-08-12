@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
@@ -166,17 +167,19 @@ public class ConsentEnforcementExecutor implements OpenBankingGatewayExecutor {
     private String invokeConsentValidationService(String enforcementJWTPayload) throws IOException,
             OpenBankingException {
 
-        HttpPost httpPost = new HttpPost(getValidationEndpoint());
-        StringEntity params;
-        params = new StringEntity(enforcementJWTPayload);
-        httpPost.setEntity(params);
-        httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JWT_CONTENT_TYPE);
-        String userName = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
-        String password = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
-        httpPost.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-        HttpResponse response = GatewayDataHolder.getHttpClient().execute(httpPost);
-        InputStream in = response.getEntity().getContent();
-        return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+        try (CloseableHttpClient httpClient = GatewayDataHolder.getHttpClient()) {
+            HttpPost httpPost = new HttpPost(getValidationEndpoint());
+            StringEntity params;
+            params = new StringEntity(enforcementJWTPayload);
+            httpPost.setEntity(params);
+            httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JWT_CONTENT_TYPE);
+            String userName = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
+            String password = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
+            httpPost.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
+            HttpResponse response = httpClient.execute(httpPost);
+            InputStream in = response.getEntity().getContent();
+            return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+        }
     }
 
     /**

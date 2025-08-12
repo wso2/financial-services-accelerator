@@ -51,6 +51,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
@@ -204,14 +205,14 @@ public class GatewayUtils {
                 publisherHostName + "/" + GatewayConstants.PUBLISHER_API_PATH + apiId +
                         GatewayConstants.SWAGGER_ENDPOINT;
 
-        HttpGet httpGet = new HttpGet(publisherAPIURL);
-        String userName = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
-        String password = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
+        try (CloseableHttpClient httpClient = GatewayDataHolder.getHttpClient()) {
+            HttpGet httpGet = new HttpGet(publisherAPIURL);
+            String userName = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
+            String password = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
 
-        httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-        HttpResponse response = null;
-        try {
-            response = GatewayDataHolder.getHttpClient().execute(httpGet);
+            httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
+            HttpResponse response = null;
+            response = httpClient.execute(httpGet);
             InputStream in = response.getEntity().getContent();
             return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
         } catch (IOException | OpenBankingException e) {
