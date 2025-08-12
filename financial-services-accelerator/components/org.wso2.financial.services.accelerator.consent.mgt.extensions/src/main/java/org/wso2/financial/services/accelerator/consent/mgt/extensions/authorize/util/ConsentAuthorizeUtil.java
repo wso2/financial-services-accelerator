@@ -60,7 +60,6 @@ import java.util.UUID;
 public class ConsentAuthorizeUtil {
 
     private static final Log log = LogFactory.getLog(ConsentAuthorizeUtil.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -97,7 +96,7 @@ public class ConsentAuthorizeUtil {
      */
     public static String extractConsentIdFromRequestObject(String requestObject) throws ConsentException {
         log.debug("Extracting consent ID from request object");
-        String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
+        String authFlowConsentIdSource = FinancialServicesConfigParser.getInstance().getAuthFlowConsentIdSource();
 
         try {
             if (FinancialServicesConstants.REQUEST_OBJECT.equals(authFlowConsentIdSource)) {
@@ -132,7 +131,7 @@ public class ConsentAuthorizeUtil {
      */
     public static String extractConsentIdFromRequestParam(JSONObject requestParameters) {
         log.debug("Extracting consent ID from request parameters");
-        String key = configParser.getConsentIdExtractionKey();
+        String key = FinancialServicesConfigParser.getInstance().getConsentIdExtractionKey();
 
         // TODO: need to support other request parameters based on requirements
         if (key.equals(FinancialServicesConstants.SCOPE)) {
