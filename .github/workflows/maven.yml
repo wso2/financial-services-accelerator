@@ -102,7 +102,7 @@ jobs:
           chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           echo "Decrypting update script..."
           echo "Using bot username: $WSO2_USERNAME"
-          echo "$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE $WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE"
+          echo "WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE $WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE"
           gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
           echo "Setting up..."
           bash $RUNNER_HOME/test-automation/setup.sh
