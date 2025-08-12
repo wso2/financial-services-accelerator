@@ -90,7 +90,8 @@ public class DefaultConsentRetrievalStepTest {
 //        financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
 //        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(Mockito.any()))
 //                .thenReturn(consentId);
-//        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromScopesRequestParam(Mockito.any()))
+//        financialServicesUtilsMock.when(() -> FinancialServicesUtils
+//        .getConsentIdFromScopesRequestParam(Mockito.any()))
 //                .thenReturn(consentId);
     }
 
@@ -176,7 +177,8 @@ public class DefaultConsentRetrievalStepTest {
             String consentId = "12345677654321234234";
             financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(Mockito.any()))
                     .thenReturn(consentId);
-            financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromScopesRequestParam(Mockito.any()))
+            financialServicesUtilsMock.when(() -> FinancialServicesUtils
+                            .getConsentIdFromScopesRequestParam(Mockito.any()))
                     .thenReturn(consentId);
 
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
