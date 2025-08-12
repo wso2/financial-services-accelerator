@@ -110,7 +110,7 @@ public class JWTUtils {
      * @param jwtString signed json web token
      * @param jwksUri   endpoint displaying the key set for the signing certificates
      * @param algorithm the signing algorithm for jwt
-     * @return true if signature is valid
+     * @return JWT Claim Set
      * @throws ParseException        if an error occurs while parsing the jwt
      * @throws BadJOSEException      if the jwt is invalid
      * @throws JOSEException         if an error occurs while processing the jwt
@@ -165,6 +165,7 @@ public class JWTUtils {
      * @throws InvalidKeySpecException  if the provided key is invalid
      * @throws JOSEException            if an error occurs during the signature
      *                                  validation process
+     * @throws FinancialServicesException if the algorithm is not supported
      */
     @Generated(message = "Excluding from code coverage as KeyFactory does not initialize in testsuite")
     public static boolean isValidSignature(SignedJWT signedJWT, String publicKey)
@@ -199,6 +200,7 @@ public class JWTUtils {
      * @return the parsed SignedJWT object
      * @throws IllegalArgumentException if the provided token identifier is not a
      *                                  parsable JWT
+     * @throws ParseException           if the JWT string cannot be parsed
      *
      */
     @Generated(message = "Excluding from code coverage as it require external call")
