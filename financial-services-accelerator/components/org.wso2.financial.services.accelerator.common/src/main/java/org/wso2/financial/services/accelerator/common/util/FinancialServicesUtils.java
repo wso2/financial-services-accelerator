@@ -73,6 +73,7 @@ public class FinancialServicesUtils {
      *
      * @param classpath full class path
      * @param className  class name
+     * @param <T> type of the class
      * @return new object instance
      */
     @Generated(message = "Ignoring since method contains no logics")
