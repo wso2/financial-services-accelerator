@@ -125,6 +125,8 @@
                         <exclude>**/*ConsentPayloadValidationResult.class</exclude>
                         <exclude>**/*ConsentValidateRequest.class</exclude>
                         <exclude>**/model/**/*</exclude>
+                        <exclude>**/PeriodicalConsentJobActivator.class</exclude>
+                        <exclude>**/PeriodicalConsentJobScheduler.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
