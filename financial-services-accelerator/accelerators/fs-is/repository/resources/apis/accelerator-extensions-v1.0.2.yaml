@@ -955,7 +955,7 @@ paths:
                     status: ERROR
                     errorCode: 401
                     errorMessage: invalid_permissions
-                    errorDescription: "The requested  permissions are invalid, unknown"
+                    errorDescription: "The requested permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
