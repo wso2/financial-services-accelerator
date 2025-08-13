@@ -265,6 +265,9 @@ public class Utils {
      */
     public static void appendResourceBundleParams(JSONObject dataSet,
                                                   ResourceBundle resourceBundle) {
+
+        log.debug("Appending resource bundle parameters to dataSet");
+
         JSONObject dataFromResourceBundle = dataSet.optJSONObject(Constants.RESOURCE_BUNDLE_DATA);
         if (dataFromResourceBundle == null) {
             dataFromResourceBundle = new JSONObject();
@@ -305,6 +308,9 @@ public class Utils {
      * @param request   server request
      */
     public static void appendLanguageOptions(JSONObject dataSet, HttpServletRequest request) {
+
+        log.debug("Appending language options based on locale");
+
         JSONObject dataFromResourceBundle = dataSet.optJSONObject(Constants.RESOURCE_BUNDLE_DATA);
         if (dataFromResourceBundle == null) {
             dataFromResourceBundle = new JSONObject();
@@ -329,9 +335,13 @@ public class Utils {
      * @return  fetched language property (with fallback)
      */
     public static String[] getLanguagePropertiesForLocale(Locale locale) {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting language properties for locale: " + locale.toString());
+        }
         try (InputStream inputStream = getClassLoaderResourceAsStream("LanguageOptions.properties")) {
 
             if (inputStream == null) {
+                log.warn("LanguageOptions.properties file not found in classpath");
                 return null; // No config file
             }
 
