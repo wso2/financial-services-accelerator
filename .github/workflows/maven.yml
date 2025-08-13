@@ -18,7 +18,7 @@ name: Build Financial Services Repository
 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  pull_request:
+  pull_request_target:
     branches:
       - 'main'
 
@@ -94,16 +94,16 @@ jobs:
           export MAVEN_OPTS="-Xmx4g"
           mvn -B install --file pom.xml
         # TODO: Commenting out until the secrets issue get fixed
-#      - name: Running the integration test suite
-#        run: |
-#          echo "Starting tests..."
-#          export MAVEN_OPTS="-Xmx4g"
-#          RUNNER_HOME=`pwd`
-#          chmod +x $RUNNER_HOME/test-automation/test.sh
-#          chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-#          echo "Decrypting update script..."
-#          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
-#          echo "Setting up..."
-#          bash $RUNNER_HOME/test-automation/setup.sh
-#          echo "Running test suite..."
-#          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
+      - name: Running the integration test suite
+        run: |
+          echo "Starting tests..."
+          export MAVEN_OPTS="-Xmx4g"
+          RUNNER_HOME=`pwd`
+          chmod +x $RUNNER_HOME/test-automation/test.sh
+          chmod +x ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+          echo "Decrypting update script..."
+          gpg --quiet --batch --yes --decrypt --passphrase="$WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE" --output ${RUNNER_HOME}/test-automation/wso2update_linux ${RUNNER_HOME}/test-automation/wso2update_linux.gpg
+          echo "Setting up..."
+          bash $RUNNER_HOME/test-automation/setup.sh
+          echo "Running test suite..."
+          bash $RUNNER_HOME/test-automation/test.sh -i $TEST_HOME
