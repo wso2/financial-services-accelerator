@@ -859,7 +859,7 @@ paths:
                     errorCode: 401
                     data:
                       errorMessage: invalid_permissions
-                      erroreDescription: "The requested  permissions are invalid, unknown"
+                      erroreDescription: "The requested permissions are invalid, unknown"
         "400":
           description: Bad Request
           content:
