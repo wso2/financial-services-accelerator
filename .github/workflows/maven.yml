@@ -93,7 +93,6 @@ jobs:
         run: |
           export MAVEN_OPTS="-Xmx4g"
           mvn -B install --file pom.xml
-        # TODO: Commenting out until the secrets issue get fixed
       - name: Running the integration test suite
         run: |
           echo "Starting tests..."
