@@ -35,6 +35,7 @@
         <module>open-banking-test-framework</module>
     </modules>
 
+    <repositories>
         <repository>
             <id>wso2-nexus-2</id>
             <name>WSO2 internal Repository</name>
