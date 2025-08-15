@@ -25,8 +25,8 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>org.wso2.financial.services.accelerator</groupId>
-        <artifactId>financial-services</artifactId>
+        <groupId>com.wso2.openbanking.accelerator</groupId>
+        <artifactId>open-banking</artifactId>
         <version>3.3.24-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -34,18 +34,6 @@
         <module>bfsi-test-framework</module>
         <module>open-banking-test-framework</module>
     </modules>
-
-    <repositories>
-        <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
 
         <repository>
             <id>wso2-nexus-2</id>
