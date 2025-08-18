@@ -151,6 +151,14 @@ public class ServiceExtensionUtils {
                         log.error(String.format(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR +
                                         "Status code: %s, Error: %s", statusCode,
                                 responseContent.replaceAll("[\r\n]", "")));
+                        if (statusCode == 400 || statusCode == 500) {
+                            ExternalServiceResponse externalServiceResponse = mapResponse(responseContent,
+                                    ExternalServiceResponse.class);
+
+                            throw new FinancialServicesException(externalServiceResponse.getData()
+                                    .path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                                    .asText(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR));
+                        }
                         throw new FinancialServicesException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
                     }
 

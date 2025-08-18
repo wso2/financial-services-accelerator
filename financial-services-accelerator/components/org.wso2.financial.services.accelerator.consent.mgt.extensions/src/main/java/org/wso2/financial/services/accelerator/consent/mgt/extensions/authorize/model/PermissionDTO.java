@@ -26,9 +26,9 @@ import javax.validation.constraints.NotEmpty;
  * Permissions object for external API consent retrieval.
  */
 public class PermissionDTO {
-    @NotEmpty
+    @NotEmpty(message = "UUID in Permission Object cannot be empty")
     private String uid;
-    @NotEmpty
+    @NotEmpty(message = "Display Values in Permission Object cannot be empty")
     private List<String> displayValues;
     private List<AccountDTO> initiatedAccounts;
 

@@ -196,14 +196,9 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             ExternalAPIPreConsentPersistRequestDTO requestDTO) throws FinancialServicesException {
 
         ExternalServiceRequest externalServiceRequest = ExternalAPIUtil.createExternalServiceRequest(requestDTO);
-        ExternalServiceResponse externalServiceResponse;
+        ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
+                externalServiceRequest, ServiceExtensionTypeEnum.PERSIST_AUTHORIZED_CONSENT);
 
-        try {
-            externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
-                    externalServiceRequest, ServiceExtensionTypeEnum.PERSIST_AUTHORIZED_CONSENT);
-        } catch (FinancialServicesException e) {
-            throw new ConsentManagementException(e.getMessage());
-        }
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
             String newConsentStatus = externalServiceResponse.getData().path(
                     ConsentExtensionConstants.NEW_CONSENT_STATUS).asText();

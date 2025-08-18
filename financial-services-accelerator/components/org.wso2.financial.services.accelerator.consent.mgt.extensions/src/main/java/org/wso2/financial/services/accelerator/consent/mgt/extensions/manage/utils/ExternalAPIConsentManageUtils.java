@@ -19,7 +19,6 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ut
 
 import com.google.gson.Gson;
 import org.json.JSONObject;
-import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
@@ -52,10 +51,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIPreConsentGenerateResponseDTO callExternalService(
-            ExternalAPIPreConsentGenerateRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIPreConsentGenerateRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
@@ -68,10 +67,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIModifiedResponseDTO callExternalService(
-            ExternalAPIPostConsentGenerateRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIPostConsentGenerateRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
@@ -84,10 +83,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIConsentRevokeResponseDTO callExternalService(
-            ExternalAPIConsentRevokeRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIConsentRevokeRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
@@ -100,10 +99,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIModifiedResponseDTO callExternalService(
-            ExternalAPIConsentRetrieveRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIConsentRetrieveRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
@@ -116,10 +115,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIPreFileUploadResponseDTO callExternalService(
-            ExternalAPIPreFileUploadRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIPreFileUploadRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
@@ -132,10 +131,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIModifiedResponseDTO callExternalService(
-            ExternalAPIPostFileUploadRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIPostFileUploadRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
@@ -148,10 +147,10 @@ public class ExternalAPIConsentManageUtils {
      *
      * @param requestDTO - Request DTO
      * @return - Response DTO
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     public static ExternalAPIModifiedResponseDTO callExternalServiceForFileRetrieval(
-            ExternalAPIConsentRetrieveRequestDTO requestDTO) throws ConsentManagementException {
+            ExternalAPIConsentRetrieveRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
@@ -165,25 +164,21 @@ public class ExternalAPIConsentManageUtils {
      * @param requestJson - Request JSON
      * @param serviceType - Service Type
      * @return - Response JSON
-     * @throws ConsentManagementException - Consent Management Exception
+     * @throws FinancialServicesException - If there is an error while calling the external service
      */
     private static JSONObject callExternalService(
-            JSONObject requestJson, ServiceExtensionTypeEnum serviceType) throws ConsentManagementException {
+            JSONObject requestJson, ServiceExtensionTypeEnum serviceType) throws FinancialServicesException {
 
-        try {
-            ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
-                    UUID.randomUUID().toString(), requestJson);
-            ExternalServiceResponse response =
-                    ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest, serviceType);
-            if (response.getStatus().equals(StatusEnum.ERROR)) {
-                ExternalAPIUtil.handleResponseError(response);
-            }
-            if (response.getData() == null) {
-                return new JSONObject();
-            }
-            return new JSONObject(response.getData().toString());
-        } catch (FinancialServicesException e) {
-            throw new ConsentManagementException("Error occurred while invoking external service call", e);
+        ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
+                UUID.randomUUID().toString(), requestJson);
+        ExternalServiceResponse response =
+                ServiceExtensionUtils.invokeExternalServiceCall(externalServiceRequest, serviceType);
+        if (response.getStatus().equals(StatusEnum.ERROR)) {
+            ExternalAPIUtil.handleResponseError(response);
         }
+        if (response.getData() == null) {
+            return new JSONObject();
+        }
+        return new JSONObject(response.getData().toString());
     }
 }
