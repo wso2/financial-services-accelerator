@@ -18,6 +18,8 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils;
 
 import com.google.gson.Gson;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
@@ -45,6 +47,7 @@ import java.util.UUID;
 public class ExternalAPIConsentManageUtils {
 
     private static final Gson gson = new Gson();
+    private static final Log log = LogFactory.getLog(ExternalAPIConsentManageUtils.class);
 
     /**
      * Method to call external service for pre consent generation.
@@ -56,6 +59,7 @@ public class ExternalAPIConsentManageUtils {
     public static ExternalAPIPreConsentGenerateResponseDTO callExternalService(
             ExternalAPIPreConsentGenerateRequestDTO requestDTO) throws FinancialServicesException {
 
+        log.debug("Calling external service for pre consent generation");
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
@@ -73,6 +77,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIPostConsentGenerateRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
+        log.debug("Calling external service for post consent generation");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_CREATION_RESPONSE);
         return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
@@ -89,6 +94,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIConsentRevokeRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
+        log.debug("Calling external service for consent revocation");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_REVOKE);
         return gson.fromJson(responseJson.toString(), ExternalAPIConsentRevokeResponseDTO.class);
@@ -105,6 +111,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIConsentRetrieveRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
+        log.debug("Calling external service for consent retrieval");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_RETRIEVAL);
         return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
@@ -121,6 +128,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIPreFileUploadRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
+        log.debug("Calling external service for pre-process file upload");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_FILE_UPLOAD);
         return gson.fromJson(responseJson.toString(), ExternalAPIPreFileUploadResponseDTO.class);
@@ -137,6 +145,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIPostFileUploadRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = new JSONObject(requestDTO);
+        log.debug("Calling external service for post-process file upload");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
         return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
@@ -153,6 +162,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIConsentRetrieveRequestDTO requestDTO) throws FinancialServicesException {
 
         JSONObject requestJson = requestDTO.toJson();
+        log.debug("Calling external service for file retrieval");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
         return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
@@ -169,6 +179,10 @@ public class ExternalAPIConsentManageUtils {
     private static JSONObject callExternalService(
             JSONObject requestJson, ServiceExtensionTypeEnum serviceType) throws FinancialServicesException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Invoking external service call for service type: %s",
+                    serviceType.toString().replaceAll("\r\n", " ")));
+        }
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
                 UUID.randomUUID().toString(), requestJson);
         ExternalServiceResponse response =
