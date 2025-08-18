@@ -494,7 +494,7 @@ public class ConsentAuthorizeUtil {
                     debtorAccount.getString(ConsentExtensionConstants.NAME) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.NAME_TITLE + " : " +
                         debtorAccount.getString(ConsentExtensionConstants.NAME));
-                initiatedAccount.put(ConsentAuthorizeConstants.DISPLAY_NAME,
+                initiatedAccount.put(ConsentExtensionConstants.NAME,
                         debtorAccount.getString(ConsentExtensionConstants.NAME));
             }
 
@@ -511,7 +511,11 @@ public class ConsentAuthorizeUtil {
             if (debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
-                initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
+                initiatedAccount.put(ConsentExtensionConstants.IDENTIFICATION,
+                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+
+                // Set account identification as account display name
+                initiatedAccount.put(ConsentAuthorizeConstants.DISPLAY_NAME,
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
             }
 

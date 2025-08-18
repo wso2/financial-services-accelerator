@@ -16,12 +16,13 @@
 ~ under the License.
 --%>
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
 <c:if test="${isReauthorization eq true}">
     <h5 class="ui header">
         <strong>
-            You are about to re-authorize an intent which has been authorized before.
+            ${reAuthenticationDisclaimer}
         </strong>
     </h5>
 </c:if>

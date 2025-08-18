@@ -19,13 +19,24 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authservl
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -140,5 +151,70 @@ public class UtilsTest {
 
         assertTrue(result.get("emptyArray") instanceof List);
         assertTrue(((List<?>) result.get("emptyArray")).isEmpty());
+    }
+
+    @Test
+    public void testAppendResourceBundleParams_populatesExpectedKeys() {
+        ResourceBundle resourceBundleMock = mock(ResourceBundle.class);
+        when(resourceBundleMock.getString(anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        JSONObject dataSet = new JSONObject();
+        dataSet.put("application", "MyApp");
+
+        Utils.appendResourceBundleParams(dataSet, resourceBundleMock);
+
+        JSONObject rbData = dataSet.optJSONObject(Constants.RESOURCE_BUNDLE_DATA);
+        assertNotNull(rbData);
+
+        assertEquals(rbData.getString(Constants.APP_REQUESTS_DETAILS), Constants.APP_REQUESTS_DETAILS_KEY);
+        assertEquals(rbData.getString(Constants.DATA_REQUESTED), Constants.DATA_REQUESTED_KEY);
+        assertEquals(rbData.getString(Constants.REQUESTED_PERMISSIONS), Constants.REQUESTED_PERMISSIONS_KEY);
+    }
+
+    @Test
+    public void testAppendLanguageOptions_setsTextDirection() {
+        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        when(requestMock.getLocale()).thenReturn(Locale.forLanguageTag("ar"));
+
+        JSONObject dataSet = new JSONObject();
+
+        Utils.appendLanguageOptions(dataSet, requestMock);
+
+        JSONObject rbData = dataSet.optJSONObject(Constants.RESOURCE_BUNDLE_DATA);
+        assertNotNull(rbData);
+
+        String direction = rbData.getString("textDirection");
+        assertNotNull(direction);
+        assertTrue(direction.equals("ltr") || direction.equals("rtl"));
+    }
+
+    @Test
+    public void testGetLanguagePropertiesForLocale_withMockedProperties() throws Exception {
+        String propertiesContent = "lang.switch.en=English,EN,ltr\nlang.switch.ar=Arabic,AR,rtl\n";
+
+        try (MockedStatic<Utils> mockedStatic = Mockito.mockStatic(Utils.class)) {
+            // Mock only getClassLoaderResourceAsStream
+            mockedStatic.when(() -> Utils.getClassLoaderResourceAsStream("LanguageOptions.properties"))
+                    .thenAnswer(invocation -> new ByteArrayInputStream(propertiesContent.getBytes()));
+
+            // For getLanguagePropertiesForLocale, call the real method
+            mockedStatic.when(() -> Utils.getLanguagePropertiesForLocale(Mockito.any(Locale.class)))
+                    .thenCallRealMethod();
+
+            String[] enProps = Utils.getLanguagePropertiesForLocale(Locale.ENGLISH);
+            assertNotNull(enProps);
+            assertEquals(enProps[0], "English");
+            assertEquals(enProps[2], "ltr");
+
+            String[] arProps = Utils.getLanguagePropertiesForLocale(new Locale("ar"));
+            assertNotNull(arProps);
+            assertEquals(arProps[0], "Arabic");
+            assertEquals(arProps[2], "rtl");
+
+            String[] fallbackProps = Utils.getLanguagePropertiesForLocale(new Locale("fr"));
+            assertNotNull(fallbackProps);
+            assertEquals(fallbackProps[2], "ltr");
+        }
     }
 }
