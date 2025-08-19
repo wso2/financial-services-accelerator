@@ -339,7 +339,7 @@ public class Utils {
 //            log.debug(String.format("Getting language properties for locale: %s",
 //                    locale.toString().replaceAll("[\r\n]", "")));
             log.debug(String.format("Error while retrieving the value for key: %s from resource bundle.",
-                    locale.getLanguage().replaceAll("[\n\r]", "")));
+                    "locale.getLanguage()\n".replaceAll("[\n\r]", "")));
         }
         try (InputStream inputStream = getClassLoaderResourceAsStream("LanguageOptions.properties")) {
 
