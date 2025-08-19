@@ -334,6 +334,11 @@ public class Utils {
      * @param locale    request locale
      * @return  fetched language property (with fallback)
      */
+    @SuppressFBWarnings("CRLF_INJECTION_LOGS")
+    // Suppressed content - log.debug(String.format("Getting language properties for locale: %s",
+    //                    locale.toString().replaceAll("[\r\n]", "")));
+    // Suppression reason - Since this is getting caught in action build but not locally
+    // Suppressed warning count - 1
     public static String[] getLanguagePropertiesForLocale(Locale locale) {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Getting language properties for locale: %s",
