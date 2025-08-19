@@ -32,7 +32,7 @@ import javax.validation.constraints.NotEmpty;
  * Consent data object for external API consent retrieval.
  */
 public class ConsentDataDTO {
-    @NotEmpty
+    @NotEmpty(message = "Consent Type in ConsentData Object cannot be empty")
     private String type;
 
     @Valid
