@@ -36,6 +36,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.C
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -70,6 +71,8 @@ public class FSDefaultAuthServletImplTest {
     public void initClass() {
 
         httpServletRequestMock = mock(HttpServletRequest.class);
+        Locale locale = new Locale("en", "US");
+        doReturn(locale).when(httpServletRequestMock).getLocale();
         resourceBundle = mock(ResourceBundle.class);
         mockHolder = mock(ConsentExtensionsDataHolder.class);
         mockConfigService = mock(FinancialServicesConfigurationService.class);
