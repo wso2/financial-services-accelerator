@@ -336,7 +336,8 @@ public class Utils {
      */
     public static String[] getLanguagePropertiesForLocale(Locale locale) {
         if (log.isDebugEnabled()) {
-            log.debug("Getting language properties for locale: " + locale.toString());
+            log.debug(String.format("Getting language properties for locale: %s",
+                    locale.toString().replaceAll("[\r\n]", "")));
         }
         try (InputStream inputStream = getClassLoaderResourceAsStream("LanguageOptions.properties")) {
 
