@@ -335,6 +335,9 @@ public class Utils {
      * @return  fetched language property (with fallback)
      */
     public static String[] getLanguagePropertiesForLocale(Locale locale) {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting language properties for locale: " + locale.toString());
+        }
         try (InputStream inputStream = getClassLoaderResourceAsStream("LanguageOptions.properties")) {
 
             if (inputStream == null) {
