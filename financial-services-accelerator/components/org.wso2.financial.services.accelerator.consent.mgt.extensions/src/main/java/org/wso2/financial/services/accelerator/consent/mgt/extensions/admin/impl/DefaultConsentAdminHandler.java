@@ -44,6 +44,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.util
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.utils.ExternalAPIConsentAdminUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
@@ -185,8 +186,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                 enrichedSearchResult.put(ConsentExtensionConstants.METADATA, metadata);
                 consentAdminData.setResponsePayload(enrichedSearchResult);
             } catch (FinancialServicesException e) {
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while searching consents", e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                        ConsentOperationEnum.CONSENT_SEARCH);
             }
         } else {
             JSONObject metadata = new JSONObject();
@@ -238,8 +239,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                 userId, responseDTO.getRequireTokenRevocation(),
                                 ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
                     } catch (FinancialServicesException e) {
-                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                                "Exception occurred while revoking the consent", e);
+                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                                ConsentOperationEnum.CONSENT_DELETE);
                     }
                 } else {
                     if (!ConsentExtensionConstants.AUTHORIZED_STATUS.equals(consentResource.getCurrentStatus())) {
@@ -316,8 +317,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                     count = responseDTO.getEnrichedSearchResult().length();
 
                 } catch (FinancialServicesException e) {
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                            "Exception occurred while searching consents", e);
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                            ConsentOperationEnum.CONSENT_SEARCH);
                 }
             } else {
 
