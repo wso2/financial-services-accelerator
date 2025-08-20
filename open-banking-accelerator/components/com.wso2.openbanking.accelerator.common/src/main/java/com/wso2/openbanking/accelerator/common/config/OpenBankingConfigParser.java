@@ -987,6 +987,25 @@ public class OpenBankingConfigParser {
     }
 
     /**
+     * ConnectionPool time to live.
+     *
+     * @return connection time to live, default value is -1L
+     */
+    public long getConnectionPoolTimeToLive() {
+        try {
+            Object ttl = getConfigElementFromKey(OpenBankingConstants.CONNECTION_POOL_TIME_TO_LIVE);
+            if (ttl != null) {
+                return Integer.parseInt(String.valueOf(ttl));
+            } else {
+                return -1L;
+            }
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Error occurred while reading the TimeToLive " +
+                    "value in open-banking.xml. " + e.getMessage());
+        }
+    }
+
+    /**
      * ConnectionPool maximum connection per route count.
      *
      * @return maximum connections per route value, default value is 1500

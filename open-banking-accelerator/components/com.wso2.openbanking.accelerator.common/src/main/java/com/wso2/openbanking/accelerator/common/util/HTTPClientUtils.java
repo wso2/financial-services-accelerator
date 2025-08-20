@@ -44,6 +44,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
@@ -58,7 +59,7 @@ public class HTTPClientUtils {
     public static final String HTTP_PROTOCOL = "http";
     public static final String HTTPS_PROTOCOL = "https";
     private static final String[] SUPPORTED_HTTP_PROTOCOLS = {"TLSv1.2"};
-    private static final Log log = LogFactory.getLog(DatabaseUtil.class);
+    private static final Log log = LogFactory.getLog(HTTPClientUtils.class);
     private static volatile PoolingHttpClientConnectionManager connectionManager;
     private static volatile CloseableHttpClient httpsClient;
 
@@ -87,7 +88,9 @@ public class HTTPClientUtils {
                             .register(HTTPS_PROTOCOL, sslsf)
                             .build();
 
-                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+                    long ttl = OpenBankingConfigParser.getInstance().getConnectionPoolTimeToLive();
+                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry, null,
+                            null, null, ttl, TimeUnit.MILLISECONDS);
 
                     connectionManager.setMaxTotal(maxTotal);
                     connectionManager.setDefaultMaxPerRoute(maxPerRoute);
