@@ -62,10 +62,10 @@ public class OAuthCallbackServlet extends HttpServlet {
         final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL)
                 .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
         try {
-            final String code = req.getParameter(CODE)
-                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
+            final String code = req.getParameter(CODE);
             if (StringUtils.isNotEmpty(code)) {
-                LOG.debug(String.format("Authorization callback request received with code: %s", code));
+                LOG.debug(String.format("Authorization callback request received with code: %s", code
+                        .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
             }
 
             String redirectUrl = iamBaseUrl + "/consentmgr";
