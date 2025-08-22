@@ -87,7 +87,8 @@ public class SMSNotificationProvider implements NotificationProvider {
                                 && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED))
                 ) {
                     String error = String.format("Error while invoking rest api : %s %s",
-                            httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
+                            httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine()
+                                    .getReasonPhrase());
                     throw new OpenBankingException(error);
                 }
             }
