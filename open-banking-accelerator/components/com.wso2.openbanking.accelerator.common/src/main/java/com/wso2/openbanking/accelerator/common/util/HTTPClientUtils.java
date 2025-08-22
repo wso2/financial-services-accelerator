@@ -95,6 +95,8 @@ public class HTTPClientUtils {
 
                     connectionManager.setMaxTotal(maxTotal);
                     connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+                    log.info("HTTPS connection manager initialized with maxTotal: " + maxTotal + ", maxPerRoute: " +
+                            maxPerRoute + ", TTL: " + ttl + "ms");
                 }
             }
         }
@@ -116,6 +118,7 @@ public class HTTPClientUtils {
                     httpsClient = HttpClients.custom()
                             .setConnectionManager(connectionManager)
                             .build();
+                    log.debug("HTTPS client instance created successfully");
                 }
             }
         }

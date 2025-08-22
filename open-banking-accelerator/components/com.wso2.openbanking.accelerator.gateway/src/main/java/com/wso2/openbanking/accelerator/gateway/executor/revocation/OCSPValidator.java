@@ -320,6 +320,7 @@ public class OCSPValidator implements RevocationValidator {
 
         try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
 
+            log.debug("Sending OCSP request to: " + serviceUrl);
             setRequestProperties(request.getEncoded(), httpPost);
             //Check errors in response, if response status code is not 200 (success) range, throws exception
             // eg: if response code is 200 (success) or 201 (accepted) return true,

@@ -167,6 +167,9 @@ public class ConsentEnforcementExecutor implements OpenBankingGatewayExecutor {
     private String invokeConsentValidationService(String enforcementJWTPayload) throws IOException,
             OpenBankingException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking consent validation service at endpoint: " + getValidationEndpoint());
+        }
         HttpPost httpPost = new HttpPost(getValidationEndpoint());
         StringEntity params;
         params = new StringEntity(enforcementJWTPayload);
@@ -176,6 +179,7 @@ public class ConsentEnforcementExecutor implements OpenBankingGatewayExecutor {
         String password = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
         httpPost.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
         try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+            log.info("Successfully invoked consent validation service");
             InputStream in = response.getEntity().getContent();
             in.close();
             return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));

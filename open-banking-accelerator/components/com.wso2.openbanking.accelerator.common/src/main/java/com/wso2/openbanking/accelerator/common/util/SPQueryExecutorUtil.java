@@ -59,6 +59,7 @@ public class SPQueryExecutorUtil {
     public static JSONObject executeQueryOnStreamProcessor(String appName, String query, String spUserName,
                                                            String spPassword, String spApiHost)
             throws IOException, ParseException, OpenBankingException {
+        log.info("Executing query on Stream Processor for app: " + appName);
         byte[] encodedAuth = Base64.getEncoder()
                 .encode((spUserName + ":" + spPassword).getBytes(StandardCharsets.ISO_8859_1));
         String authHeader = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8.toString());
@@ -76,6 +77,8 @@ public class SPQueryExecutorUtil {
             log.debug(String.format("Executing query %s on SP", query));
         }
         try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+            log.debug("Received response from Stream Processor with status: " +
+                    response.getStatusLine().getStatusCode());
             HttpEntity entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 String error = String.format("Error while invoking SP rest api : %s %s",
