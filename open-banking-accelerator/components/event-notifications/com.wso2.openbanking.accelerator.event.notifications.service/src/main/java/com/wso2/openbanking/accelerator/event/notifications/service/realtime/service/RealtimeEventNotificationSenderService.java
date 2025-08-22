@@ -157,7 +157,8 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                             log.debug("Real-time event notification with notificationId: " + notificationId
                                     + " sent successfully");
                         }
-                        aggregatedPollingDAO.updateNotificationStatusById(notificationId, EventNotificationConstants.ACK);
+                        aggregatedPollingDAO.updateNotificationStatusById(notificationId,
+                                EventNotificationConstants.ACK);
                         return;
                     } else {
                         if (log.isDebugEnabled()) {
