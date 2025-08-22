@@ -26,7 +26,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticatedUser;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
 import org.wso2.carbon.user.api.UserRealm;
@@ -69,26 +68,28 @@ public class SMSNotificationProvider implements NotificationProvider {
                     "Error could not resolve mobile number for user : %s", username), e);
         }
 
-        try (CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient()) {
-            String notificationServiceURL =
-                    OpenBankingConfigParser.getInstance().getCibaWebLinkSMSNotificationServiceURL();
-            if (notificationServiceURL == null) {
-                throw new OpenBankingException("Error occurred while retrieving SMS service URL.");
-            }
+        String notificationServiceURL =
+                OpenBankingConfigParser.getInstance().getCibaWebLinkSMSNotificationServiceURL();
+        if (notificationServiceURL == null) {
+            throw new OpenBankingException("Error occurred while retrieving SMS service URL.");
+        }
+        try {
             HttpPost httpPost = new HttpPost(notificationServiceURL);
             StringEntity entity = new StringEntity(getPayload(username, webLink, mobileNumber));
             httpPost.setEntity(entity);
             setHeaders(httpPost);
-            CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
-            if (!((httpResponse.getStatusLine() != null
-                    && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) ||
-                    (httpResponse.getStatusLine() != null
-                            && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED))
-            ) {
-                String error = String.format("Error while invoking rest api : %s %s",
-                        httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
-                throw new OpenBankingException(error);
+            try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+
+                if (!((httpResponse.getStatusLine() != null
+                        && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) ||
+                        (httpResponse.getStatusLine() != null
+                                && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED))
+                ) {
+                    String error = String.format("Error while invoking rest api : %s %s",
+                            httpResponse.getStatusLine().getStatusCode(), httpResponse.getStatusLine().getReasonPhrase());
+                    throw new OpenBankingException(error);
+                }
             }
         } catch (IOException e) {
             throw new OpenBankingException("Error when creating http client.", e);

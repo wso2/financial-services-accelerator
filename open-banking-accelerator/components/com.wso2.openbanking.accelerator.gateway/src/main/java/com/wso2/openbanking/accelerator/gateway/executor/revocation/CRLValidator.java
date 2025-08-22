@@ -27,10 +27,9 @@ import com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHol
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERIA5String;
@@ -213,52 +212,52 @@ public class CRLValidator implements RevocationValidator {
         if (log.isDebugEnabled()) {
             log.debug("Certificate revocation check proxy enabled: " + certificateRevocationProxyEnabled);
         }
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
 
-            HttpGet httpGet = new HttpGet(crlURL);
-            if (certificateRevocationProxyEnabled) {
-                log.debug("Setting certificate revocation proxy started.");
-                if (certificateRevocationProxyHost == null || certificateRevocationProxyHost.trim().isEmpty()) {
-                    String message = "Certificate revocation proxy server host is not configured. Please do set the " +
-                            "'CertificateManagement -> CertificateRevocationProxy -> ProxyHost' file";
-                    log.error(message);
-                    throw new CertificateValidationException(message);
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("Certificate revocation proxy: " + certificateRevocationProxyHost + ":" +
-                            certificateRevocationProxyPort);
-                }
-                HttpHost proxy = new HttpHost(certificateRevocationProxyHost, certificateRevocationProxyPort);
-                RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-                httpGet.setConfig(config);
-                log.debug("Setting certificate revocation proxy finished.");
+        HttpGet httpGet = new HttpGet(crlURL);
+        if (certificateRevocationProxyEnabled) {
+            log.debug("Setting certificate revocation proxy started.");
+            if (certificateRevocationProxyHost == null || certificateRevocationProxyHost.trim().isEmpty()) {
+                String message = "Certificate revocation proxy server host is not configured. Please do set the " +
+                        "'CertificateManagement -> CertificateRevocationProxy -> ProxyHost' file";
+                log.error(message);
+                throw new CertificateValidationException(message);
             }
-
-            // adding request timeout configurations
-            RequestConfig timeoutRequestConfig;
-            if (httpGet.getConfig() == null) {
-                httpGet.setConfig(RequestConfig.custom().build());
-            }
-            timeoutRequestConfig = RequestConfig.copy(httpGet.getConfig())
-                    .setConnectTimeout(httpConnectTimeout)
-                    .setConnectionRequestTimeout(httpConnectionRequestTimeout)
-                    .setSocketTimeout(httpSocketTimeout)
-                    .build();
-            httpGet.setConfig(timeoutRequestConfig);
-            // add debug logs
             if (log.isDebugEnabled()) {
-                log.debug("CRL request timeout configurations: " + "httpConnectTimeout: " + httpConnectTimeout +
-                        ", httpConnectionRequestTimeout: " + httpConnectionRequestTimeout + ", httpSocketTimeout: " +
-                        httpSocketTimeout);
+                log.debug("Certificate revocation proxy: " + certificateRevocationProxyHost + ":" +
+                        certificateRevocationProxyPort);
             }
+            HttpHost proxy = new HttpHost(certificateRevocationProxyHost, certificateRevocationProxyPort);
+            RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+            httpGet.setConfig(config);
+            log.debug("Setting certificate revocation proxy finished.");
+        }
 
-            HttpResponse httpResponse = client.execute(httpGet);
+        // adding request timeout configurations
+        RequestConfig timeoutRequestConfig;
+        if (httpGet.getConfig() == null) {
+            httpGet.setConfig(RequestConfig.custom().build());
+        }
+        timeoutRequestConfig = RequestConfig.copy(httpGet.getConfig())
+                .setConnectTimeout(httpConnectTimeout)
+                .setConnectionRequestTimeout(httpConnectionRequestTimeout)
+                .setSocketTimeout(httpSocketTimeout)
+                .build();
+        httpGet.setConfig(timeoutRequestConfig);
+        if (log.isDebugEnabled()) {
+            log.debug("CRL request timeout configurations: " + "httpConnectTimeout: " + httpConnectTimeout +
+                    ", httpConnectionRequestTimeout: " + httpConnectionRequestTimeout + ", httpSocketTimeout: " +
+                    httpSocketTimeout);
+        }
+
+
+        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
             //Check errors in response:
             if (httpResponse.getStatusLine().getStatusCode() / 100 != 2) {
                 throw new CertificateValidationException("Error getting crl response." +
                         "Response code is " + httpResponse.getStatusLine().getStatusCode());
             }
             InputStream in = httpResponse.getEntity().getContent();
+            in.close();
 
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509CRL x509CRLDownloaded = (X509CRL) cf.generateCRL(in);

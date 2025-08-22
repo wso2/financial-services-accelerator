@@ -70,11 +70,10 @@ public class HTTPClientUtils {
     /**
      * Initialize the connection manager for HTTPS protocol.
      *
-     * @param maxTotal     Maximum total connections
-     * @param maxPerRoute  Maximum connections per route
      * @throws OpenBankingException OpenBankingException exception
      */
-    private static void initConnectionManagerForHttpsProtocol(int maxTotal, int maxPerRoute)
+    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    private static void initConnectionManagerForHttpsProtocol()
             throws OpenBankingException {
 
         if (connectionManager == null) {
@@ -88,6 +87,8 @@ public class HTTPClientUtils {
                             .register(HTTPS_PROTOCOL, sslsf)
                             .build();
 
+                    int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
+                    int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
                     long ttl = OpenBankingConfigParser.getInstance().getConnectionPoolTimeToLive();
                     connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry, null,
                             null, null, ttl, TimeUnit.MILLISECONDS);
@@ -111,9 +112,7 @@ public class HTTPClientUtils {
         if (httpsClient == null) {
             synchronized (HTTPClientUtils.class) {
                 if (httpsClient == null) {
-                    int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
-                    int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
-                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
+                    initConnectionManagerForHttpsProtocol(); // init manager before using
                     httpsClient = HttpClients.custom()
                             .setConnectionManager(connectionManager)
                             .build();
@@ -124,33 +123,7 @@ public class HTTPClientUtils {
     }
 
     /**
-     * Get closeable https client to send realtime event notifications.
-     *
-     * @return Closeable https client
-     * @throws OpenBankingException OpenBankingException exception
-     */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getRealtimeEventNotificationHttpsClient() throws OpenBankingException {
-
-        if (httpsClient == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (httpsClient == null) {
-                    int maxTotal = OpenBankingConfigParser.getInstance().getRealtimeEventNotificationMaxRetries() + 1;
-                    int maxPerRoute = OpenBankingConfigParser.getInstance()
-                            .getRealtimeEventNotificationMaxRetries() + 1;
-                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
-                    httpsClient = HttpClients.custom()
-                            .setConnectionManager(connectionManager)
-                            .build();
-                }
-            }
-        }
-        return httpsClient;
-
-    }
-
-    /**
-     * create a SSL Connection Socket Factory.
+     * create a SSL Connection Socket Factory
      *
      * @return SSLConnectionSocketFactory
      * @throws OpenBankingException

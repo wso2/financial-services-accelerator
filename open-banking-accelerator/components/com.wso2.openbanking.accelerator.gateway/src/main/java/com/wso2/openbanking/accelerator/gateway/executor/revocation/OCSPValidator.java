@@ -27,12 +27,11 @@ import com.wso2.openbanking.accelerator.gateway.internal.TPPCertValidatorDataHol
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DEROctetString;
@@ -280,49 +279,48 @@ public class OCSPValidator implements RevocationValidator {
         if (log.isDebugEnabled()) {
             log.debug("Certificate revocation check proxy enabled: " + certificateRevocationProxyEnabled);
         }
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
-            HttpPost httpPost = new HttpPost(serviceUrl);
+        HttpPost httpPost = new HttpPost(serviceUrl);
 
-            if (certificateRevocationProxyEnabled) {
-                log.debug("Setting certificate revocation proxy started.");
-                if (certificateRevocationProxyHost == null || certificateRevocationProxyHost.trim().isEmpty()) {
-                    String message = "Certificate revocation proxy server host is not configured. Please do set the " +
-                            "'CertificateManagement -> CertificateRevocationProxy -> ProxyHost' file";
-                    log.error(message);
-                    throw new CertificateValidationException(message);
-                }
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Certificate revocation proxy: " + certificateRevocationProxyHost + ":" +
-                            certificateRevocationProxyPort);
-                }
-                HttpHost proxy = new HttpHost(certificateRevocationProxyHost, certificateRevocationProxyPort);
-                RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
-                httpPost.setConfig(config);
-                log.debug("Setting certificate revocation proxy finished.");
+        if (certificateRevocationProxyEnabled) {
+            log.debug("Setting certificate revocation proxy started.");
+            if (certificateRevocationProxyHost == null || certificateRevocationProxyHost.trim().isEmpty()) {
+                String message = "Certificate revocation proxy server host is not configured. Please do set the " +
+                        "'CertificateManagement -> CertificateRevocationProxy -> ProxyHost' file";
+                log.error(message);
+                throw new CertificateValidationException(message);
             }
 
-            // adding request timeout configurations
-            RequestConfig timeoutRequestConfig;
-            if (httpPost.getConfig() == null) {
-                httpPost.setConfig(RequestConfig.custom().build());
-            }
-            timeoutRequestConfig = RequestConfig.copy(httpPost.getConfig())
-                    .setConnectTimeout(httpConnectTimeout)
-                    .setConnectionRequestTimeout(httpConnectionRequestTimeout)
-                    .setSocketTimeout(httpSocketTimeout)
-                    .build();
-            httpPost.setConfig(timeoutRequestConfig);
-            // add debug logs
             if (log.isDebugEnabled()) {
-                log.debug("OCSP request timeout configurations: " + "httpConnectTimeout: " + httpConnectTimeout +
-                        ", httpConnectionRequestTimeout: " + httpConnectionRequestTimeout + ", httpSocketTimeout: " +
-                        httpSocketTimeout);
+                log.debug("Certificate revocation proxy: " + certificateRevocationProxyHost + ":" +
+                        certificateRevocationProxyPort);
             }
+            HttpHost proxy = new HttpHost(certificateRevocationProxyHost, certificateRevocationProxyPort);
+            RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+            httpPost.setConfig(config);
+            log.debug("Setting certificate revocation proxy finished.");
+        }
+
+        // adding request timeout configurations
+        RequestConfig timeoutRequestConfig;
+        if (httpPost.getConfig() == null) {
+            httpPost.setConfig(RequestConfig.custom().build());
+        }
+        timeoutRequestConfig = RequestConfig.copy(httpPost.getConfig())
+                .setConnectTimeout(httpConnectTimeout)
+                .setConnectionRequestTimeout(httpConnectionRequestTimeout)
+                .setSocketTimeout(httpSocketTimeout)
+                .build();
+        httpPost.setConfig(timeoutRequestConfig);
+
+        if (log.isDebugEnabled()) {
+            log.debug("OCSP request timeout configurations: " + "httpConnectTimeout: " + httpConnectTimeout +
+                    ", httpConnectionRequestTimeout: " + httpConnectionRequestTimeout + ", httpSocketTimeout: " +
+                    httpSocketTimeout);
+        }
+
+        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
 
             setRequestProperties(request.getEncoded(), httpPost);
-            HttpResponse httpResponse = client.execute(httpPost);
-
             //Check errors in response, if response status code is not 200 (success) range, throws exception
             // eg: if response code is 200 (success) or 201 (accepted) return true,
             //     if response code is 404 (not found) or 500 throw exception

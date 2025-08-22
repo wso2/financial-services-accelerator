@@ -30,6 +30,7 @@ import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
 import com.wso2.openbanking.accelerator.gateway.executor.exception.OpenBankingExecutorException;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
@@ -49,9 +50,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
@@ -205,15 +205,14 @@ public class GatewayUtils {
                 publisherHostName + "/" + GatewayConstants.PUBLISHER_API_PATH + apiId +
                         GatewayConstants.SWAGGER_ENDPOINT;
 
-        try (CloseableHttpClient httpClient = GatewayDataHolder.getHttpClient()) {
-            HttpGet httpGet = new HttpGet(publisherAPIURL);
-            String userName = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
-            String password = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
+        HttpGet httpGet = new HttpGet(publisherAPIURL);
+        String userName = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
+        String password = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
 
-            httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-            HttpResponse response = null;
-            response = httpClient.execute(httpGet);
+        httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
             InputStream in = response.getEntity().getContent();
+            in.close();
             return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
         } catch (IOException | OpenBankingException e) {
             throw new OpenBankingRuntimeException("Failed to retrieve swagger definition from API", e);

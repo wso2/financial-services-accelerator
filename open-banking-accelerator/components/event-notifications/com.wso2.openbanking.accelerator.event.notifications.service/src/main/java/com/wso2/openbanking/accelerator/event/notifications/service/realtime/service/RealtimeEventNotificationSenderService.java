@@ -29,13 +29,12 @@ import com.wso2.openbanking.accelerator.event.notifications.service.persistence.
 import com.wso2.openbanking.accelerator.event.notifications.service.util.EventNotificationServiceUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 
 import java.io.IOException;
 import java.net.URI;
@@ -60,19 +59,15 @@ public class RealtimeEventNotificationSenderService implements Runnable {
             configParser.getRealtimeEventNotificationCircuitBreakerOpenTimeoutInSeconds();
     private static final int TIMEOUT_IN_SECONDS = configParser.getRealtimeEventNotificationTimeoutInSeconds();
 
-    private CloseableHttpClient httpClient;
     private RealtimeEventNotificationRequestGenerator httpRequestGenerator;
     private String notificationId;
     private String callbackUrl;
     private String payloadJson;
+    private int maxRetryCount = configParser.getRealtimeEventNotificationMaxRetries() + 1;
 
     public RealtimeEventNotificationSenderService(String callbackUrl, String payloadJson,
                                                   String notificationId) {
-        try {
-            this.httpClient = HTTPClientUtils.getRealtimeEventNotificationHttpsClient();
-        } catch (OpenBankingException e) {
-            log.error("Failed to initialize the HTTP client for the realtime event notification", e);
-        }
+
         this.httpRequestGenerator = EventNotificationServiceUtil.getRealtimeEventNotificationRequestGenerator();
         this.notificationId = notificationId;
         this.callbackUrl = callbackUrl;
@@ -155,20 +150,23 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                         .build();
                 httpPost.setConfig(requestConfig);
 
-                HttpResponse response = httpClient.execute(httpPost);
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == HttpStatus.SC_ACCEPTED) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Real-time event notification with notificationId: " + notificationId
-                                + " sent successfully");
+                try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode == HttpStatus.SC_ACCEPTED) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Real-time event notification with notificationId: " + notificationId
+                                    + " sent successfully");
+                        }
+                        aggregatedPollingDAO.updateNotificationStatusById(notificationId, EventNotificationConstants.ACK);
+                        return;
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Real-time event notification with notificationId: " + notificationId
+                                    + " sent failed with status code: " + statusCode);
+                        }
                     }
-                    aggregatedPollingDAO.updateNotificationStatusById(notificationId, EventNotificationConstants.ACK);
-                    return;
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Real-time event notification with notificationId: " + notificationId
-                                + " sent failed with status code: " + statusCode);
-                    }
+                } catch (OpenBankingException e) {
+                    log.error("Failed to initialize the HTTP client for the realtime event notification", e);
                 }
             } catch (IOException | InterruptedException e) {
                 log.error("Real-time event notification with notificationId: " + notificationId
