@@ -153,8 +153,6 @@ cd ${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 MVNSTATE=$?
 
-sleep 2h
-
 echo "-----------------Executing IS tests----------------"
 cd ${IS_TEST_HOME}/dcr
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
