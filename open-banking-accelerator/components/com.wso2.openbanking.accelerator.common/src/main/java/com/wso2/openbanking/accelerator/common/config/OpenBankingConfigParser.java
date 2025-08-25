@@ -992,15 +992,16 @@ public class OpenBankingConfigParser {
      * @return connection time to live, default value is -1L
      */
     public long getConnectionPoolTimeToLive() {
-        log.debug("Reading ConnectionPool time to live configuration");
         try {
             Object ttl = getConfigElementFromKey(OpenBankingConstants.CONNECTION_POOL_TIME_TO_LIVE);
             if (ttl != null) {
                 long timeToLive = Integer.parseInt(String.valueOf(ttl));
-                log.info("ConnectionPool time to live set to: " + timeToLive);
+                if (log.isDebugEnabled()) {
+                    log.info("ConnectionPool time to live set to: " + timeToLive);
+                }
                 return timeToLive;
             } else {
-                log.info("ConnectionPool time to live not configured, using default value: -1L");
+                log.debug("ConnectionPool time to live not configured, using default value: -1L");
                 return -1L;
             }
         } catch (NumberFormatException e) {

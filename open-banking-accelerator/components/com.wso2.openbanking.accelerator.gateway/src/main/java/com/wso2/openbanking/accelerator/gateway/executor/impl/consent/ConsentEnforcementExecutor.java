@@ -171,8 +171,7 @@ public class ConsentEnforcementExecutor implements OpenBankingGatewayExecutor {
             log.debug("Invoking consent validation service at endpoint: " + getValidationEndpoint());
         }
         HttpPost httpPost = new HttpPost(getValidationEndpoint());
-        StringEntity params;
-        params = new StringEntity(enforcementJWTPayload);
+        StringEntity params = new StringEntity(enforcementJWTPayload);
         httpPost.setEntity(params);
         httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JWT_CONTENT_TYPE);
         String userName = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);

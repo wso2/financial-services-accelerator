@@ -80,6 +80,8 @@ import java.util.Optional;
 
 import javax.ws.rs.HttpMethod;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 /**
  * Executor for signature validation, am app creation and API subscription for DCR.
  */
@@ -815,7 +817,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
             URI uri = new URIBuilder(httpGet.getURI()).addParameters(nameValuePairs).build();
             ((HttpRequestBase) httpGet).setURI(uri);
         }
-        httpGet.setHeader("Accept", "application/json");
+        httpGet.setHeader(HttpHeaders.ACCEPT, APPLICATION_JSON);
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
         try (CloseableHttpResponse restAPIResponse = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
             return getResponse(restAPIResponse);
