@@ -44,6 +44,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
@@ -58,7 +59,7 @@ public class HTTPClientUtils {
     public static final String HTTP_PROTOCOL = "http";
     public static final String HTTPS_PROTOCOL = "https";
     private static final String[] SUPPORTED_HTTP_PROTOCOLS = {"TLSv1.2"};
-    private static final Log log = LogFactory.getLog(DatabaseUtil.class);
+    private static final Log log = LogFactory.getLog(HTTPClientUtils.class);
     private static volatile PoolingHttpClientConnectionManager connectionManager;
     private static volatile CloseableHttpClient httpsClient;
 
@@ -69,11 +70,10 @@ public class HTTPClientUtils {
     /**
      * Initialize the connection manager for HTTPS protocol.
      *
-     * @param maxTotal     Maximum total connections
-     * @param maxPerRoute  Maximum connections per route
      * @throws OpenBankingException OpenBankingException exception
      */
-    private static void initConnectionManagerForHttpsProtocol(int maxTotal, int maxPerRoute)
+    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    private static void initConnectionManagerForHttpsProtocol()
             throws OpenBankingException {
 
         if (connectionManager == null) {
@@ -87,10 +87,16 @@ public class HTTPClientUtils {
                             .register(HTTPS_PROTOCOL, sslsf)
                             .build();
 
-                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+                    int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
+                    int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
+                    long ttl = OpenBankingConfigParser.getInstance().getConnectionPoolTimeToLive();
+                    connectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry, null,
+                            null, null, ttl, TimeUnit.MILLISECONDS);
 
                     connectionManager.setMaxTotal(maxTotal);
                     connectionManager.setDefaultMaxPerRoute(maxPerRoute);
+                    log.info("HTTPS connection manager initialized with maxTotal: " + maxTotal + ", maxPerRoute: " +
+                            maxPerRoute + ", TTL: " + ttl + "ms");
                 }
             }
         }
@@ -108,42 +114,15 @@ public class HTTPClientUtils {
         if (httpsClient == null) {
             synchronized (HTTPClientUtils.class) {
                 if (httpsClient == null) {
-                    int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
-                    int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
-                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
+                    initConnectionManagerForHttpsProtocol(); // init manager before using
                     httpsClient = HttpClients.custom()
                             .setConnectionManager(connectionManager)
                             .build();
+                    log.debug("HTTPS client instance created successfully");
                 }
             }
         }
         return httpsClient;
-    }
-
-    /**
-     * Get closeable https client to send realtime event notifications.
-     *
-     * @return Closeable https client
-     * @throws OpenBankingException OpenBankingException exception
-     */
-    @Generated(message = "Ignoring since method contains no logics")
-    public static CloseableHttpClient getRealtimeEventNotificationHttpsClient() throws OpenBankingException {
-
-        if (httpsClient == null) {
-            synchronized (HTTPClientUtils.class) {
-                if (httpsClient == null) {
-                    int maxTotal = OpenBankingConfigParser.getInstance().getRealtimeEventNotificationMaxRetries() + 1;
-                    int maxPerRoute = OpenBankingConfigParser.getInstance()
-                            .getRealtimeEventNotificationMaxRetries() + 1;
-                    initConnectionManagerForHttpsProtocol(maxTotal, maxPerRoute); // init manager before using
-                    httpsClient = HttpClients.custom()
-                            .setConnectionManager(connectionManager)
-                            .build();
-                }
-            }
-        }
-        return httpsClient;
-
     }
 
     /**

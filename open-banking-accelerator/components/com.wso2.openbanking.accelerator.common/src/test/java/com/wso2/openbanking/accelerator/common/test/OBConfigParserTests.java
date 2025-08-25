@@ -158,6 +158,15 @@ public class OBConfigParserTests {
     }
 
     @Test(priority = 8)
+    public void testGetConnectionPoolTimeToLive() {
+
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";
+        long ttl = OpenBankingConfigParser.getInstance(dummyConfigFile).getConnectionPoolTimeToLive();
+
+        Assert.assertEquals(ttl, 300);
+    }
+
+    @Test(priority = 8)
     public void testConsentPeriodicalExpirationConfigs() {
 
         String dummyConfigFile = absolutePathForTestResources + "/open-banking.xml";

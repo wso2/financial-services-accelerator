@@ -224,6 +224,7 @@
     <HTTPConnectionPool>
         <MaxConnections>1000</MaxConnections>
         <MaxConnectionsPerRoute>500</MaxConnectionsPerRoute>
+        <TimeToLive>300</TimeToLive>
     </HTTPConnectionPool>
 
     <ServiceActivator>
