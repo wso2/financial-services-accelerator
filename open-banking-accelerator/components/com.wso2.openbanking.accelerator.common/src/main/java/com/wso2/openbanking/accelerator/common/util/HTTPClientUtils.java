@@ -126,7 +126,7 @@ public class HTTPClientUtils {
     }
 
     /**
-     * create a SSL Connection Socket Factory
+     * create a SSL Connection Socket Factory.
      *
      * @return SSLConnectionSocketFactory
      * @throws OpenBankingException
