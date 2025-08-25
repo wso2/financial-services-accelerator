@@ -33,6 +33,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.Authorizat
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentRetrievalStep;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
@@ -41,11 +42,13 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentC
 
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -64,6 +67,7 @@ public class DefaultConsentRetrievalStepTest {
     ArrayList<AuthorizationResource> authResources;
     private static MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder;
     private static MockedStatic<FinancialServicesUtils> financialServicesUtilsMock;
+    private MockedStatic<ConsentAuthorizeUtil> authorizeUtilMockedStatic;
 
     @BeforeClass
     public void initClass() throws ConsentManagementException {
@@ -87,9 +91,9 @@ public class DefaultConsentRetrievalStepTest {
 
         String consentId = "12345677654321234234";
         financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
-        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(Mockito.any()))
+        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(any()))
                 .thenReturn(consentId);
-        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromScopesRequestParam(Mockito.any()))
+        financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromScopesRequestParam(any()))
                 .thenReturn(consentId);
     }
 
@@ -98,6 +102,7 @@ public class DefaultConsentRetrievalStepTest {
         // Closing the mockStatic after each test
         consentExtensionsDataHolder.close();
         financialServicesUtilsMock.close();
+        authorizeUtilMockedStatic.close();
     }
 
     @Test
@@ -168,9 +173,21 @@ public class DefaultConsentRetrievalStepTest {
             doReturn(true).when(consentDataMock).isRegulatory();
             doReturn(request).when(consentDataMock).getSpQueryParams();
 
+            // Mock static methods to return valid consent ID
+            // Mock ConsentAuthorizeUtil
+            authorizeUtilMockedStatic = Mockito.mockStatic(ConsentAuthorizeUtil.class);
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
+                    .thenReturn("dummyJWT");
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getRequestObjectJson(anyString()))
+                    .thenReturn(new JSONObject());
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
+                    .thenReturn("consent123");
+            authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(any()))
+                    .thenReturn(new JSONObject());
+
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -192,7 +209,7 @@ public class DefaultConsentRetrievalStepTest {
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
 
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -213,7 +230,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -237,7 +254,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertNotNull(jsonObject.get("consumerData"));
         }
     }
 
@@ -261,7 +278,7 @@ public class DefaultConsentRetrievalStepTest {
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
-            assertNotNull(jsonObject.get("accounts"));
+            assertFalse(jsonObject.has("consumerData"));
         }
     }
 }

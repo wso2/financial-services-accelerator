@@ -19,7 +19,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.model;
 
 /**
- * ExternalAPIAdminConsentRevokeResponseDTO -Response DTO for extension of admin consent revocation
+ * ExternalAPIAdminConsentRevokeResponseDTO -Response DTO for extension of admin consent revocation.
  */
 
 public class ExternalAPIAdminConsentRevokeResponseDTO {

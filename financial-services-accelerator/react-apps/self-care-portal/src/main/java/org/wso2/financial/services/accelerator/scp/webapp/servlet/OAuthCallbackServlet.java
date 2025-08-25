@@ -18,10 +18,12 @@
 
 package org.wso2.financial.services.accelerator.scp.webapp.servlet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
@@ -51,10 +53,20 @@ public class OAuthCallbackServlet extends HttpServlet {
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
     @Override
+    @SuppressFBWarnings("SERVLET_PARAMETER")
+    // Suppressed content - req.getParameter(CODE)
+    // Suppression reason - False Positive : These endpoints are secured with access control
+    // as defined in the IS deployment.toml file
+    // Suppressed warning count - 1
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL);
+        final String iamBaseUrl = Utils.getParameter(Constants.IS_BASE_URL)
+                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
         try {
             final String code = req.getParameter(CODE);
+            if (StringUtils.isNotEmpty(code)) {
+                LOG.debug(String.format("Authorization callback request received with code: %s", code
+                        .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
+            }
 
             String redirectUrl = iamBaseUrl + "/consentmgr";
 
@@ -72,17 +84,22 @@ public class OAuthCallbackServlet extends HttpServlet {
                 // add cookies to response
                 oAuthService.generateCookiesFromTokens(tokenResponse, req, resp);
             }
-            if ("access_denied".equals(req.getParameter(ERROR)) && !LOGOUT_DENY_ERROR_DESCRIPTION.equals
-                    (req.getParameter(ERROR_DESCRIPTION))) {
-                LOG.debug("User denied the consent. Error: " + req.getParameter(ERROR) +
-                        "Error Description:" + req.getParameter(ERROR_DESCRIPTION));
-                SelfCarePortalError error = new SelfCarePortalError(req.getParameter(ERROR),
-                        req.getParameter(ERROR_DESCRIPTION));
+            if ("access_denied".equals(req.getParameter(ERROR))
+                    && !LOGOUT_DENY_ERROR_DESCRIPTION.equals(req.getParameter(ERROR_DESCRIPTION))) {
+                LOG.debug(String.format("User denied the consent. Error: %s Error Description: %s",
+                        req.getParameter(ERROR).replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                        req.getParameter(ERROR_DESCRIPTION)
+                                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
+                SelfCarePortalError error = new SelfCarePortalError(
+                        req.getParameter(ERROR).replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                        req.getParameter(ERROR_DESCRIPTION)
+                                .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""));
                 final String errorUrlFormat = iamBaseUrl + "/consentmgr/error?message=%s&description=%s";
                 Utils.sendErrorToFrontend(error, errorUrlFormat, resp);
                 return;
             }
-            LOG.debug("Redirecting to frontend application: " + redirectUrl);
+            LOG.debug(String.format("Redirecting to frontend application: %s",
+                    redirectUrl.replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
             resp.sendRedirect(redirectUrl);
         } catch (TokenGenerationException | IOException e) {
             LOG.error("Exception occurred while processing authorization callback request. Caused by, ", e);

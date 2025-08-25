@@ -21,7 +21,7 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 
 /**
- * ExternalAPIPostConsentGenerateRequestDTO
+ * ExternalAPIPostConsentGenerateRequestDTO.
  */
 public class ExternalAPIPostConsentGenerateRequestDTO {
 

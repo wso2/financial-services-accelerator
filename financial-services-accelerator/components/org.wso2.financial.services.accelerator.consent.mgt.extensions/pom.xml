@@ -21,7 +21,7 @@
     <parent>
         <artifactId>financial-services-accelerator</artifactId>
         <groupId>org.wso2.financial.services.accelerator</groupId>
-        <version>4.1.1</version>
+        <version>4.1.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -125,6 +125,8 @@
                         <exclude>**/*ConsentPayloadValidationResult.class</exclude>
                         <exclude>**/*ConsentValidateRequest.class</exclude>
                         <exclude>**/model/**/*</exclude>
+                        <exclude>**/PeriodicalConsentJobActivator.class</exclude>
+                        <exclude>**/PeriodicalConsentJobScheduler.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

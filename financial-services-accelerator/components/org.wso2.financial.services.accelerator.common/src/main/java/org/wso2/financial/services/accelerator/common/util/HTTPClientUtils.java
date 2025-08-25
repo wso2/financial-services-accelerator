@@ -94,7 +94,7 @@ public class HTTPClientUtils {
      * create a SSL Connection Socket Factory.
      *
      * @return SSLConnectionSocketFactory
-     * @throws FinancialServicesException
+     * @throws FinancialServicesException when failed to create SSLConnectionSocketFactory
      */
     @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
     public static SSLConnectionSocketFactory createSSLConnectionSocketFactory()

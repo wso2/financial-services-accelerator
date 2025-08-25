@@ -18,7 +18,6 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -28,8 +27,13 @@ import org.wso2.financial.services.accelerator.common.exception.ConsentManagemen
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
@@ -40,7 +44,10 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Consent persist step default implementation.
@@ -91,6 +98,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             consentPersist(consentPersistData, consentResource);
 
         } catch (ConsentManagementException e) {
+            log.error(e.getMessage().replaceAll("\n\r", ""), e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while persisting consent");
         }
@@ -132,7 +140,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
         }
         consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(), authorizationId,
-                getConsentedAccounts(payload, isApproved), authStatus, consentStatus);
+                getConsentedAccounts(payload, consentData.getMetaDataMap(), isApproved), authStatus, consentStatus);
     }
 
     /**
@@ -141,64 +149,106 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
      * @param persistPayload payload to persist
      * @return Account data map
      */
-    private static Map<String, ArrayList<String>> getConsentedAccounts(JSONObject persistPayload, boolean isApproved) {
+    private static Map<String, ArrayList<String>> getConsentedAccounts(JSONObject persistPayload,
+                                                                       Map<String, Object> metaDataMap,
+                                                                       boolean isApproved) {
 
         Map<String, ArrayList<String>> accountIDsMapWithPermissions = new HashMap<>();
         ArrayList<String> permissionsDefault = new ArrayList<>();
         permissionsDefault.add(ConsentExtensionConstants.PRIMARY);
+        boolean hasAuthorizedAccounts = false;
 
-        //Check whether payment account exists
-        //Payment Account is the debtor account sent in the payload
-        if (persistPayload.has(ConsentExtensionConstants.PAYMENT_ACCOUNT) &&
-                StringUtils.isNotBlank(persistPayload.getString(ConsentExtensionConstants.PAYMENT_ACCOUNT))) {
-            //Check whether account Id is in String format
-            if (!(persistPayload.get(ConsentExtensionConstants.PAYMENT_ACCOUNT) instanceof String)) {
-                log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-            }
+        // Extract accounts and permissions in metadata
+        PopulateConsentAuthorizeScreenDTO populateResponseDTO = (PopulateConsentAuthorizeScreenDTO) metaDataMap
+                .get(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE);
 
-            String paymentAccount = persistPayload.getString(ConsentExtensionConstants.PAYMENT_ACCOUNT);
-            accountIDsMapWithPermissions.put(paymentAccount, permissionsDefault);
-        } else if (persistPayload.has(ConsentExtensionConstants.COF_ACCOUNT) &&
-                StringUtils.isNotBlank(persistPayload.getString(ConsentExtensionConstants.COF_ACCOUNT))) {
-            //Check whether account Id is in String format
-            if (!(persistPayload.get(ConsentExtensionConstants.COF_ACCOUNT) instanceof String)) {
-                log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-            }
+        // Extract and separate permissions, consumer accounts and consent initiated accounts
+        ConsentDataDTO consentData = populateResponseDTO.getConsentData();
 
-            String paymentAccount = persistPayload.getString(ConsentExtensionConstants.COF_ACCOUNT);
-            accountIDsMapWithPermissions.put(paymentAccount, permissionsDefault);
-        } else {
-            //Check whether account Ids are in array format
-            if (!(persistPayload.get(ConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
-                log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-            }
+        List<PermissionDTO> permissions = consentData.getPermissions();
+        List<AccountDTO> initiatedAccountsForConsent = consentData.getInitiatedAccountsForConsent();
+        List<ConsumerAccountDTO> consumerAccounts = null;
+        if (populateResponseDTO.getConsumerData() != null) {
+            consumerAccounts = populateResponseDTO.getConsumerData().getAccounts();
+        }
 
-            //Check whether account Ids are strings
-            JSONArray accountIds = persistPayload.getJSONArray(ConsentExtensionConstants.ACCOUNT_IDS);
-            for (Object account : accountIds) {
-                if (!(account instanceof String)) {
-                    log.error(ConsentAuthorizeConstants.ACCOUNT_ID_FORMAT_ERROR);
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            ConsentAuthorizeConstants.ACCOUNT_ID_FORMAT_ERROR);
-                }
-                if (((String) account).isEmpty()) {
-                    if (isApproved) {
-                        log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                                ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-                    } else {
-                        account = "n/a";
-                    }
-                }
-                accountIDsMapWithPermissions.put((String) account, permissionsDefault);
+        // Build consumer account name to consumer account object map
+        Map<String, ConsumerAccountDTO> accountNameToObjectMap = new HashMap<>();
+        if (consumerAccounts != null) {
+            for (ConsumerAccountDTO consumerAccount: consumerAccounts) {
+                accountNameToObjectMap.put(consumerAccount.getDisplayName(), consumerAccount);
             }
         }
+
+        // Set of all accounts to map with default permission
+        Set<AccountDTO> allAccountsSet = new HashSet<>();
+
+        // Append all consent initiated accounts
+        if (initiatedAccountsForConsent != null) {
+            allAccountsSet.addAll(initiatedAccountsForConsent);
+        }
+
+        // Append all permission initiated accounts
+        if (permissions != null) {
+            Set<AccountDTO> allAccountsWithPermissionsSet = new HashSet<>();
+            for (PermissionDTO permission: permissions) {
+                List<AccountDTO> initiatedAccounts = permission.getInitiatedAccounts();
+                if (initiatedAccounts != null) {
+                    allAccountsWithPermissionsSet.addAll(initiatedAccounts);
+                }
+            }
+            allAccountsSet.addAll(allAccountsWithPermissionsSet);
+        }
+
+        // Append all selected consumer accounts
+        boolean allowMultipleAccounts = Boolean.TRUE.equals(consentData.getAllowMultipleAccounts());
+        JSONObject requestParameters =
+                persistPayload.optJSONObject(ConsentAuthorizeConstants.REQUEST_PARAMETERS);
+        if (requestParameters != null) {
+            for (String key: requestParameters.keySet()) {
+
+                JSONArray parameterValues = requestParameters.optJSONArray(key);
+                if (parameterValues == null) {
+                    continue;
+                }
+
+                boolean foundOneAccount = false;
+                for (int i = 0; i < parameterValues.length(); i++) {
+
+                    ConsumerAccountDTO accountObject = accountNameToObjectMap.getOrDefault(parameterValues.getString(i),
+                            null);
+                    if (accountObject == null) {
+                        continue;
+                    }
+
+                    // allowMultipleAccounts validation
+                    if (foundOneAccount && !allowMultipleAccounts) {
+                        log.error("Found multiple account selections when only one is allowed");
+                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                                "Found multiple account selections when only one is allowed");
+                    }
+
+                    foundOneAccount = true;
+                    allAccountsSet.add(accountObject);
+                }
+            }
+        }
+
+        // Map accounts in the set of all accounts to default permission
+        for (AccountDTO account: allAccountsSet) {
+            hasAuthorizedAccounts = true;
+            accountIDsMapWithPermissions.put(account.getAccountId(), permissionsDefault);
+        }
+
+        if (!hasAuthorizedAccounts && isApproved) {
+            log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
+        } else {
+            // in case a consent is denied with no account mappings
+            accountIDsMapWithPermissions.put("n/a", permissionsDefault);
+        }
+
         return accountIDsMapWithPermissions;
     }
 }

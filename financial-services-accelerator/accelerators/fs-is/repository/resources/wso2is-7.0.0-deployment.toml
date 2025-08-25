@@ -289,6 +289,9 @@ grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.ClientCred
 enable_fapi_enforcement=true
 ssa_jkws= "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001HQQrZAAX.jwks"
 
+[oauth.dcrm]
+return_null_fields_in_response=false
+
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
 enable_claims_separation_for_access_tokens = false
@@ -573,6 +576,9 @@ allowed_api_resources=["payment-consents"]
 [financial_services.consent.preserve_consent_link]
 enabled=false
 
+[financial_services.consent.authorize_jsp]
+path="fs_default.jsp"
+
 [financial_services.identity]
 consent_id_claim_name="consent_id"
 append_consent_id_to_token_id_token=false
@@ -584,7 +590,7 @@ append_consent_id_to_token_introspect_response=false
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
 
 [financial_services.identity.extensions]
-# Uncomment these to get a default implementation of identity extensions
+# Uncomment these to get a default IS implementation of identity extensions ( Not required for OB scenarios)
 #request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
 #response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
 #claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"

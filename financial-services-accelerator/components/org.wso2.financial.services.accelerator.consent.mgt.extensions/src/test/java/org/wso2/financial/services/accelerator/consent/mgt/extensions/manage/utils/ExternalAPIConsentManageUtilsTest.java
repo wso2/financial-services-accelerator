@@ -53,6 +53,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Unit test class for ExternalAPIConsentManageUtils.
+ */
 public class ExternalAPIConsentManageUtilsTest {
 
     private MockedStatic<ServiceExtensionUtils> staticMock;

@@ -19,6 +19,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -34,15 +35,22 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentRetrievalStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentAuthorizeResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerDataDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +62,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Unit test class for ExternalAPIConsentRetrievalStep.
+ */
 public class ExternalAPIConsentRetrievalStepTest {
 
     private ExternalAPIConsentRetrievalStep consentRetrievalStep;
@@ -97,8 +109,10 @@ public class ExternalAPIConsentRetrievalStepTest {
         authorizeUtilMockedStatic = mockStatic(ConsentAuthorizeUtil.class);
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
                 .thenReturn("dummyJWT");
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.addAuthorizedDataObject(any(), any()))
+                .thenCallRealMethod();
 
         // ConsentResource
         ConsentResource consentResource = new ConsentResource();
@@ -113,16 +127,12 @@ public class ExternalAPIConsentRetrievalStepTest {
         when(consentCoreService.searchAuthorizations(anyString())).thenReturn(authList);
 
         // External service success response
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-        List<Map<String, Object>> consentDataList = new ArrayList<>();
-        consentDataList.add(Map.of("field", "value"));
-        List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        consumerDataList.add(Map.of("account", "123"));
-
-        responseDTO.setConsentData(consentDataList);
-        responseDTO.setConsumerData(consumerDataList);
-
         ObjectMapper mapper = new ObjectMapper();
+        PopulateConsentAuthorizeScreenDTO responseDTO;
+
+        responseDTO = mapper.readValue(TestConstants.ACCOUNT_AUTH_SERVLET_DATA,
+                PopulateConsentAuthorizeScreenDTO.class);
+
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
@@ -167,7 +177,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         // Mock ConsentAuthorizeUtil statics
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractRequestObject(anyString()))
                 .thenReturn("dummyJWT");
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
 
         ConsentResource mockConsentResource = getMockConsentResource();
@@ -189,13 +199,21 @@ public class ExternalAPIConsentRetrievalStepTest {
         serviceUtilsMockedStatic.when(() -> ServiceExtensionUtils.invokeExternalServiceCall(any(), any()))
                 .thenReturn(externalServiceResponse);
 
+        // Mock config parser
+        configParser.close();
+        configParser = mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
+        when(configParserMock.getAuthFlowConsentIdSource()).thenReturn("requestObject");
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
         JSONObject jsonObject = new JSONObject();
+        consentRetrievalStep = new ExternalAPIConsentRetrievalStep();
         consentRetrievalStep.execute(realConsentData, jsonObject);
 
         assertTrue(jsonObject.has("consentData"));
-        assertTrue(jsonObject.has("accounts"));
-        assertEquals(jsonObject.getJSONArray("consentData").getJSONObject(0).getString("field"), "value");
-        assertEquals(jsonObject.getJSONArray("accounts").getJSONObject(0).getString("account"), "123");
+        assertTrue(jsonObject.has("consumerData"));
+        assertEquals(jsonObject.getJSONObject("consentData").getString("type"), "accounts");
+        assertTrue(jsonObject.getJSONObject("consentData").getBoolean("allowMultipleAccounts"));
     }
 
 
@@ -235,6 +253,13 @@ public class ExternalAPIConsentRetrievalStepTest {
         when(consentCoreService.searchAuthorizations(anyString()))
                 .thenReturn(authList);
 
+        // Mock config parser
+        configParser.close();
+        configParser = mockStatic(FinancialServicesConfigParser.class);
+        FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
+        when(configParserMock.getAuthFlowConsentIdSource()).thenReturn("requestObject");
+        configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
         // Simulate external service failure
         ExternalServiceResponse errorResponse = new ExternalServiceResponse();
         errorResponse.setStatus(StatusEnum.ERROR);
@@ -246,6 +271,7 @@ public class ExternalAPIConsentRetrievalStepTest {
 
         // Execute and expect ConsentException due to error response
         JSONObject jsonObject = new JSONObject();
+        consentRetrievalStep = new ExternalAPIConsentRetrievalStep();
         consentRetrievalStep.execute(realConsentData, jsonObject);
     }
 
@@ -259,22 +285,11 @@ public class ExternalAPIConsentRetrievalStepTest {
         return resource;
     }
 
-    private static ExternalServiceResponse getExternalServiceResponse() {
-        ExternalAPIPreConsentAuthorizeResponseDTO responseDTO = new ExternalAPIPreConsentAuthorizeResponseDTO();
-
-        List<Map<String, Object>> consentDataList = new ArrayList<>();
-        Map<String, Object> consentEntry = new HashMap<>();
-        consentEntry.put("field", "value");
-        consentDataList.add(consentEntry);
-
-        List<Map<String, Object>> consumerDataList = new ArrayList<>();
-        Map<String, Object> consumerEntry = new HashMap<>();
-        consumerEntry.put("account", "123");
-        consumerDataList.add(consumerEntry);
-
-        responseDTO.setConsentData(consentDataList);
-        responseDTO.setConsumerData(consumerDataList);
+    private static ExternalServiceResponse getExternalServiceResponse() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+        PopulateConsentAuthorizeScreenDTO responseDTO;
+        responseDTO = mapper.readValue(TestConstants.ACCOUNT_AUTH_SERVLET_DATA,
+                PopulateConsentAuthorizeScreenDTO.class);
         JsonNode jsonNode = mapper.valueToTree(responseDTO);
 
         ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse();
@@ -291,6 +306,7 @@ public class ExternalAPIConsentRetrievalStepTest {
         configParser = mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
         when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
+        when(configParserMock.getAuthFlowConsentIdSource()).thenReturn("requestObject");
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         dataHolderMockedStatic.close();
@@ -326,7 +342,7 @@ public class ExternalAPIConsentRetrievalStepTest {
                 .thenReturn("dummyJWT");
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.getRequestObjectJson(anyString()))
                 .thenReturn(new JSONObject());
-        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentId(anyString()))
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
 
         // Execute
@@ -340,7 +356,226 @@ public class ExternalAPIConsentRetrievalStepTest {
         Mockito.verify(spyConsentData).setAuthResource(any(AuthorizationResource.class));
 
         assertTrue(jsonObject.has("consentData"));
-        assertTrue(jsonObject.has("accounts"));
+        assertTrue(jsonObject.has("consumerData"));
     }
 
+    @Test
+    public void testAddAuthorizedDataObject_withPermissionsAndSelectedConsumerAccounts() throws Exception {
+        // Setup permissions
+        PermissionDTO permission = new PermissionDTO();
+        permission.setUid("permission-uid");
+        permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
+
+        // Setup consumer account
+        ConsumerAccountDTO consumerAcc = new ConsumerAccountDTO();
+        consumerAcc.setAccountId("acc-user-1");
+        consumerAcc.setDisplayName("acc-user-1");
+
+        // Build hashes
+        String permissionJSON = new ObjectMapper().writeValueAsString(permission);
+        String accountName = consumerAcc.getDisplayName();
+
+        // Build metadata map
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setPermissions(Collections.singletonList(permission));
+        responseDTO.setConsentData(consentData);
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        consumerData.setAccounts(Collections.singletonList(consumerAcc));
+        responseDTO.setConsumerData(consumerData);
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        accountPermissionParams.put("permission-uid", new JSONArray(Collections.singletonList(accountName)));
+        inputPayload.put("requestParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has("permissions"));
+        assertEquals(authEntry.getJSONArray("permissions").getString(0), "ReadAccounts");
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 selected
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withPermissionsAndPermissionInitiatedAccounts() throws Exception {
+        // Setup permissions
+        PermissionDTO permission = new PermissionDTO();
+        permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
+        AccountDTO initiatedAcc = new AccountDTO();
+        initiatedAcc.setAccountId("acc-init-1");
+        permission.setInitiatedAccounts(Collections.singletonList(initiatedAcc));
+
+        // Build metadata map
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setPermissions(Collections.singletonList(permission));
+        responseDTO.setConsentData(consentData);
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        inputPayload.put("requestParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has("permissions"));
+        assertEquals(authEntry.getJSONArray("permissions").getString(0), "ReadAccounts");
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 permission initiated
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withPermissionsAndConsentInitiatedAccounts() throws Exception {
+        // Setup permissions
+        PermissionDTO permission = new PermissionDTO();
+        permission.setDisplayValues(Collections.singletonList("ReadAccounts"));
+
+        // Setup consent initiated accounts
+        AccountDTO initiatedAcc = new AccountDTO();
+        initiatedAcc.setAccountId("acc-init-1");
+
+        // Build metadata map
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setPermissions(Collections.singletonList(permission));
+        consentData.setInitiatedAccountsForConsent(Collections.singletonList(initiatedAcc));
+        responseDTO.setConsentData(consentData);
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        inputPayload.put("requestParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertTrue(authEntry.has("permissions"));
+        assertEquals(authEntry.getJSONArray("permissions").getString(0), "ReadAccounts");
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 consent initiated
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withoutPermissionsWithConsumerAccounts() throws Exception {
+        // Setup consumer account
+        ConsumerAccountDTO consumerAcc = new ConsumerAccountDTO();
+        consumerAcc.setAccountId("acc-user-1");
+        consumerAcc.setDisplayName("acc-user-1");
+
+        // Build hashes
+        String accountName = consumerAcc.getDisplayName();
+
+        // Build metadata map
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        responseDTO.setConsentData(consentData);
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        consumerData.setAccounts(Collections.singletonList(consumerAcc));
+        responseDTO.setConsumerData(consumerData);
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        accountPermissionParams.put("accounts", new JSONArray(Collections.singletonList(accountName)));
+        inputPayload.put("requestParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertFalse(authEntry.has("permissions"));
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 selected
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withoutPermissionsWithConsentInitiatedAccounts() throws Exception {
+        // Setup consent initiated accounts
+        AccountDTO initiatedAcc = new AccountDTO();
+        initiatedAcc.setAccountId("acc-init-1");
+
+        // Build metadata map
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setInitiatedAccountsForConsent(Collections.singletonList(initiatedAcc));
+        responseDTO.setConsentData(consentData);
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        inputPayload.put("requestParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        JSONArray authorizedData = inputPayload.getJSONArray("authorizedData");
+        assertEquals(authorizedData.length(), 1);
+
+        JSONObject authEntry = authorizedData.getJSONObject(0);
+        assertFalse(authEntry.has("permissions"));
+        assertTrue(authEntry.has("accounts"));
+        assertEquals(authEntry.getJSONArray("accounts").length(), 1); // 1 consent initiated
+    }
+
+    @Test
+    public void testAddAuthorizedDataObject_withoutPermissionsWithoutAccounts() throws Exception {
+
+        // Build metadata map
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        responseDTO.setConsentData(consentData);
+
+        Map<String, Object> metaDataMap = new HashMap<>();
+        metaDataMap.put("externalAPIPreConsentAuthorizeResponse", responseDTO);
+
+        // Build input payload with hashed permission and account
+        JSONObject inputPayload = new JSONObject();
+        JSONObject accountPermissionParams = new JSONObject();
+        inputPayload.put("requestParameters", accountPermissionParams);
+
+        ConsentAuthorizeUtil.addAuthorizedDataObject(inputPayload, metaDataMap);
+
+        // Assertions
+        assertTrue(inputPayload.has("authorizedData"));
+        assertTrue(inputPayload.getJSONArray("authorizedData").isEmpty());
+    }
 }

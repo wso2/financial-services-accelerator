@@ -55,10 +55,10 @@ public class ExpiredConsentStatusUpdateJob implements Job {
             FinancialServicesConfigParser.getInstance().getEligibleStatusesForConsentExpiry();
 
     /**
-     * Method used to enforce periodic statues update of consents
+     * Method used to enforce periodic statues update of consents.
      *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
+     * @param jobExecutionContext      the job execution context
+     * @throws JobExecutionException   if an error occurs during job execution
      */
     @Generated(message = "Ignoring since method contains no unit testable logics")
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -71,7 +71,7 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     }
 
     /**
-     * Method to update statues of consents
+     * Method to update statues of consents.
      */
     public static void updateExpiredStatues() throws ConsentManagementException {
 
@@ -93,7 +93,7 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     }
 
     /**
-     * Check if the consents is expired based on the consent attribute value
+     * Check if the consents is expired based on the consent attribute value.
      *
      * @param detailedConsentResource
      * @return
@@ -120,7 +120,7 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     }
 
     /**
-     * Update the expired consents in DB
+     * Update the expired consents in DB.
      *
      * @param detailedConsentResource
      * @return
