@@ -181,8 +181,9 @@ public class ConsentEnforcementExecutor implements OpenBankingGatewayExecutor {
         try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
             log.info("Successfully invoked consent validation service");
             InputStream in = response.getEntity().getContent();
+            String responseContent = IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
             in.close();
-            return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+            return responseContent;
         }
     }
 

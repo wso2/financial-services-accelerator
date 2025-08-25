@@ -212,8 +212,9 @@ public class GatewayUtils {
         httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
         try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
             InputStream in = response.getEntity().getContent();
+            String responseContent = IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
             in.close();
-            return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+            return responseContent;
         } catch (IOException | OpenBankingException e) {
             throw new OpenBankingRuntimeException("Failed to retrieve swagger definition from API", e);
         }

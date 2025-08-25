@@ -257,10 +257,10 @@ public class CRLValidator implements RevocationValidator {
                         "Response code is " + httpResponse.getStatusLine().getStatusCode());
             }
             InputStream in = httpResponse.getEntity().getContent();
-            in.close();
 
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509CRL x509CRLDownloaded = (X509CRL) cf.generateCRL(in);
+            in.close();
             if (log.isDebugEnabled()) {
                 log.debug("CRL is downloaded from CRL Url: " + crlURL);
             }
