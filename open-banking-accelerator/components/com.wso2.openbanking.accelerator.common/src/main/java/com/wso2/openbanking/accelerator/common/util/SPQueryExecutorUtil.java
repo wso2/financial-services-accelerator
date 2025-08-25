@@ -77,8 +77,10 @@ public class SPQueryExecutorUtil {
             log.debug(String.format("Executing query %s on SP", query));
         }
         try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
-            log.debug("Received response from Stream Processor with status: " +
-                    response.getStatusLine().getStatusCode());
+            if (log.isDebugEnabled()) {
+                log.debug("Received response from Stream Processor with status: " +
+                        response.getStatusLine().getStatusCode());
+            }
             HttpEntity entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 String error = String.format("Error while invoking SP rest api : %s %s",
