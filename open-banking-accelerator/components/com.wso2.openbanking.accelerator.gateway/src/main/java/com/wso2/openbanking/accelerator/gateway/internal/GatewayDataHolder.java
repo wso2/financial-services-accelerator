@@ -45,7 +45,6 @@ import java.util.Map;
 public class GatewayDataHolder {
 
     private static volatile GatewayDataHolder instance;
-    private static volatile CloseableHttpClient httpClient;
     private static volatile GatewayCache gatewayCache;
     private OpenBankingConfigurationService openBankingConfigurationService;
     private Map<String, Object> configurations;
@@ -81,16 +80,14 @@ public class GatewayDataHolder {
         return instance;
     }
 
+    /**
+     * Deprecated.
+     * Use {@link HTTPClientUtils#getHttpsClient()} instead.
+     */
+    @Deprecated
     public static CloseableHttpClient getHttpClient() throws OpenBankingException {
 
-        if (httpClient == null) {
-            synchronized (GatewayDataHolder.class) {
-                if (httpClient == null) {
-                    httpClient = HTTPClientUtils.getHttpsClient();
-                }
-            }
-        }
-        return httpClient;
+        return HTTPClientUtils.getHttpsClient();
     }
 
     public static GatewayCache getGatewayCache() {

@@ -60,7 +60,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -80,6 +79,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.HttpMethod;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * Executor for signature validation, am app creation and API subscription for DCR.
@@ -746,14 +747,13 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     protected JsonElement callPost(String endpoint, String payload, String authenticationHeader)
             throws IOException, OpenBankingException {
 
-        try (CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient()) {
-            HttpPost httpPost = new HttpPost(endpoint);
-            StringEntity entity = new StringEntity(payload);
-            httpPost.setEntity(entity);
-            httpPost.setHeader(GatewayConstants.ACCEPT, GatewayConstants.JSON_CONTENT_TYPE);
-            httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
-            httpPost.setHeader(HttpHeaders.AUTHORIZATION, authenticationHeader);
-            CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpPost httpPost = new HttpPost(endpoint);
+        StringEntity entity = new StringEntity(payload);
+        httpPost.setEntity(entity);
+        httpPost.setHeader(GatewayConstants.ACCEPT, GatewayConstants.JSON_CONTENT_TYPE);
+        httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, authenticationHeader);
+        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
             return getResponse(httpResponse);
         }
     }
@@ -762,16 +762,14 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     protected JsonElement getToken(String authHeader, String url, String clientId) throws IOException, JSONException,
             OpenBankingException {
 
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
-            HttpPost request = new HttpPost(url);
-            List<NameValuePair> params = new ArrayList<>();
-            params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-            params.add(new BasicNameValuePair("scope", "apim:subscribe apim:api_key apim:app_manage " +
-                    "apim:sub_manage openid"));
-            //params.add(new BasicNameValuePair("client_id", clientId));
-            request.setEntity(new UrlEncodedFormEntity(params));
-            request.addHeader(HTTPConstants.HEADER_AUTHORIZATION, authHeader);
-            HttpResponse response = client.execute(request);
+        HttpPost request = new HttpPost(url);
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
+        params.add(new BasicNameValuePair("scope", "apim:subscribe apim:api_key apim:app_manage " +
+                "apim:sub_manage openid"));
+        request.setEntity(new UrlEncodedFormEntity(params));
+        request.addHeader(HTTPConstants.HEADER_AUTHORIZATION, authHeader);
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(request)) {
             if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                 log.error("Obtaining access token  failed with status code: " +
                         response.getStatusLine().getStatusCode());
@@ -812,17 +810,16 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     protected JsonElement callGet(String endpoint, String authHeader, String queryParamKey, String paramValue)
             throws IOException, OpenBankingException, URISyntaxException {
 
-        try (CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient()) {
-            HttpGet httpGet = new HttpGet(endpoint);
-            List nameValuePairs = new ArrayList();
-            if (StringUtils.isNotEmpty(queryParamKey)) {
-                nameValuePairs.add(new BasicNameValuePair(queryParamKey, paramValue));
-                URI uri = new URIBuilder(httpGet.getURI()).addParameters(nameValuePairs).build();
-                ((HttpRequestBase) httpGet).setURI(uri);
-            }
-            httpGet.setHeader("Accept", "application/json");
-            httpGet.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-            CloseableHttpResponse restAPIResponse = httpClient.execute(httpGet);
+        HttpGet httpGet = new HttpGet(endpoint);
+        List nameValuePairs = new ArrayList();
+        if (StringUtils.isNotEmpty(queryParamKey)) {
+            nameValuePairs.add(new BasicNameValuePair(queryParamKey, paramValue));
+            URI uri = new URIBuilder(httpGet.getURI()).addParameters(nameValuePairs).build();
+            ((HttpRequestBase) httpGet).setURI(uri);
+        }
+        httpGet.setHeader(HttpHeaders.ACCEPT, APPLICATION_JSON);
+        httpGet.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        try (CloseableHttpResponse restAPIResponse = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
             return getResponse(restAPIResponse);
         }
     }
@@ -854,10 +851,9 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
     @Generated(message = "Excluding from test coverage since it is an HTTP call")
     protected boolean callDelete(String endpoint, String authHeader) throws OpenBankingException, IOException {
 
-        try (CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient()) {
-            HttpDelete httpDelete = new HttpDelete(endpoint);
-            httpDelete.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-            CloseableHttpResponse appDeletedResponse = httpClient.execute(httpDelete);
+        HttpDelete httpDelete = new HttpDelete(endpoint);
+        httpDelete.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        try (CloseableHttpResponse appDeletedResponse = HTTPClientUtils.getHttpsClient().execute(httpDelete)) {
             int status = appDeletedResponse.getStatusLine().getStatusCode();
             return (status == 204 || status == 200);
         }
