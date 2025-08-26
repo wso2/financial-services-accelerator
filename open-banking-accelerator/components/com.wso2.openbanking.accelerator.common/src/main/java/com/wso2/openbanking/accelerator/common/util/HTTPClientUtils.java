@@ -95,11 +95,27 @@ public class HTTPClientUtils {
 
                     connectionManager.setMaxTotal(maxTotal);
                     connectionManager.setDefaultMaxPerRoute(maxPerRoute);
-                    log.info("HTTPS connection manager initialized with maxTotal: " + maxTotal + ", maxPerRoute: " +
-                            maxPerRoute + ", TTL: " + ttl + "ms");
+                    if (log.isDebugEnabled()) {
+                        log.info("HTTPS connection manager initialized with maxTotal: " +
+                                maxTotal + ", maxPerRoute: " + maxPerRoute + ", TTL: " + ttl + "ms");
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Get closeable https client
+     *
+     * @return Closeable https client
+     * @throws OpenBankingException OpenBankingException exception
+     */
+    @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
+    @Deprecated // Use getHttpsClientInstance() instead.
+    public static CloseableHttpClient getHttpsClient() throws OpenBankingException {
+
+        initConnectionManagerForHttpsProtocol();
+        return HttpClients.custom().setConnectionManager(connectionManager).build();
     }
 
     /**
@@ -109,7 +125,7 @@ public class HTTPClientUtils {
      * @throws OpenBankingException OpenBankingException exception
      */
     @Generated(message = "Ignoring because ServerConfiguration cannot be mocked")
-    public static CloseableHttpClient getHttpsClient() throws OpenBankingException {
+    public static CloseableHttpClient getHttpsClientInstance() throws OpenBankingException {
 
         if (httpsClient == null) {
             synchronized (HTTPClientUtils.class) {

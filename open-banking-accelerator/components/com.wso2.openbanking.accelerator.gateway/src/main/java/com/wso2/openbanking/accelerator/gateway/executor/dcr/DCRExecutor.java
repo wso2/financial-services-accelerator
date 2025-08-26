@@ -753,7 +753,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         httpPost.setHeader(GatewayConstants.ACCEPT, GatewayConstants.JSON_CONTENT_TYPE);
         httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, authenticationHeader);
-        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
             return getResponse(httpResponse);
         }
     }
@@ -769,7 +769,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
                 "apim:sub_manage openid"));
         request.setEntity(new UrlEncodedFormEntity(params));
         request.addHeader(HTTPConstants.HEADER_AUTHORIZATION, authHeader);
-        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(request)) {
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(request)) {
             if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
                 log.error("Obtaining access token  failed with status code: " +
                         response.getStatusLine().getStatusCode());
@@ -819,7 +819,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         }
         httpGet.setHeader(HttpHeaders.ACCEPT, APPLICATION_JSON);
         httpGet.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-        try (CloseableHttpResponse restAPIResponse = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
+        try (CloseableHttpResponse restAPIResponse = HTTPClientUtils.getHttpsClientInstance().execute(httpGet)) {
             return getResponse(restAPIResponse);
         }
     }
@@ -853,7 +853,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
 
         HttpDelete httpDelete = new HttpDelete(endpoint);
         httpDelete.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-        try (CloseableHttpResponse appDeletedResponse = HTTPClientUtils.getHttpsClient().execute(httpDelete)) {
+        try (CloseableHttpResponse appDeletedResponse = HTTPClientUtils.getHttpsClientInstance().execute(httpDelete)) {
             int status = appDeletedResponse.getStatusLine().getStatusCode();
             return (status == 204 || status == 200);
         }

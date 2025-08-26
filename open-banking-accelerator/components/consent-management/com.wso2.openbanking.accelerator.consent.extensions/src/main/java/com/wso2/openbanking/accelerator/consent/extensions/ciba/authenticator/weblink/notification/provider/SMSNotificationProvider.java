@@ -79,7 +79,7 @@ public class SMSNotificationProvider implements NotificationProvider {
             httpPost.setEntity(entity);
             setHeaders(httpPost);
 
-            try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+            try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
 
                 if (!((httpResponse.getStatusLine() != null
                         && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) ||

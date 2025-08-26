@@ -76,7 +76,7 @@ public class SPQueryExecutorUtil {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Executing query %s on SP", query));
         }
-        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
             if (log.isDebugEnabled()) {
                 log.debug("Received response from Stream Processor with status: " +
                         response.getStatusLine().getStatusCode());

@@ -150,7 +150,7 @@ public class RealtimeEventNotificationSenderService implements Runnable {
                         .build();
                 httpPost.setConfig(requestConfig);
 
-                try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+                try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
                     int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode == HttpStatus.SC_ACCEPTED) {
                         if (log.isDebugEnabled()) {
