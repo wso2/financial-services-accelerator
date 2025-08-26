@@ -90,7 +90,7 @@ public class SPQueryExecutorUtilTest {
         CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        Mockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        Mockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         JSONObject result = SPQueryExecutorUtil.executeQueryOnStreamProcessor(appName, query, spUsername,
                 spPassword, spApiHost);

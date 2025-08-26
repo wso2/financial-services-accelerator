@@ -81,7 +81,7 @@ public class UtilsTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         // assert
         JSONObject responseJson = Utils.sendRequest(new HttpGet(REQUEST_URL));
@@ -109,7 +109,7 @@ public class UtilsTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         // assert
         JSONObject responseJson = Utils.sendRequest(new HttpGet(REQUEST_URL));
@@ -136,7 +136,7 @@ public class UtilsTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         // assert
         JSONObject responseJson = Utils.sendTokenRequest(new HttpPost(REQUEST_URL));
@@ -165,7 +165,7 @@ public class UtilsTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         // assert
         Utils.sendTokenRequest(new HttpPost(REQUEST_URL));

@@ -210,7 +210,7 @@ public class GatewayUtils {
         String password = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
 
         httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(httpGet)) {
             InputStream in = response.getEntity().getContent();
             String responseContent = IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
             in.close();

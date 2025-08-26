@@ -82,12 +82,12 @@ public class GatewayDataHolder {
 
     /**
      * Deprecated.
-     * Use {@link HTTPClientUtils#getHttpsClient()} instead.
+     * Use {@link HTTPClientUtils#getHttpsClientInstance()} instead.
      */
     @Deprecated
     public static CloseableHttpClient getHttpClient() throws OpenBankingException {
 
-        return HTTPClientUtils.getHttpsClient();
+        return HTTPClientUtils.getHttpsClientInstance();
     }
 
     public static GatewayCache getGatewayCache() {

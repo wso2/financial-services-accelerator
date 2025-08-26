@@ -250,7 +250,7 @@ public class CRLValidator implements RevocationValidator {
         }
 
 
-        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpGet)) {
+        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClientInstance().execute(httpGet)) {
             //Check errors in response:
             if (httpResponse.getStatusLine().getStatusCode() / 100 != 2) {
                 throw new CertificateValidationException("Error getting crl response." +

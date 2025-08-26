@@ -318,7 +318,7 @@ public class OCSPValidator implements RevocationValidator {
                     httpSocketTimeout);
         }
 
-        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClient().execute(httpPost)) {
+        try (CloseableHttpResponse httpResponse = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
 
             log.debug("Sending OCSP request to: " + serviceUrl);
             setRequestProperties(request.getEncoded(), httpPost);

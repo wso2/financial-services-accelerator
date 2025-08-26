@@ -459,7 +459,7 @@ public class OBIdentifierAuthenticator extends AbstractApplicationAuthenticator
         String credentials = adminUsername + ":" + String.valueOf(adminPassword);
         credentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
 
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
+        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClientInstance()) {
             HttpGet dataRequest = new HttpGet(authRequestURL + sessionDataKey);
             dataRequest.addHeader(IdentifierHandlerConstants.ACCEPT_HEADER,
                     IdentifierHandlerConstants.ACCEPT_HEADER_VALUE);
