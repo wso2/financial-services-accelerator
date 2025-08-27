@@ -28,6 +28,7 @@ import org.w3c.dom.Document;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -149,6 +150,10 @@ public class IdempotencyValidator {
             log.error("Error Occurred while handling the request", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error Occurred while handling the request", consentOperationEnum);
+        } catch (FinancialServicesException e) {
+            log.error("Error Occurred while handling the request", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                    consentOperationEnum);
         }
         return false;
     }

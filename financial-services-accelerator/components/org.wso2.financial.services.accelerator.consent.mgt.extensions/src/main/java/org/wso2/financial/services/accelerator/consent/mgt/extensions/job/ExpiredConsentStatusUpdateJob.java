@@ -57,8 +57,8 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     /**
      * Method used to enforce periodic statues update of consents.
      *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
+     * @param jobExecutionContext      the job execution context
+     * @throws JobExecutionException   if an error occurs during job execution
      */
     @Generated(message = "Ignoring since method contains no unit testable logics")
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {

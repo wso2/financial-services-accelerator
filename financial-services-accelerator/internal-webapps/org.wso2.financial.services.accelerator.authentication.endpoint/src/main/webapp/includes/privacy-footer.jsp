@@ -16,6 +16,7 @@
 ~ under the License.
 --%>
 
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <div class="form-group ui form row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div class="well policy-info-message" role="alert margin-top-5x">

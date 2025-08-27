@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -190,6 +191,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Error Occurred while retrieving the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error Occurred while retrieving the consent", ConsentOperationEnum.CONSENT_RETRIEVE);
+        } catch (FinancialServicesException e) {
+            log.error("Error Occurred while retrieving the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage(), ConsentOperationEnum.CONSENT_RETRIEVE);
         }
     }
 
@@ -300,6 +305,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Error Occurred while creating the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error Occurred while creating the consent", ConsentOperationEnum.CONSENT_CREATE);
+        } catch (FinancialServicesException e) {
+            log.error("Error Occurred while creating the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                    ConsentOperationEnum.CONSENT_CREATE);
         }
 
     }
@@ -400,6 +409,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             consentManageData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
+            log.error("Error occurred while deleting the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while deleting the consent", ConsentOperationEnum.CONSENT_DELETE);
+        } catch (FinancialServicesException e) {
             log.error(e.getMessage().replaceAll("[\r\n]+", ""));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     e.getMessage().replaceAll("[\r\n]+", ""), ConsentOperationEnum.CONSENT_DELETE);
@@ -523,6 +536,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while uploading consent file", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error Occurred while uploading consent file", ConsentOperationEnum.CONSENT_FILE_UPLOAD);
+        } catch (FinancialServicesException e) {
+            log.error("Error Occurred while uploading consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
@@ -595,6 +612,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Error Occurred while retrieving consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error Occurred while retrieving consent file", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+        } catch (FinancialServicesException e) {
+            log.error("Error Occurred while retrieving consent file", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
     }
 

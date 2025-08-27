@@ -27,7 +27,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
@@ -39,11 +38,8 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -58,6 +54,12 @@ public class ServiceExtensionUtils {
     private static final Log log = LogFactory.getLog(ServiceExtensionUtils.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Method to check whether the service extension is enabled and if the given service type is enabled.
+     *
+     * @param serviceExtensionTypeEnum  The service extension type to check.
+     * @return  true if the service extension is enabled and the given service type is enabled, false otherwise.
+     */
     public static boolean isInvokeExternalService(ServiceExtensionTypeEnum serviceExtensionTypeEnum) {
 
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
@@ -70,9 +72,10 @@ public class ServiceExtensionUtils {
      * Method to invoke external service call.
      * Implements the retry mechanism for the external service call.
      *
-     * @param externalServiceRequest
-     * @param serviceType
-     * @return
+     * @param externalServiceRequest  The request containing the details of the external service call.
+     * @param serviceType             Type of the service extension to be invoked.
+     * @return ExternalServiceResponse containing the response from the external service.
+     * @throws FinancialServicesException If an error occurs during the external service call or if the response is not
      */
     public static ExternalServiceResponse invokeExternalServiceCall(ExternalServiceRequest externalServiceRequest,
                                                                     ServiceExtensionTypeEnum serviceType)
@@ -148,6 +151,14 @@ public class ServiceExtensionUtils {
                         log.error(String.format(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR +
                                         "Status code: %s, Error: %s", statusCode,
                                 responseContent.replaceAll("[\r\n]", "")));
+                        if (statusCode == 400 || statusCode == 500) {
+                            ExternalServiceResponse externalServiceResponse = mapResponse(responseContent,
+                                    ExternalServiceResponse.class);
+
+                            throw new FinancialServicesException(externalServiceResponse.getData()
+                                    .path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                                    .asText(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR));
+                        }
                         throw new FinancialServicesException(ErrorConstants.EXTERNAL_SERVICE_DEFAULT_ERROR);
                     }
 
@@ -171,6 +182,12 @@ public class ServiceExtensionUtils {
         throw new FinancialServicesException("External service call failed");
     }
 
+    /**
+     * Method to check whether the exception is retryable.
+     *
+     * @param e   Exception to be checked
+     * @return  true if the exception is retryable, false otherwise
+     */
     private static boolean isRetryableException(Exception e) {
         return e instanceof SocketTimeoutException ||
                 e instanceof ConnectException ||
@@ -180,66 +197,50 @@ public class ServiceExtensionUtils {
     /**
      * Method to map a json object to a model class
      *
-     * @param jsonResponse
-     * @param clazz
-     * @param <T>
-     * @return
-     * @throws JsonProcessingException
+     * @param jsonResponse   JSON response string to be mapped
+     * @param clazz          Class type to which the JSON response should be mapped
+     * @param <T>            Type of the class to which the JSON response should be mapped
+     * @return              Mapped object of type T
+     * @throws JsonProcessingException If an error occurs during JSON processing
      */
     public static <T> T mapResponse(String jsonResponse, Class<T> clazz) throws JsonProcessingException {
 
         return objectMapper.readValue(jsonResponse, clazz);
     }
 
+    /**
+     * Method to construct the endpoint URL for the service extension.
+     *
+     * @param serviceType  Type of the service extension
+     * @return  Constructed endpoint URL
+     */
     private static String constructExtensionEndpoint(ServiceExtensionTypeEnum serviceType) {
 
         String baseUrl = FinancialServicesConfigParser.getInstance().getServiceExtensionsEndpointBaseUrl();
         return baseUrl + "/" + serviceType.toString().replaceAll("_", "-");
     }
 
+    /**
+     * Method to set the basic auth header for the HTTP POST request.
+     *
+     * @param httpPost  HTTP POST request to set the header
+     * @param userName  Username for basic authentication
+     * @param password  Password for basic authentication
+     */
     public static void setBasicAuthHeader(HttpPost httpPost, String userName, String password) {
 
         httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, getBasicAuthHeader(userName, password));
     }
 
+    /**
+     * Method to set the OAuth2 authentication header for the HTTP POST request.
+     *
+     * @param httpPost  HTTP POST request to set the header
+     * @param token     OAuth2 token to be set in the header
+     */
     public static void setOauth2AuthHeader(HttpPost httpPost, String token) {
 
         httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, FinancialServicesConstants.BEARER_TAG + token);
-    }
-
-    /**
-     * Method to obtain client credential grant token.
-     *
-     * @param tokenEP
-     * @param clientId
-     * @param clientSecret
-     * @return
-     * @throws URISyntaxException
-     * @throws FinancialServicesException
-     * @throws IOException
-     */
-    @Generated(message = "Ignoring since method contains an external call")
-    public static String getClientCredentialGrantToken(String tokenEP, String clientId, String clientSecret)
-            throws URISyntaxException, FinancialServicesException, IOException {
-
-        HttpPost httpPost = new HttpPost(tokenEP);
-        URI uri = new URIBuilder(httpPost.getURI())
-                .addParameter("grant_type", "client_credentials")
-                .build();
-        httpPost.setURI(uri);
-
-        httpPost.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
-                FinancialServicesConstants.URL_ENCODED_CONTENT_TYPE);
-        httpPost.setHeader(FinancialServicesConstants.AUTH_HEADER, getBasicAuthHeader(clientId, clientSecret));
-
-        CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPost);
-
-        if (response.getStatusLine().getStatusCode() != 200) {
-            throw new FinancialServicesException("Error occurred while obtaining the token");
-        }
-        InputStream in = response.getEntity().getContent();
-        JSONObject tokenResponse = new JSONObject(IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8)));
-        return tokenResponse.getString("access_token");
     }
 
     /**

@@ -30,7 +30,7 @@ import javax.validation.constraints.NotEmpty;
  * Account object for external API consent retrieval.
  */
 public class AccountDTO {
-    @NotEmpty
+    @NotEmpty(message = "Display name in Account Object cannot be empty")
     private String displayName;
     private String accountId;
     

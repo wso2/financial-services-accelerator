@@ -36,12 +36,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.C
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,12 +71,15 @@ public class FSDefaultAuthServletImplTest {
     public void initClass() {
 
         httpServletRequestMock = mock(HttpServletRequest.class);
+        Locale locale = new Locale("en", "US");
+        doReturn(locale).when(httpServletRequestMock).getLocale();
         resourceBundle = mock(ResourceBundle.class);
         mockHolder = mock(ConsentExtensionsDataHolder.class);
         mockConfigService = mock(FinancialServicesConfigurationService.class);
         configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
         Map<String, Object> configs = new HashMap<String, Object>();
+        when(resourceBundle.containsKey(any())).thenAnswer(k -> k);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
         Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
@@ -91,6 +96,7 @@ public class FSDefaultAuthServletImplTest {
     public void testUpdateRequestAttributeForAccounts() {
 
         JSONObject accountObj = new JSONObject(TestConstants.ACCOUNT_AUTH_SERVLET_DATA);
+        accountObj.put("application", "Test Fapi App");
 
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 accountObj, resourceBundle);
@@ -108,6 +114,7 @@ public class FSDefaultAuthServletImplTest {
     public void testUpdateRequestAttributeForCOF() {
 
         JSONObject cofObj = new JSONObject(TestConstants.COF_AUTH_SERVLET_DATA);
+        cofObj.put("application", "Test Fapi App");
 
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 cofObj, resourceBundle);
@@ -125,6 +132,7 @@ public class FSDefaultAuthServletImplTest {
     public void testUpdateRequestAttributeForPayments() {
 
         JSONObject paymentObj = new JSONObject(TestConstants.PAYMENT_AUTH_SERVLET_DATA);
+        paymentObj.put("application", "Test Fapi App");
         HttpSession session = mock(HttpSession.class);
         doReturn(session).when(httpServletRequestMock).getSession();
 
@@ -144,6 +152,7 @@ public class FSDefaultAuthServletImplTest {
     public void testUpdateRequestAttributeForNonExistingType() {
 
         JSONObject object = new JSONObject(TestConstants.AUTH_SERVLET_JSON_WITH_TYPE);
+        object.put("application", "Test Fapi App");
 
         Map<String, Object> requestAttributes = servletImpl.updateRequestAttribute(httpServletRequestMock,
                 object, resourceBundle);

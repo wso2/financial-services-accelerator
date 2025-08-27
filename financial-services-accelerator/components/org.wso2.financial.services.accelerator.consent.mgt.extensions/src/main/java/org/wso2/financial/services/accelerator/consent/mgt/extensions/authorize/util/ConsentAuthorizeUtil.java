@@ -60,7 +60,6 @@ import java.util.UUID;
 public class ConsentAuthorizeUtil {
 
     private static final Log log = LogFactory.getLog(ConsentAuthorizeUtil.class);
-    private static final FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -97,7 +96,7 @@ public class ConsentAuthorizeUtil {
      */
     public static String extractConsentIdFromRequestObject(String requestObject) throws ConsentException {
         log.debug("Extracting consent ID from request object");
-        String authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
+        String authFlowConsentIdSource = FinancialServicesConfigParser.getInstance().getAuthFlowConsentIdSource();
 
         try {
             if (FinancialServicesConstants.REQUEST_OBJECT.equals(authFlowConsentIdSource)) {
@@ -132,7 +131,7 @@ public class ConsentAuthorizeUtil {
      */
     public static String extractConsentIdFromRequestParam(JSONObject requestParameters) {
         log.debug("Extracting consent ID from request parameters");
-        String key = configParser.getConsentIdExtractionKey();
+        String key = FinancialServicesConfigParser.getInstance().getConsentIdExtractionKey();
 
         // TODO: need to support other request parameters based on requirements
         if (key.equals(FinancialServicesConstants.SCOPE)) {
@@ -495,7 +494,7 @@ public class ConsentAuthorizeUtil {
                     debtorAccount.getString(ConsentExtensionConstants.NAME) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.NAME_TITLE + " : " +
                         debtorAccount.getString(ConsentExtensionConstants.NAME));
-                initiatedAccount.put(ConsentAuthorizeConstants.DISPLAY_NAME,
+                initiatedAccount.put(ConsentExtensionConstants.NAME,
                         debtorAccount.getString(ConsentExtensionConstants.NAME));
             }
 
@@ -511,6 +510,12 @@ public class ConsentAuthorizeUtil {
             //Adding Debtor Account Identification
             if (debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION) != null) {
                 debtorAccountArray.put(ConsentExtensionConstants.IDENTIFICATION_TITLE + " : " +
+                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+                initiatedAccount.put(ConsentExtensionConstants.IDENTIFICATION,
+                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+
+                // Set account identification as account display name
+                initiatedAccount.put(ConsentAuthorizeConstants.DISPLAY_NAME,
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
                 initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));

@@ -161,8 +161,8 @@ public class CommonTestUtil {
     /**
      * Test util method to check cert expiry.
      *
-     * @param peerCertificate
-     * @return
+     * @param peerCertificate the certificate to check
+     * @return  true if the certificate has expired, false otherwise
      */
     public static boolean hasExpired(X509Certificate peerCertificate) {
         try {
