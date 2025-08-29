@@ -153,6 +153,7 @@ public class OpenBankingConstants {
     public static final String REVOCATION_VALIDATOR_CONFIG_TAG = "RevocationValidator";
     public static final String TPP_MANAGEMENT_CONFIG_TAG = "TPPManagement";
     public static final String CONNECTION_POOL_MAX_CONNECTIONS = "HTTPConnectionPool.MaxConnections";
+    public static final String CONNECTION_POOL_TIME_TO_LIVE = "HTTPConnectionPool.TimeToLive";
     public static final String CONNECTION_POOL_MAX_CONNECTIONS_PER_ROUTE = "HTTPConnectionPool.MaxConnectionsPerRoute";
     public static final String PUSH_AUTH_EXPIRY_TIME = "PushAuthorisation.ExpiryTime";
     public static final String PUSH_AUTH_REQUEST_URI_SUBSTRING = "PushAuthorisation.RequestUriSubString";

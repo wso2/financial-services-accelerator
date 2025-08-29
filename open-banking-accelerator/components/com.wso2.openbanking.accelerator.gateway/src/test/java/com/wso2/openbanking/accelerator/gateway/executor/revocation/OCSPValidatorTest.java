@@ -117,7 +117,7 @@ public class OCSPValidatorTest extends PowerMockTestCase {
         CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         Mockito.when(tppCertValidatorDataHolder.isCertificateRevocationProxyEnabled()).thenReturn(true);
         Mockito.when(tppCertValidatorDataHolder.getCertificateRevocationProxyHost()).thenReturn(" ");
@@ -150,7 +150,7 @@ public class OCSPValidatorTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         Mockito.doReturn(true).when(tppCertValidatorDataHolder).isCertificateRevocationProxyEnabled();
         Mockito.doReturn("localhost").when(tppCertValidatorDataHolder).getCertificateRevocationProxyHost();
@@ -171,7 +171,7 @@ public class OCSPValidatorTest extends PowerMockTestCase {
         Mockito.doThrow(IOException.class).when(closeableHttpClientMock).execute(Mockito.any(HttpPost.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         TPPCertValidatorDataHolder tppCertValidatorDataHolderMock = Mockito.mock(TPPCertValidatorDataHolder.class);
 

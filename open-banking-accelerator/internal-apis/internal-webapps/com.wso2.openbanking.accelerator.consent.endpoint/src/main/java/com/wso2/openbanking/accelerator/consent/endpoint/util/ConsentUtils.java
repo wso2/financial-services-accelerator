@@ -86,7 +86,7 @@ public class ConsentUtils {
     public static URI authorizeRequest(String consent, Map<String, String> cookies, ConsentData consentData) {
 
         String authorizeURL = IdentityUtil.getProperty("OAuth.OAuth2AuthzEPUrl");
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
+        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClientInstance()) {
 
             BasicCookieStore cookieStore = new BasicCookieStore();
             String cookieDomain = new URI(authorizeURL).getHost();

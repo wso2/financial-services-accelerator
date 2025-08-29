@@ -76,7 +76,7 @@ public class Utils {
 
         LOG.debug("Sending request to " + request.getURI());
         String responseStr = null;
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
+        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClientInstance()) {
             HttpResponse response = client.execute(request);
             HttpEntity responseEntity = response.getEntity();
             if (responseEntity != null) {
@@ -109,7 +109,7 @@ public class Utils {
     }
 
     public static JSONObject sendTokenRequest(HttpPost tokenReq) throws TokenGenerationException {
-        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
+        try (CloseableHttpClient client = HTTPClientUtils.getHttpsClientInstance()) {
             HttpResponse response = client.execute(tokenReq);
             String responseStr = EntityUtils.toString(response.getEntity());
 
