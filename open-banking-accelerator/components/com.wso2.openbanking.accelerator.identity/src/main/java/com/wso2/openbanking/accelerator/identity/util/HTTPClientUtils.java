@@ -144,8 +144,25 @@ public class HTTPClientUtils {
     @Deprecated // Use getHttpsClientInstance() instead.
     public static CloseableHttpClient getHttpsClient() throws OpenBankingException {
 
-        initConnectionManagerForHttpsProtocol();
-        return HttpClients.custom().setConnectionManager(connectionManager).build();
+        SSLConnectionSocketFactory sslsf = createSSLConnectionSocketFactory();
+
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(HTTP_PROTOCOL, new PlainConnectionSocketFactory())
+                .register(HTTPS_PROTOCOL, sslsf)
+                .build();
+
+        int maxTotal = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnections();
+        int maxPerRoute = OpenBankingConfigParser.getInstance().getConnectionPoolMaxConnectionsPerRoute();
+        long ttl = OpenBankingConfigParser.getInstance().getConnectionPoolTimeToLive();
+
+        final PoolingHttpClientConnectionManager connectionMgr =
+                new PoolingHttpClientConnectionManager(socketFactoryRegistry, null,
+                        null, null, ttl, TimeUnit.MILLISECONDS);
+
+        // configuring default maximum connections
+        connectionMgr.setMaxTotal(maxTotal);
+        connectionMgr.setDefaultMaxPerRoute(maxPerRoute);
+        return HttpClients.custom().setConnectionManager(connectionMgr).build();
     }
 
     /**
