@@ -24,6 +24,7 @@ import org.mockito.MockedStatic;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
@@ -31,6 +32,8 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.doReturn;
@@ -124,6 +127,52 @@ public class FinancialServicesUtilsTest {
 
         String extractedConsentId = FinancialServicesUtils.extractConsentIdFromRegex(value);
         Assert.assertEquals(extractedConsentId, consentId);
+    }
+
+    @Test(dataProviderClass = FinancialServicesUtilsTest.class, dataProvider = "consentFlowTypesForScopes")
+    public void testIfPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
+                                              List<String> scopeBasedConsentScopes,
+                                              boolean expected) {
+
+        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, preInitiatedConsentScopes,
+                scopeBasedConsentScopes);
+        Assert.assertEquals(result, expected);
+    }
+
+    @Test(dataProviderClass = FinancialServicesUtilsTest.class, dataProvider = "consentFlowTypesForScopeList")
+    public void testIfPreInitiatedConsentFlow(String[] scope, List<String> preInitiatedConsentScopes,
+                                              List<String> scopeBasedConsentScopes,
+                                              boolean expected) {
+
+        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, preInitiatedConsentScopes,
+                scopeBasedConsentScopes);
+        Assert.assertEquals(result, expected);
+    }
+
+    @DataProvider(name = "consentFlowTypesForScopes")
+    public Object[][] getConsentFlowTypesForScopes() {
+
+        return new Object[][] {
+                {"accounts", Collections.emptyList(), Collections.emptyList(), true},
+                {"accounts", Collections.singletonList("payments"), Collections.singletonList("accounts"), false},
+                {"payments", Collections.singletonList("payments"), Collections.singletonList("accounts"), true},
+                {"accounts", List.of("payments", "accounts"), Collections.emptyList(), true},
+                {"accounts", Collections.emptyList(), List.of("payments", "accounts"), false}
+        };
+    }
+
+    @DataProvider(name = "consentFlowTypesForScopeList")
+    public Object[][] getConsentFlowTypesForScopeList() {
+
+        return new Object[][] {
+                {new String[] {"accounts", "openid"}, Collections.emptyList(), Collections.emptyList(), true},
+                {new String[] {"accounts", "openid"}, Collections.singletonList("payments"),
+                        Collections.singletonList("accounts"), false},
+                {new String[] {"payments", "openid"}, Collections.singletonList("payments"),
+                        Collections.singletonList("accounts"), true},
+                {new String[] {"accounts", "openid"}, List.of("payments", "accounts"), Collections.emptyList(), true},
+                {new String[] {"accounts", "openid"}, Collections.emptyList(), List.of("payments", "accounts"), false}
+        };
     }
 
 }

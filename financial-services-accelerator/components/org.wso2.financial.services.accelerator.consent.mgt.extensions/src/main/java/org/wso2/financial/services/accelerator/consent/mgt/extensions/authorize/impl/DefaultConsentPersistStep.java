@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
@@ -54,13 +55,15 @@ import java.util.Set;
  */
 public class DefaultConsentPersistStep implements ConsentPersistStep {
 
-    private final boolean isPreInitiatedConsent;
+    private final List<String> preInitiatedConsentScopes;
+    private final List<String> scopeBasedConsentScopes;
     private static final Log log = LogFactory.getLog(DefaultConsentPersistStep.class);
 
     public DefaultConsentPersistStep() {
 
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
-        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
+        scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
     }
 
     @Override
@@ -76,7 +79,10 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            if (isPreInitiatedConsent && consentData.getConsentId() == null) {
+            boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+                    consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+
+            if (ifPreInitiatedConsentFlow && consentData.getConsentId() == null) {
                 log.error("Consent ID not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Consent ID not available in consent data", consentData.getState());
@@ -89,7 +95,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                 consentResource = consentData.getConsentResource();
             }
 
-            if (isPreInitiatedConsent && consentData.getAuthResource() == null) {
+            if (ifPreInitiatedConsentFlow && consentData.getAuthResource() == null) {
                 log.error("Auth resource not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Auth resource not available in consent data", consentData.getState());
@@ -122,8 +128,10 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
+        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+                consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
         // Create the consent if it is not pre initiated.
-        if (isPreInitiatedConsent) {
+        if (ifPreInitiatedConsentFlow) {
             authorizationId = consentData.getAuthResource().getAuthorizationID();
         } else {
             DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(

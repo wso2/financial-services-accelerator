@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
@@ -39,18 +40,22 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
+import java.util.List;
+
 /**
  * Consent retrieval step default implementation.
  */
 public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
-    private final boolean isPreInitiatedConsent;
+    private final List<String> preInitiatedConsentScopes;
+    private final List<String> scopeBasedConsentScopes;
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
 
     public DefaultConsentRetrievalStep() {
 
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
-        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
+        scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
     }
 
     @Override
@@ -65,9 +70,11 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         JSONObject consentDataJSON;
         ConsentResource consentResource;
+        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
 
         try {
-            if (isPreInitiatedConsent) {
+            if (ifPreInitiatedConsentFlow) {
 
                 log.debug("Extracting consent ID from pre-initiated consent request object.");
                 String consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
@@ -117,7 +124,9 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
             /* Appending Dummy data for Accounts consent. In real-world scenario should be separate step
              calling accounts service */
             // Append only when consent type is accounts or no initiated account for payment consents
-            if (!isPreInitiatedConsent || ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
+
+            if (!ifPreInitiatedConsentFlow ||
+                    ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
                     (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
                             !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {
                 JSONArray accountsJSON = ConsentAuthorizeUtil.appendDummyAccountID();

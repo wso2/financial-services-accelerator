@@ -34,11 +34,10 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -186,20 +185,6 @@ public class FinancialServicesUtils {
     }
 
     /**
-     * Method to obtain basic auth header.
-     *
-     * @param username Username of Auth header
-     * @param password Password of Auth header
-     * @return basic auth header
-     */
-    public static String getBasicAuthHeader(String username, char[] password) {
-
-        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON +
-                String.valueOf(password)).getBytes(StandardCharsets.UTF_8));
-        return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
-    }
-
-    /**
      * Extracts the consent ID from the essential claims JSON string.
      *
      * @param essentialClaims The essential claims JSON string
@@ -259,5 +244,48 @@ public class FinancialServicesUtils {
         }
 
         return extractConsentIdFromRegex(scopesString.toString().trim());
+    }
+
+    /**
+     * Utility method to determine whether the pre-initiated consent flow should be used.
+     *
+     * @param scope                         Scope from the request
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes      List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
+                                                    List<String> scopeBasedConsentScopes) {
+
+        if (scope == null || scope.isEmpty()) {
+            return true;
+        }
+        if (preInitiatedConsentScopes.isEmpty() && scopeBasedConsentScopes.isEmpty()) {
+            return true;
+        } else if (!scopeBasedConsentScopes.isEmpty() && scopeBasedConsentScopes.stream().anyMatch(scope::contains)) {
+            return false;
+        } else if (!preInitiatedConsentScopes.isEmpty() &&
+                preInitiatedConsentScopes.stream().anyMatch(scope::contains)) {
+            return true;
+        }
+        return true;
+    }
+
+    /**
+     * Utility method to determine whether the pre-initiated consent flow should be used.
+     *
+     * @param scopes                        List of Scope from the request
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(String[] scopes, List<String> preInitiatedConsentScopes,
+                                                    List<String> scopeBasedConsentScopes) {
+
+        if (scopes == null || scopes.length == 0) {
+            return true;
+        }
+        String scopeString  = String.join(" ", scopes);
+        return isPreInitiatedConsentFlow(scopeString, preInitiatedConsentScopes, scopeBasedConsentScopes);
     }
 }

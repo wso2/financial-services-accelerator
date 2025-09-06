@@ -305,7 +305,6 @@ public class ExternalAPIConsentRetrievalStepTest {
         configParser.close();
         configParser = mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
-        when(configParserMock.isPreInitiatedConsent()).thenReturn(true);
         when(configParserMock.getAuthFlowConsentIdSource()).thenReturn("requestObject");
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
