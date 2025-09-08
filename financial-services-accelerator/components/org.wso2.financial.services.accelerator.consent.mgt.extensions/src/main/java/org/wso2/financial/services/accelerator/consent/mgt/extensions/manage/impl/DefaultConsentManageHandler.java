@@ -27,6 +27,7 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -122,6 +123,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exists in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
+        }
+
         //Validate Initiation headers
         ConsentPayloadValidationResult headerValidationResult = ConsentManageUtils.getConsentManageValidator()
                 .validateRequestHeaders(consentManageData);
@@ -214,6 +222,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Client ID missing in the request.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
                     ConsentOperationEnum.CONSENT_CREATE);
+        }
+
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exists in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
         //Validate Initiation headers
@@ -329,6 +344,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Client ID missing in the request.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
                     ConsentOperationEnum.CONSENT_DELETE);
+        }
+
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exists in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
         //Validate Initiation headers
@@ -453,6 +475,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exists in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
+        }
+
         String resourcePath = consentManageData.getRequestPath();
         if (resourcePath == null) {
             log.error("Resource path not found in the request");
@@ -561,6 +590,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.error("Client ID is missing in the request.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+        }
+
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exists in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+                    ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
         String resourcePath = consentManageData.getRequestPath();
