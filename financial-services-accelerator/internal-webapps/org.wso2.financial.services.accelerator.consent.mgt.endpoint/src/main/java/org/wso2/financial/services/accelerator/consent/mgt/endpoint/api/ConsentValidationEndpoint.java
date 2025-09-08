@@ -180,8 +180,9 @@ public class ConsentValidationEndpoint {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
             consentValidateData.setComprehensiveConsent(consentResource);
         } catch (ConsentManagementException e) {
-            log.error("Exception while getting consent", e);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Exception while getting consent");
+            log.error("Consent details not found for the given consent id", e);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Consent details not found for the given consent id");
         }
 
         ConsentValidationResult validationResult = new ConsentValidationResult();
