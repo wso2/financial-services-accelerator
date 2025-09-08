@@ -240,7 +240,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                 ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
                     } catch (FinancialServicesException e) {
                         throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
-                                ConsentOperationEnum.CONSENT_SEARCH);
+                                ConsentOperationEnum.CONSENT_DELETE);
                     }
                 } else {
                     if (!ConsentExtensionConstants.AUTHORIZED_STATUS.equals(consentResource.getCurrentStatus())) {

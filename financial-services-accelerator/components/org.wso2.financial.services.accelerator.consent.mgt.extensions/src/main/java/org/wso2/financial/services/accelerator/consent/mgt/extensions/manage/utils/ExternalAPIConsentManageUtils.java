@@ -59,6 +59,7 @@ public class ExternalAPIConsentManageUtils {
     public static ExternalAPIPreConsentGenerateResponseDTO callExternalService(
             ExternalAPIPreConsentGenerateRequestDTO requestDTO) throws FinancialServicesException {
 
+        log.debug("Calling external service for pre consent generation");
         JSONObject requestJson = new JSONObject(requestDTO);
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_CREATION);
@@ -178,6 +179,10 @@ public class ExternalAPIConsentManageUtils {
     private static JSONObject callExternalService(
             JSONObject requestJson, ServiceExtensionTypeEnum serviceType) throws FinancialServicesException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Invoking external service call for service type: %s",
+                    serviceType.toString().replaceAll("\r\n", " ")));
+        }
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(
                 UUID.randomUUID().toString(), requestJson);
         ExternalServiceResponse response =

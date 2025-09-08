@@ -199,6 +199,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         log.debug("Invoking external service for consent persistence with service type: PERSIST_AUTHORIZED_CONSENT");
         ExternalServiceResponse externalServiceResponse = ServiceExtensionUtils.invokeExternalServiceCall(
                 externalServiceRequest, ServiceExtensionTypeEnum.PERSIST_AUTHORIZED_CONSENT);
+
         if (externalServiceResponse.getStatus().equals(StatusEnum.ERROR)) {
             String newConsentStatus = externalServiceResponse.getData().path(
                     ConsentExtensionConstants.NEW_CONSENT_STATUS).asText();

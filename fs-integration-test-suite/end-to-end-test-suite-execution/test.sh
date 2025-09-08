@@ -110,9 +110,12 @@ cp ${TEST_FRAMEWORK_HOME}/src/main/resources/SampleTestConfiguration.xml ${TEST_
 #--------------Server Configurations-----------------#
 sed -i -e "s|Common.IS_Version|7.1.0|g" $TEST_CONFIG_FILE
 
+# Get the hostname and convert it to lowercase using tr
+IS_HOSTNAME_LC=$(get_prop "IsHostname" | tr '[:upper:]' '[:lower:]')
+
 ##----------------set hostnames for sequences -----------#
 sed -i -e "s|{AM_HOST}|$(get_prop "ApimHostname")|g" $TEST_CONFIG_FILE
-sed -i -e "s|{IS_HOST}|$(get_prop "IsHostname")|g" $TEST_CONFIG_FILE
+sed -i -e "s|{IS_HOST}|${IS_HOSTNAME_LC}|g" "$TEST_CONFIG_FILE"
 
 ##----------------set Directory Path-----------#
 sed -i -e "s|{TestSuiteDirectoryPath}|${ACCELERATOR_TESTS_HOME}|g" $TEST_CONFIG_FILE
@@ -122,7 +125,8 @@ sed -i -e "s|Provisioning.Enabled|true|g" $TEST_CONFIG_FILE
 sed -i -e "s|Provisioning.ProvisionFilePath|${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps/src/test/resources/api-config-provisioning.yaml|g" $TEST_CONFIG_FILE
 
 # Set Web Browser Configuration
-sed -i -e "s|BrowserAutomation.HeadlessEnabled|$(get_prop "BrowserAutomation.HeadlessEnabled")|g" $TEST_CONFIG_FILE
+sed -i -e "s|BrowserAutomation.BrowserPreference|firefox|g" $TEST_CONFIG_FILE
+sed -i -e "s|BrowserAutomation.HeadlessEnabled|true|g" $TEST_CONFIG_FILE
 if [ $(get_prop "OSName") == "mac" ]; then
     sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/mac/geckodriver|g" $TEST_CONFIG_FILE
 else
@@ -143,8 +147,6 @@ fi
 #--------------Build the test framework and the project-----------------#
 cd ${ACCELERATOR_TESTS_HOME}
 mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-
-sleep 1h
 
 ##--------------API Publish and Subscribe Step-----------------#
 cd ${ACCELERATOR_TESTS_HOME}/accelerator-tests/preconfiguration.steps

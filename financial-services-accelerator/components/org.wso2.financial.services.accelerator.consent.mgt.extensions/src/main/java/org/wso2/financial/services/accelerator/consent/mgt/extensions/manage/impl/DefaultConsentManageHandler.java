@@ -409,7 +409,6 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             consentManageData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
-
             log.error("Error occurred while deleting the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while deleting the consent", ConsentOperationEnum.CONSENT_DELETE);

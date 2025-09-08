@@ -517,6 +517,8 @@ public class ConsentAuthorizeUtil {
                 // Set account identification as account display name
                 initiatedAccount.put(ConsentAuthorizeConstants.DISPLAY_NAME,
                         debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
+                initiatedAccount.put(ConsentAuthorizeConstants.ACCOUNT_ID,
+                        debtorAccount.getString(ConsentExtensionConstants.IDENTIFICATION));
             }
 
             basicConsentData.put(ConsentExtensionConstants.DEBTOR_ACC_TITLE, debtorAccountArray);
