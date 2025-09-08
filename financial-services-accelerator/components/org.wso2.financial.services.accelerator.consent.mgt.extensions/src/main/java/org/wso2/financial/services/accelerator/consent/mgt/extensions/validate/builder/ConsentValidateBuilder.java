@@ -27,7 +27,6 @@ import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtil
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.ConsentValidatorServiceExtension;
 
 import java.util.Map;
 
@@ -50,13 +49,8 @@ public class ConsentValidateBuilder {
                 .getConfigurationService();
         Map<String, Object> configs =  configurationService.getConfigurations();
 
-        if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS)) {
-            log.debug("Service extensions endpoint is enabled. Loading configurations from service extensions.");
-            consentValidator = new ConsentValidatorServiceExtension();
-        } else {
-            String handlerConfig = (String)  configs.get(FinancialServicesConstants.CONSENT_VALIDATOR);
-            consentValidator = FinancialServicesUtils.getClassInstanceFromFQN(handlerConfig, ConsentValidator.class);
-        }
+        String handlerConfig = (String)  configs.get(FinancialServicesConstants.CONSENT_VALIDATOR);
+        consentValidator = FinancialServicesUtils.getClassInstanceFromFQN(handlerConfig, ConsentValidator.class);
         requestSignatureAlias = (String) configs.get(FinancialServicesConstants.SIGNATURE_ALIAS);
         log.debug("Validate handler loaded successfully");
     }

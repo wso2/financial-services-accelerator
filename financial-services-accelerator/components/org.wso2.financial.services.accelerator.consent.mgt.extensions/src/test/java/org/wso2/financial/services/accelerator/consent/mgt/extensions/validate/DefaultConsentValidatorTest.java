@@ -18,6 +18,9 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.mockito.MockedStatic;
@@ -27,9 +30,14 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestUtil;
@@ -38,8 +46,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.m
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidationResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -55,6 +66,7 @@ public class DefaultConsentValidatorTest {
     ConsentValidationResult consentValidationResultMock;
     MockedStatic<FinancialServicesConfigParser> financialServicesConfigParserMockedStatic;
     MockedStatic<FinancialServicesUtils> financialServicesUtilsMockedStatic;
+    MockedStatic<ServiceExtensionUtils> serviceExtensionUtilsMockedStatic;
 
     @BeforeClass
     public void beforeTest() {
@@ -65,12 +77,18 @@ public class DefaultConsentValidatorTest {
         financialServicesUtilsMockedStatic = Mockito.mockStatic(FinancialServicesUtils.class);
         financialServicesUtilsMockedStatic.when(() -> FinancialServicesUtils.resolveUsernameFromUserId(anyString()))
                 .thenReturn(TestConstants.SAMPLE_USER_ID);
+
+        serviceExtensionUtilsMockedStatic = Mockito.mockStatic(ServiceExtensionUtils.class);
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
     }
 
     @AfterClass
     public void afterTest() {
         financialServicesConfigParserMockedStatic.close();
         financialServicesUtilsMockedStatic.close();
+        serviceExtensionUtilsMockedStatic.close();
     }
 
     @Test
@@ -202,6 +220,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForInvalidConsentType() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -227,6 +255,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithInvalidAccountURI() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -250,6 +288,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithInvalidPermissionsForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.ACC_INITIATION_WITH_LIMITED_PERMISSIONS).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -274,6 +322,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithInvalidStatusForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -299,6 +357,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithExpiredInitiationForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.ACC_INITIATION_EXPIRED).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -323,6 +391,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -344,6 +422,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithInvalidCOFURI() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -367,6 +455,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithInvalidStatusForCOF() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -392,6 +490,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateWithExpiredInitiationForCOF() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT_EXPIRED).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -416,6 +524,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForCOFWithoutConsentIdFromToken() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -440,6 +558,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForCOFWithoutConsentIdFromConsent() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -466,6 +594,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForCOFConsentIdMismatch() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -492,6 +630,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForCOFConsentIdPayloadMismatch() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -519,6 +667,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForCOF() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.COF_RECEIPT).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -543,6 +701,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentWithoutConsentIDFromToken() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -567,6 +735,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentWithoutConsentIDFromConsent() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -592,6 +770,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentConsentIDMismatch() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -617,6 +805,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentInvalidStatus() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -643,6 +841,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentWithoutDataPayload() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -665,12 +873,22 @@ public class DefaultConsentValidatorTest {
         Assert.assertFalse(consentValidationResultMock.isValid());
         Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.BAD_REQUEST.getReasonPhrase());
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Invalid Submission payload Data " +
-                        "Object found");
+                "Object found");
         Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test
     public void testValidateForPaymentMismatchConsentIDPayload() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -698,6 +916,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentWithoutInitiationPayload() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -726,6 +954,16 @@ public class DefaultConsentValidatorTest {
 
     @Test
     public void testValidateForPaymentWithMismatchInitiationPayload() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -747,13 +985,23 @@ public class DefaultConsentValidatorTest {
 
         Assert.assertFalse(consentValidationResultMock.isValid());
         Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.BAD_REQUEST.getReasonPhrase());
-        Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Initiation payloads does" +
-                " not match");
+        Assert.assertEquals(consentValidationResultMock.getErrorMessage(),
+                "Initiation payloads does not match");
         Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test
     public void testValidateForPayments() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
         DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
         doReturn(TestConstants.PAYMENT_INITIATION).when(consentResource).getReceipt();
         ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
@@ -773,5 +1021,90 @@ public class DefaultConsentValidatorTest {
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
         Assert.assertTrue(consentValidationResultMock.isValid());
+    }
+
+    @Test
+    public void testValidateWIthExternalServiceEnabled() throws JsonProcessingException {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.singletonList(ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS))
+                .when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(true);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree("{}");
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .invokeExternalServiceCall(any(), any())).thenReturn(new ExternalServiceResponse("testId",
+                StatusEnum.SUCCESS, rootNode));
+
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
+        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        doReturn(authResources).when(consentResource).getAuthorizationResources();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentResource).getClientID();
+        doReturn(TestConstants.ACCOUNTS).when(consentResource).getConsentType();
+
+        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
+        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentValidateDataMock).getConsentId();
+        doReturn(new JSONObject()).when(consentValidateDataMock).getHeaders();
+        doReturn(new HashMap<>()).when(consentValidateDataMock).getResourceParams();
+        doReturn("/accounts").when(consentValidateDataMock).getRequestPath();
+
+        validator.validate(consentValidateDataMock, consentValidationResultMock);
+
+        Assert.assertTrue(consentValidationResultMock.isValid());
+    }
+
+    @Test
+    public void testValidateForExternalServiceError() throws JsonProcessingException {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(true).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.singletonList(ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS))
+                .when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
+        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        doReturn(authResources).when(consentResource).getAuthorizationResources();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentResource).getClientID();
+        doReturn(TestConstants.ACCOUNTS).when(consentResource).getConsentType();
+        doReturn(ConsentExtensionConstants.AUTHORIZED_STATUS).when(consentResource).getCurrentStatus();
+
+        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
+        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentValidateDataMock).getConsentId();
+        doReturn(new JSONObject()).when(consentValidateDataMock).getHeaders();
+        doReturn(new HashMap<>()).when(consentValidateDataMock).getResourceParams();
+        doReturn("/accounts").when(consentValidateDataMock).getRequestPath();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree("{" +
+                "\"errorMessage\": \"errorMessage\"," +
+                "\"errorDescription\": \"errorDescription\"" +
+                "}");
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(true);
+        ExternalServiceResponse externalServiceResponse = new ExternalServiceResponse("testId",
+                StatusEnum.ERROR, rootNode);
+        externalServiceResponse.setErrorCode(400);
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .invokeExternalServiceCall(any(), any())).thenReturn(externalServiceResponse);
+
+        validator.validate(consentValidateDataMock, consentValidationResultMock);
+
+        Assert.assertFalse(consentValidationResultMock.isValid());
     }
 }
