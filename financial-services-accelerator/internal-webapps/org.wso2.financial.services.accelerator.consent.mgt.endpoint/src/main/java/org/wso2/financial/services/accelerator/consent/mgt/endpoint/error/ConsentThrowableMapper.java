@@ -65,6 +65,8 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
                                 .entity(((ConsentException) throwable).getPayload().toString())
                                 .header(ConsentConstants.HEADER_CONTENT_TYPE,
                                         ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                                .header(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                                        UUID.randomUUID().toString())
                                 .build();
                     }
 
@@ -76,6 +78,8 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
                             .entity(e.getMessage())
                             .header(ConsentConstants.HEADER_CONTENT_TYPE,
                                     ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                            .header(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                                    UUID.randomUUID().toString())
                             .build();
                 }
             }
@@ -84,6 +88,8 @@ public class ConsentThrowableMapper implements ExceptionMapper<Throwable> {
                     .entity(((ConsentException) throwable).getPayload().toString())
                     .header(ConsentConstants.HEADER_CONTENT_TYPE,
                             ConsentConstants.DEFAULT_RESPONSE_CONTENT_TYPE)
+                    .header(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                            UUID.randomUUID().toString())
                     .build();
         } else {
             log.error(String.format("Generic exception. Cause: %s", throwable.getMessage().replaceAll("[\r\n]", "")),
