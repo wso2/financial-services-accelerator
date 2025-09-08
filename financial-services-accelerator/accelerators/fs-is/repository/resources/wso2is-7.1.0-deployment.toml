@@ -217,6 +217,7 @@ context = "(.*)/api/fs/consent/(.*)"
 http_method = "all"
 permissions = ["/permission/admin"]
 secure = "true"
+scopes = ["ob-internal-api-access"]
 
 [[resource.access_control]]
 context = "(.*)/fs/authenticationendpoint/(.*)"
@@ -229,6 +230,7 @@ context = "(.*)/api/fs/event-notifications/(.*)"
 http_method = "all"
 permissions = ["/permission/admin"]
 secure = "true"
+scopes = ["ob-internal-api-access"]
 
 [[resource.access_control]]
 context = "(.*)/consentmgr/(.*)"
