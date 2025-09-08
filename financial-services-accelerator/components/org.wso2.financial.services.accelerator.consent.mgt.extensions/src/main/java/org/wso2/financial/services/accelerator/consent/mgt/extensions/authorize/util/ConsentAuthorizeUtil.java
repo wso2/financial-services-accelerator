@@ -920,6 +920,7 @@ public class ConsentAuthorizeUtil {
      */
     public static String retrieveScopes(ConsentData consentData) {
 
+        log.debug("Retrieving scopes from request object");
         String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
         return ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
     }

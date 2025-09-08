@@ -81,6 +81,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
             boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                     consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+            log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
 
             if (ifPreInitiatedConsentFlow && consentData.getConsentId() == null) {
                 log.error("Consent ID not available in consent data");
@@ -130,10 +131,19 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
+
         // Create the consent if it is not pre initiated.
         if (ifPreInitiatedConsentFlow) {
             authorizationId = consentData.getAuthResource().getAuthorizationID();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Using existing authorization ID: %s", authorizationId.replaceAll("\n\r", "")));
+            }
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Creating new authorizable consent for client: %s",
+                        consentData.getClientId().replaceAll("\n\r", "")));
+            }
             DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
                     consentResource, userId, authStatus, ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
             String consentId = createdConsent.getConsentID();

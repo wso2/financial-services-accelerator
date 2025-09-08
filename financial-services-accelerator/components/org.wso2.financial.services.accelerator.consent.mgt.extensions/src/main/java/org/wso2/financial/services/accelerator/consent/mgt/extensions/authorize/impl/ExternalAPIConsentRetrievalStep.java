@@ -104,6 +104,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 ConsentAuthorizeUtil.retrieveScopes(consentData), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
 
         try {
             if (ifPreInitiatedConsentFlow) {
@@ -162,6 +163,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Setting consent type as default for scope based consents
             if (!ifPreInitiatedConsentFlow) {
+                log.debug("Setting consent type as DEFAULT for scope based consent");
                 consentData.setType(ConsentExtensionConstants.DEFAULT);
             }
 

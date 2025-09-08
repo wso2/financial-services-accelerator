@@ -34,8 +34,10 @@ import org.wso2.financial.services.accelerator.common.exception.FinancialService
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesRuntimeException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -182,6 +184,20 @@ public class FinancialServicesUtils {
         DateFormat simple = new SimpleDateFormat(FinancialServicesConstants.ISO_FORMAT);
         Date simpleDateVal = new Date(dateValue * 1000);
         return simple.format(simpleDateVal);
+    }
+
+    /**
+     * Method to obtain basic auth header.
+     *
+     * @param username Username of Auth header
+     * @param password Password of Auth header
+     * @return basic auth header
+     */
+    public static String getBasicAuthHeader(String username, char[] password) {
+
+        byte[] authHeader = Base64.getEncoder().encode((username + FinancialServicesConstants.COLON +
+                String.valueOf(password)).getBytes(StandardCharsets.UTF_8));
+        return FinancialServicesConstants.BASIC_TAG + new String(authHeader, StandardCharsets.UTF_8);
     }
 
     /**

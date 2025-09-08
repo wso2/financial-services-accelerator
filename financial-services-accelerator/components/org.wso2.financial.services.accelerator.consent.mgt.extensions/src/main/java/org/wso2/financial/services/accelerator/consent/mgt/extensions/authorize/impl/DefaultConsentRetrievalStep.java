@@ -72,6 +72,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         ConsentResource consentResource;
         boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
                 preInitiatedConsentScopes, scopeBasedConsentScopes);
+        log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
 
         try {
             if (ifPreInitiatedConsentFlow) {
@@ -81,6 +82,10 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                 if (consentId == null) {
                     log.error("intent_id not found in request object");
                     throw new ConsentException(ResponseStatus.BAD_REQUEST, "intent_id not found in request object");
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Retrieved consentId: %s for pre-initiated consent flow",
+                            consentId.replaceAll("\n\r", "")));
                 }
 
                 consentData.setConsentId(consentId);
