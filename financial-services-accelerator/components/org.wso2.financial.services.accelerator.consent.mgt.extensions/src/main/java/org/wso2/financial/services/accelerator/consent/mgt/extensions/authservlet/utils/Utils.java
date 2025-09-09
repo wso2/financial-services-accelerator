@@ -335,7 +335,6 @@ public class Utils {
      * @return  fetched language property (with fallback)
      */
     public static String[] getLanguagePropertiesForLocale(Locale locale) {
-
         if (log.isDebugEnabled()) {
             log.debug(String.format("Getting language properties for locale: %s",
                     locale.toString().replaceAll("[\r\n]", "")));
