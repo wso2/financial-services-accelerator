@@ -125,8 +125,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         //Check whether client ID is valid
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
-            log.error("Client ID does not exists in the system.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
@@ -226,8 +226,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         //Check whether client ID is valid
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
-            log.error("Client ID does not exists in the system.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
@@ -348,8 +348,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         //Check whether client ID is valid
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
-            log.error("Client ID does not exists in the system.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
@@ -477,8 +477,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         //Check whether client ID is valid
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
-            log.error("Client ID does not exists in the system.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 
@@ -594,8 +594,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         //Check whether client ID is valid
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
-            log.error("Client ID does not exists in the system.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exists in the system.",
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
                     ConsentOperationEnum.CONSENT_RETRIEVE);
         }
 

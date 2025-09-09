@@ -457,8 +457,8 @@ public class DefaultConsentValidator implements ConsentValidator {
 
 
         if (!isJsonObjectsSimilar(requestInitiation, submissionInitiation)) {
-            log.error("Initiation payloads does not match");
-            consentValidationResult.setErrorMessage("Initiation payloads does not match");
+            log.error("Initiation payloads do not match");
+            consentValidationResult.setErrorMessage("Initiation payloads do not match");
             consentValidationResult.setErrorCode(ResponseStatus.BAD_REQUEST.getReasonPhrase());
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;

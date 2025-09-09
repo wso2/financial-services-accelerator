@@ -987,7 +987,7 @@ public class DefaultConsentValidatorTest {
         Assert.assertFalse(consentValidationResultMock.isValid());
         Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.BAD_REQUEST.getReasonPhrase());
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(),
-                "Initiation payloads does not match");
+                "Initiation payloads do not match");
         Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
