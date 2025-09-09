@@ -414,6 +414,7 @@ public class DefaultConsentValidatorTest {
         doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
         doReturn("/accounts").when(consentValidateDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentValidateDataMock).getConsentId();
 
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 

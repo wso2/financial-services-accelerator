@@ -70,11 +70,6 @@ public class DefaultConsentValidator implements ConsentValidator {
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
             throws ConsentException {
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Starting consent validation for consentId: %s",
-                    consentValidateData.getConsentId()));
-        }
-
         if (consentValidateData.getComprehensiveConsent() == null ||
                 consentValidateData.getComprehensiveConsent().getReceipt() == null) {
             log.error("Consent Details cannot be found");
@@ -134,7 +129,7 @@ public class DefaultConsentValidator implements ConsentValidator {
             // Invoking external validation service configured
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Invoking external consent validation service for consentId: %s",
-                        consentValidateData.getConsentId()));
+                        consentValidateData.getConsentId().replaceAll("[\n\r]", "")));
             }
             invokeExternalConsentValidationService(consentValidateData, consentValidationResult);
         } else {
@@ -163,11 +158,11 @@ public class DefaultConsentValidator implements ConsentValidator {
                     ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS);
             if (StatusEnum.SUCCESS.equals(response.getStatus())) {
                 log.info(String.format("External consent validation successful for consentId: %s",
-                        consentValidateData.getConsentId()));
+                        consentValidateData.getConsentId().replaceAll("[\n\r]", "")));
                 consentValidationResult.setValid(true);
             } else {
                 log.warn(String.format("External consent validation failed for consentId: %s",
-                        consentValidateData.getConsentId()));
+                        consentValidateData.getConsentId().replaceAll("[\n\r]", "")));
                 consentValidationResult.setValid(false);
                 consentValidationResult.setErrorMessage(response.getData()
                         .path(FinancialServicesConstants.ERROR_DESCRIPTION)
@@ -179,7 +174,7 @@ public class DefaultConsentValidator implements ConsentValidator {
             }
         } catch (FinancialServicesException e) {
             log.error(String.format("Error occurred while invoking external consent validation service: %s",
-                    e.getMessage()));
+                    e.getMessage().replaceAll("[\n\r]", "")));
             consentValidationResult.setValid(false);
             consentValidationResult.setErrorMessage(e.getMessage());
             consentValidationResult.setErrorCode("Error occurred while invoking the external service");
@@ -235,7 +230,7 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Executing validation for consent type: %s",
-                    consentValidateData.getComprehensiveConsent().getConsentType()));
+                    consentValidateData.getComprehensiveConsent().getConsentType().replaceAll("[\n\r]", "")));
         }
         String requestType = consentValidateData.getComprehensiveConsent().getConsentType();
 
