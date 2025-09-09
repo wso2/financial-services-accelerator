@@ -111,11 +111,11 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                     consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
-            log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
+            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
 
-            if (ifPreInitiatedConsentFlow) {
+            if (isPreInitiatedConsentFlow) {
                 consentId = consentData.getConsentId();
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Processing pre-initiated consent with ID: %s",
@@ -242,10 +242,10 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private void persistConsent(ExternalAPIConsentResourceResponseDTO responseConsentResource,
                                 ConsentData consentData) throws ConsentManagementException {
 
-        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
 
-        if (ifPreInitiatedConsentFlow) {
+        if (isPreInitiatedConsentFlow) {
             // Get the existing authorization resource for the initiated consent
             String primaryUserId = consentData.getUserId();
             ArrayList<AuthorizationResource> existingAuthResources =

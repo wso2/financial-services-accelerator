@@ -130,7 +130,7 @@ public class FinancialServicesUtilsTest {
     }
 
     @Test(dataProviderClass = FinancialServicesUtilsTest.class, dataProvider = "consentFlowTypesForScopes")
-    public void testIfPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
+    public void testisPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
                                               List<String> scopeBasedConsentScopes,
                                               boolean expected) {
 
@@ -140,7 +140,7 @@ public class FinancialServicesUtilsTest {
     }
 
     @Test(dataProviderClass = FinancialServicesUtilsTest.class, dataProvider = "consentFlowTypesForScopeList")
-    public void testIfPreInitiatedConsentFlow(String[] scope, List<String> preInitiatedConsentScopes,
+    public void testisPreInitiatedConsentFlow(String[] scope, List<String> preInitiatedConsentScopes,
                                               List<String> scopeBasedConsentScopes,
                                               boolean expected) {
 

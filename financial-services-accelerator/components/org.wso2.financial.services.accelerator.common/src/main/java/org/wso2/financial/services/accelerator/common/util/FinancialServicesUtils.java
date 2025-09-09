@@ -273,7 +273,7 @@ public class FinancialServicesUtils {
     public static boolean isPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
                                                     List<String> scopeBasedConsentScopes) {
 
-        if (scope == null || scope.isEmpty()) {
+        if (StringUtils.isBlank(scope)) {
             return true;
         }
         if (preInitiatedConsentScopes.isEmpty() && scopeBasedConsentScopes.isEmpty()) {

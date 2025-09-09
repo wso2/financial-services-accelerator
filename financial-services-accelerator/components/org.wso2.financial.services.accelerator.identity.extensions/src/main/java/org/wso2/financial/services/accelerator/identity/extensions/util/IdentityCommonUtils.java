@@ -204,10 +204,10 @@ public class IdentityCommonUtils {
         List<String> scopeBasedConsentScopes = getConfiguredScopeList(identityExtensionsDataHolder
                 .getConfigurationMap().get(FinancialServicesConstants.SCOPE_BASED_CONSENT_SCOPES));
 
-        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 oauthAuthzMsgCtx.getApprovedScope(), preInitiatedConsentScopes, scopeBasedConsentScopes);
 
-        if (!ifPreInitiatedConsentFlow) {
+        if (!isPreInitiatedConsentFlow) {
             String commonAuthId = getCommonAuthIdFromCookies(oauthAuthzMsgCtx.getAuthorizationReqDTO().getCookie());
             return getConsentIdFromCommonAuthId(commonAuthId);
         }

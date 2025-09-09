@@ -70,12 +70,12 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         JSONObject consentDataJSON;
         ConsentResource consentResource;
-        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
                 preInitiatedConsentScopes, scopeBasedConsentScopes);
-        log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
+        log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
 
         try {
-            if (ifPreInitiatedConsentFlow) {
+            if (isPreInitiatedConsentFlow) {
 
                 log.debug("Extracting consent ID from pre-initiated consent request object.");
                 String consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
@@ -130,7 +130,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
              calling accounts service */
             // Append only when consent type is accounts or no initiated account for payment consents
 
-            if (!ifPreInitiatedConsentFlow ||
+            if (!isPreInitiatedConsentFlow ||
                     ConsentExtensionConstants.ACCOUNTS.equals(consentResource.getConsentType()) ||
                     (ConsentExtensionConstants.PAYMENTS.equals(consentResource.getConsentType()) &&
                             !consentDataJSON.has(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT))) {

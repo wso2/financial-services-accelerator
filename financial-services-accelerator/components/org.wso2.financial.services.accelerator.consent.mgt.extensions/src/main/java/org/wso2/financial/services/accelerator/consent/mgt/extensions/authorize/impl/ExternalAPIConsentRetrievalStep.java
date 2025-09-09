@@ -102,12 +102,12 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
         }
 
-        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 ConsentAuthorizeUtil.retrieveScopes(consentData), preInitiatedConsentScopes, scopeBasedConsentScopes);
-        log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
+        log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
 
         try {
-            if (ifPreInitiatedConsentFlow) {
+            if (isPreInitiatedConsentFlow) {
                 setMandatoryConsentData(consentId, consentData);
             }
 
@@ -162,7 +162,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
 
             // Setting consent type as default for scope based consents
-            if (!ifPreInitiatedConsentFlow) {
+            if (!isPreInitiatedConsentFlow) {
                 log.debug("Setting consent type as DEFAULT for scope based consent");
                 consentData.setType(ConsentExtensionConstants.DEFAULT);
             }

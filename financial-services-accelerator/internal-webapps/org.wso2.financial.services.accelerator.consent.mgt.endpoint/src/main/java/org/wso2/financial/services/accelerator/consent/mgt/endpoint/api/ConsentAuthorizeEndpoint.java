@@ -218,9 +218,9 @@ public class ConsentAuthorizeEndpoint {
         }
 
         executeRetrieval(consentData, jsonObject);
-        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scopeString,
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scopeString,
                 preInitiatedConsentScopes, scopeBasedConsentScopes);
-        if (ifPreInitiatedConsentFlow && consentData.getType() == null) {
+        if (isPreInitiatedConsentFlow && consentData.getType() == null) {
             log.error(ConsentConstants.ERROR_NO_CONSENT_TYPE);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,
                     ConsentConstants.ERROR_SERVER_ERROR, state);

@@ -79,11 +79,13 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                     consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
-            log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
+            if (log.isDebugEnabled()) {
+                log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+            }
 
-            if (ifPreInitiatedConsentFlow && consentData.getConsentId() == null) {
+            if (isPreInitiatedConsentFlow && consentData.getConsentId() == null) {
                 log.error("Consent ID not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Consent ID not available in consent data", consentData.getState());
@@ -96,7 +98,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                 consentResource = consentData.getConsentResource();
             }
 
-            if (ifPreInitiatedConsentFlow && consentData.getAuthResource() == null) {
+            if (isPreInitiatedConsentFlow && consentData.getAuthResource() == null) {
                 log.error("Auth resource not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Auth resource not available in consent data", consentData.getState());
@@ -129,12 +131,14 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
-        boolean ifPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
-        log.debug("Pre-initiated consent flow check result: " + ifPreInitiatedConsentFlow);
+        if (log.isDebugEnabled()) {
+            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+        }
 
         // Create the consent if it is not pre initiated.
-        if (ifPreInitiatedConsentFlow) {
+        if (isPreInitiatedConsentFlow) {
             authorizationId = consentData.getAuthResource().getAuthorizationID();
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Using existing authorization ID: %s", authorizationId.replaceAll("\n\r", "")));
