@@ -273,13 +273,19 @@ public class FinancialServicesUtils {
     public static boolean isValidClientId(String clientId) {
 
         if (StringUtils.isNotEmpty(clientId)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Validating client ID: %s", clientId));
+            }
             Optional<ServiceProvider> serviceProvider;
             try {
                 serviceProvider = Optional.ofNullable(OAuth2Util.getServiceProvider(clientId));
                 if (!serviceProvider.isPresent()) {
+                    log.warn(String.format("Service provider not found for client ID: %s", clientId));
                     return false;
                 }
             } catch (IdentityOAuth2Exception e) {
+                log.error(String.format("Error occurred while validating client ID: %s. Error: %s",
+                        clientId, e.getMessage()));
                 return false;
             }
         }
