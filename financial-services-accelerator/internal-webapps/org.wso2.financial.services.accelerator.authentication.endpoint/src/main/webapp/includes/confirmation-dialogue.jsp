@@ -28,7 +28,7 @@
     <div class="ui body col-md-12">
         <input type="button" class="btn btn-primary" id="approve" name="approve"
                 onclick="javascript: approvedConsent(); return false;"
-                value="${buttonOk}"/>
+                value="${buttonConfirm}"/>
         <input class="btn btn-primary" type="reset" value="${buttonDeny}"
                 onclick="javascript: denyConsent(); return false;"/>
         <input type="button" class="btn btn-primary" id="back" name="back"

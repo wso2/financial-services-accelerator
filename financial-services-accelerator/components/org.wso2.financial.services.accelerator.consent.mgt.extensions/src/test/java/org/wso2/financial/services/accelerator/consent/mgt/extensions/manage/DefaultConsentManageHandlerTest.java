@@ -25,9 +25,11 @@ import org.mockito.Mockito;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
@@ -81,9 +83,10 @@ public class DefaultConsentManageHandlerTest {
     private static Map<String, Object> configs;
     private MockedStatic<ConsentExtensionsDataHolder> consentExtensionsDataHolder;
     private MockedStatic<FinancialServicesConfigParser> configParser;
+    private MockedStatic<FinancialServicesUtils> financialServicesUtilsMockedStatic;
 
     @BeforeClass
-    public void initTest() throws ConsentManagementException {
+    public void initTest() throws ConsentManagementException, IdentityOAuth2Exception {
 
         consentManageDataMock = mock(ConsentManageData.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
@@ -135,6 +138,9 @@ public class DefaultConsentManageHandlerTest {
         setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPostFileUploadEnabled", true);
         setPrivateBoolean(externalServiceConsentManageHandler, "isExternalPreFileRetrievalEnabled", true);
 
+        financialServicesUtilsMockedStatic = Mockito.mockStatic(FinancialServicesUtils.class);
+        financialServicesUtilsMockedStatic.when(() -> FinancialServicesUtils.isValidClientId(anyString()))
+                .thenReturn(true);
     }
 
     @AfterClass
@@ -142,6 +148,7 @@ public class DefaultConsentManageHandlerTest {
         // Closing the mockStatic after each test
         consentExtensionsDataHolder.close();
         configParser.close();
+        financialServicesUtilsMockedStatic.close();
     }
 
     @Test(expectedExceptions = ConsentException.class)

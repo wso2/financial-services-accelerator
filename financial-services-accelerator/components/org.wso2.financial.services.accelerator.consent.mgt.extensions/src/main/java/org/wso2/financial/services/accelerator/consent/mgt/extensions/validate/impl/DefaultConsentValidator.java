@@ -26,19 +26,29 @@ import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceRequest;
+import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
+import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
+import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
+import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateRequest;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidationResult;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Consent validator default implementation.
@@ -55,6 +65,7 @@ public class DefaultConsentValidator implements ConsentValidator {
             "permissions";
     private static final String INVALID_URI_ERROR = "Path requested is invalid";
     private static final String CONSENT_EXPIRED_ERROR = "Provided consent is expired";
+
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
             throws ConsentException {
@@ -113,6 +124,114 @@ public class DefaultConsentValidator implements ConsentValidator {
             return;
         }
 
+        if (ServiceExtensionUtils.isInvokeExternalService(
+                ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS)) {
+            // Invoking external validation service configured
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Invoking external consent validation service for consentId: %s",
+                        consentValidateData.getConsentId().replaceAll("[\n\r]", "")));
+            }
+            invokeExternalConsentValidationService(consentValidateData, consentValidationResult);
+        } else {
+            // If no external service is configured, proceed with default validation.
+            log.debug("No external service configured, proceeding with default validation");
+            executeValidation(consentValidateData, receiptJSON, consentValidationResult);
+        }
+    }
+
+    /**
+     * Invoke the external service to validate the consent.
+     *
+     * @param consentValidateData  Consent validation data
+     * @param consentValidationResult  Consent validation result
+     * @throws ConsentException  Consent exception
+     */
+    private void invokeExternalConsentValidationService(ConsentValidateData consentValidateData,
+                                                        ConsentValidationResult consentValidationResult) {
+
+        log.debug("Starting external consent validation service invocation");
+        // Invoking external validation service configured
+        ExternalServiceResponse response = null;
+        try {
+            response = ServiceExtensionUtils.invokeExternalServiceCall(
+                    getConsentValidateServiceRequest(consentValidateData),
+                    ServiceExtensionTypeEnum.VALIDATE_CONSENT_ACCESS);
+            if (StatusEnum.SUCCESS.equals(response.getStatus())) {
+                log.info(String.format("External consent validation successful for consentId: %s",
+                        consentValidateData.getConsentId().replaceAll("[\n\r]", "")));
+                consentValidationResult.setValid(true);
+            } else {
+                log.warn(String.format("External consent validation failed for consentId: %s",
+                        consentValidateData.getConsentId().replaceAll("[\n\r]", "")));
+                consentValidationResult.setValid(false);
+                consentValidationResult.setErrorMessage(response.getData()
+                        .path(FinancialServicesConstants.ERROR_DESCRIPTION)
+                        .asText(FinancialServicesConstants.DEFAULT_ERROR_DESCRIPTION));
+                consentValidationResult.setErrorCode(response.getData()
+                        .path(FinancialServicesConstants.ERROR_MESSAGE)
+                        .asText(FinancialServicesConstants.DEFAULT_ERROR_MESSAGE));
+                consentValidationResult.setHttpCode(response.getErrorCode());
+            }
+        } catch (FinancialServicesException e) {
+            log.error(String.format("Error occurred while invoking external consent validation service: %s",
+                    e.getMessage().replaceAll("[\n\r]", "")));
+            consentValidationResult.setValid(false);
+            consentValidationResult.setErrorMessage(e.getMessage());
+            consentValidationResult.setErrorCode("Error occurred while invoking the external service");
+            consentValidationResult.setHttpCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Construct the service request to be sent to the external service.
+     *
+     * @param consentValidateData  Consent validation data
+     * @return  External service request
+     */
+    private ExternalServiceRequest getConsentValidateServiceRequest(ConsentValidateData consentValidateData) {
+
+        ExternalAPIConsentResourceRequestDTO externalAPIConsentResourceRequestDTO =
+                new ExternalAPIConsentResourceRequestDTO(consentValidateData.getComprehensiveConsent());
+        ConsentValidateRequest request = new ConsentValidateRequest(consentValidateData.getConsentId(),
+                new JSONObject(externalAPIConsentResourceRequestDTO), constructDataPayload(consentValidateData));
+
+        return new ExternalServiceRequest(UUID.randomUUID().toString(), new JSONObject(request));
+    }
+
+    /**
+     * Construct the data payload to be sent to the external service.
+     *
+     * @param consentValidateData  Consent validation data
+     * @return  Data payload
+     */
+    private JSONObject constructDataPayload(ConsentValidateData consentValidateData) {
+        JSONObject dataPayload = new JSONObject();
+        dataPayload.put(ConsentExtensionConstants.HEADERS, consentValidateData.getHeaders());
+        dataPayload.put(ConsentExtensionConstants.CC_CONSENT_ID, consentValidateData.getConsentId());
+        dataPayload.put(ConsentExtensionConstants.CLIENT_ID, consentValidateData.getClientId());
+        dataPayload.put(ConsentExtensionConstants.RESOURCE_PARAMS, consentValidateData.getResourceParams());
+        dataPayload.put(ConsentExtensionConstants.USER_ID, consentValidateData.getUserId());
+        dataPayload.put(ConsentExtensionConstants.ELECTED_RESOURCE, consentValidateData.getRequestPath());
+        if (consentValidateData.getPayload() != null) {
+            dataPayload.put(ConsentExtensionConstants.BODY, consentValidateData.getPayload());
+        }
+        return dataPayload;
+    }
+
+    /**
+     * Execute the validation based on the consent type.
+     *
+     * @param consentValidateData      Object with request data
+     * @param receiptJSON              Receipt JSON object
+     * @param consentValidationResult  Validation result object to return
+     */
+    private void executeValidation(ConsentValidateData consentValidateData, JSONObject receiptJSON,
+                                   ConsentValidationResult consentValidationResult) {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Executing validation for consent type: %s",
+                    consentValidateData.getComprehensiveConsent().getConsentType().replaceAll("[\n\r]", "")));
+        }
         String requestType = consentValidateData.getComprehensiveConsent().getConsentType();
 
         switch (requestType) {
@@ -340,8 +459,8 @@ public class DefaultConsentValidator implements ConsentValidator {
 
 
         if (!isJsonObjectsSimilar(requestInitiation, submissionInitiation)) {
-            log.error("Initiation payloads does not match");
-            consentValidationResult.setErrorMessage("Initiation payloads does not match");
+            log.error("Initiation payloads do not match");
+            consentValidationResult.setErrorMessage("Initiation payloads do not match");
             consentValidationResult.setErrorCode(ResponseStatus.BAD_REQUEST.getReasonPhrase());
             consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
             return;
