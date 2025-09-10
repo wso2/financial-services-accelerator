@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
@@ -39,6 +40,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -259,5 +261,35 @@ public class FinancialServicesUtils {
         }
 
         return extractConsentIdFromRegex(scopesString.toString().trim());
+    }
+
+    /**
+     * Method to validate the clientId against the SP.
+     *
+     * @param clientId  Client ID to be validated
+     * @return boolean indicating whether the client ID is valid or not
+     */
+    @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
+    public static boolean isValidClientId(String clientId) {
+
+        if (StringUtils.isNotEmpty(clientId)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Validating client ID: %s", clientId.replaceAll("[\r\n]", "")));
+            }
+            Optional<ServiceProvider> serviceProvider;
+            try {
+                serviceProvider = Optional.ofNullable(OAuth2Util.getServiceProvider(clientId));
+                if (!serviceProvider.isPresent()) {
+                    log.warn(String.format("Service provider not found for client ID: %s",
+                            clientId.replaceAll("[\r\n]", "")));
+                    return false;
+                }
+            } catch (IdentityOAuth2Exception e) {
+                log.error(String.format("Error occurred while validating client ID: %s. Error: %s",
+                        clientId.replaceAll("[\r\n]", ""), e.getMessage().replaceAll("[\r\n]", "")));
+                return false;
+            }
+        }
+        return true;
     }
 }
