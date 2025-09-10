@@ -512,6 +512,7 @@ name = "OpenBanking Ltd"
 auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
 
 # Configure the scopes per each flow below. If not configured, all scopes will be considered as pre initiated.
+# If a scopes is configured in both configs it will be condsidered as a pre-initiated consent
 [financial_services.consent.pre_initiated]
 scopes=["accounts", "payments", "fundsconfirmations"]
 

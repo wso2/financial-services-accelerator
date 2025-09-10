@@ -267,7 +267,7 @@ public class FinancialServicesUtils {
      *
      * @param scope                         Scope from the request
      * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
-     * @param scopeBasedConsentScopes      List of scopes configured for scope-based consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
      * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
      */
     public static boolean isPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
@@ -276,15 +276,7 @@ public class FinancialServicesUtils {
         if (StringUtils.isBlank(scope)) {
             return true;
         }
-        if (preInitiatedConsentScopes.isEmpty() && scopeBasedConsentScopes.isEmpty()) {
-            return true;
-        } else if (!scopeBasedConsentScopes.isEmpty() && scopeBasedConsentScopes.stream().anyMatch(scope::contains)) {
-            return false;
-        } else if (!preInitiatedConsentScopes.isEmpty() &&
-                preInitiatedConsentScopes.stream().anyMatch(scope::contains)) {
-            return true;
-        }
-        return true;
+        return isPreInitiatedConsentFlow(scope.split(" "), preInitiatedConsentScopes, scopeBasedConsentScopes);
     }
 
     /**
@@ -301,7 +293,21 @@ public class FinancialServicesUtils {
         if (scopes == null || scopes.length == 0) {
             return true;
         }
-        String scopeString  = String.join(" ", scopes);
-        return isPreInitiatedConsentFlow(scopeString, preInitiatedConsentScopes, scopeBasedConsentScopes);
+
+        for (String scope : scopes) {
+            if (preInitiatedConsentScopes.contains(scope)) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Found in preInitiatedConsentScopes: %s", scope.replaceAll("[\r\n]", "")));
+                }
+                return true;
+            } else if (scopeBasedConsentScopes.contains(scope)) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Found in scopeBasedConsentScopes: %s", scope.replaceAll("[\r\n]", "")));
+                }
+                return false;
+            }
+        }
+
+        return true;
     }
 }
