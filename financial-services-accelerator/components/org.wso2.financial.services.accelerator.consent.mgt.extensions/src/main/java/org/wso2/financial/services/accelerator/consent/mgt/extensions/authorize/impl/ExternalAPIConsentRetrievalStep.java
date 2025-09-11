@@ -104,7 +104,9 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                 ConsentAuthorizeUtil.retrieveScopes(consentData), preInitiatedConsentScopes, scopeBasedConsentScopes);
-        log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+        if (log.isDebugEnabled()) {
+            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+        }
 
         try {
             if (isPreInitiatedConsentFlow) {

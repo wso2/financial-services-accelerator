@@ -72,8 +72,9 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         ConsentResource consentResource;
         boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
                 preInitiatedConsentScopes, scopeBasedConsentScopes);
-        log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
-
+        if (log.isDebugEnabled()) {
+            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+        }
         try {
             if (isPreInitiatedConsentFlow) {
 

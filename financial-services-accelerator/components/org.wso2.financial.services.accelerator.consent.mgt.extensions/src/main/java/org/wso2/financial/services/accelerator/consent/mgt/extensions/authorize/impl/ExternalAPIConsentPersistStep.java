@@ -113,7 +113,9 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
 
             boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
                     consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
-            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+            if (log.isDebugEnabled()) {
+                log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+            }
 
             if (isPreInitiatedConsentFlow) {
                 consentId = consentData.getConsentId();
