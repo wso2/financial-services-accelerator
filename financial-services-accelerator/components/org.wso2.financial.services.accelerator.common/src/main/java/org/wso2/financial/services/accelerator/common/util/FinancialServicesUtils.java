@@ -40,6 +40,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -261,6 +262,55 @@ public class FinancialServicesUtils {
         }
 
         return extractConsentIdFromRegex(scopesString.toString().trim());
+    }
+
+    /**
+     * Utility method to determine whether the pre-initiated consent flow should be used.
+     *
+     * @param scope                         Scope from the request
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
+                                                    List<String> scopeBasedConsentScopes) {
+
+        if (StringUtils.isBlank(scope)) {
+            return true;
+        }
+        return isPreInitiatedConsentFlow(scope.split(" "), preInitiatedConsentScopes, scopeBasedConsentScopes);
+    }
+
+    /**
+     * Utility method to determine whether the pre-initiated consent flow should be used.
+     *
+     * @param scopes                        List of Scope from the request
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(String[] scopes, List<String> preInitiatedConsentScopes,
+                                                    List<String> scopeBasedConsentScopes) {
+
+        if (scopes == null || scopes.length == 0) {
+            return true;
+        }
+
+        for (String scope : scopes) {
+            if (preInitiatedConsentScopes.contains(scope)) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Found in preInitiatedConsentScopes: %s", scope.replaceAll("[\r\n]", "")));
+                }
+                return true;
+            } else if (scopeBasedConsentScopes.contains(scope)) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Found in scopeBasedConsentScopes: %s", scope.replaceAll("[\r\n]", "")));
+                }
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -236,6 +236,7 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         switch (requestType) {
             case ConsentExtensionConstants.ACCOUNTS:
+            case ConsentExtensionConstants.DEFAULT:
                 validateAccountSubmission(consentValidateData, receiptJSON, consentValidationResult);
                 break;
             case ConsentExtensionConstants.PAYMENTS:
@@ -277,7 +278,8 @@ public class DefaultConsentValidator implements ConsentValidator {
             return;
         }
         String persmissionString = permissions.toString();
-        if ((uri.matches(ACCOUNTS_BULK_REGEX) && !persmissionString.contains("ReadAccountsBasic")) ||
+        if ((uri.matches(ACCOUNTS_BULK_REGEX) && !(persmissionString.contains("ReadAccountsBasic") ||
+                persmissionString.contains("accounts"))) ||
                 (uri.matches(ACCOUNTS_REGEX) && !persmissionString.contains("ReadAccountsDetail")) ||
                 (uri.matches(TRANSACTIONS_REGEX) && !persmissionString.contains("ReadTransactionsDetail")) ||
                 (uri.matches(BALANCES_REGEX)) && !persmissionString.contains("ReadBalances")) {

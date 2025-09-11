@@ -34,6 +34,7 @@ import org.wso2.financial.services.accelerator.identity.extensions.internal.Iden
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class IdentityCommonUtilsTest {
         Map<String, Object> configMap = new HashMap<>();
         configMap.put(FinancialServicesConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
         configMap.put(FinancialServicesConstants.APPEND_CONSENT_ID_TO_ACCESS_TOKEN, "true");
-        configMap.put(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT, "true");
+        configMap.put(FinancialServicesConstants.PRE_INITIATED_CONSENT_SCOPES, Collections.singletonList("accounts"));
         IdentityExtensionsDataHolder.getInstance().setConfigurationMap(configMap);
 
         ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
@@ -109,9 +110,11 @@ public class IdentityCommonUtilsTest {
         OAuth2AuthorizeReqDTO authzReqDTO = new OAuth2AuthorizeReqDTO();
         authzReqDTO.setCookie(new Cookie[]{new Cookie("commonAuthId", "123")});
         OAuthAuthzReqMessageContext authzReqMessageContext = new OAuthAuthzReqMessageContext(authzReqDTO);
+        authzReqMessageContext.setApprovedScope(new String[] { "payments" });
 
         Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
-        configMap.put(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT, "false");
+        configMap.put(FinancialServicesConstants.PRE_INITIATED_CONSENT_SCOPES, Collections.singletonList("accounts"));
+        configMap.put(FinancialServicesConstants.SCOPE_BASED_CONSENT_SCOPES, Collections.singletonList("payments"));
 
         String consentId = IdentityCommonUtils.getConsentIdFromAuthzRequestContext(authzReqMessageContext);
         Assert.assertNotNull(consentId);
@@ -126,7 +129,8 @@ public class IdentityCommonUtilsTest {
         authzReqMessageContext.setApprovedScope(new String[]{"scope1", "scope2"});
 
         Map<String, Object> configMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
-        configMap.put(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT, "false");
+        configMap.put(FinancialServicesConstants.PRE_INITIATED_CONSENT_SCOPES, Collections.singletonList("scope"));
+        configMap.put(FinancialServicesConstants.SCOPE_BASED_CONSENT_SCOPES, Collections.singletonList("scope1"));
 
         String[] updatedScopes = IdentityCommonUtils.updateApprovedScopes(authzReqMessageContext);
         Assert.assertEquals(updatedScopes, new String[]{"scope1", "scope2", "consent_id123"});

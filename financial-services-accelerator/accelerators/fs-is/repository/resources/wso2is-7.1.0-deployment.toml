@@ -511,8 +511,15 @@ name = "OpenBanking Ltd"
 
 #================consent management==============
 [financial_services.consent]
-is_pre_initiated_consent=true # Set to true if the consent is pre-initiated by the TPP
 auth_flow_consent_id_source="requestObject" # can be one of "requestObject" or "requestParam"
+
+# Configure the scopes per each flow below. If not configured, all scopes will be considered as pre initiated.
+# If a scopes is configured in both configs it will be condsidered as a pre-initiated consent
+[financial_services.consent.pre_initiated]
+scopes=["accounts", "payments", "fundsconfirmations"]
+
+[financial_services.consent.scope_based]
+scopes=[]
 
 [financial_services.consent.consent_id_extraction]
 json_path="/id_token/openbanking_intent_id/value" # Must be configured if "auth_flow_consent_id_source" is set to "requestObject"

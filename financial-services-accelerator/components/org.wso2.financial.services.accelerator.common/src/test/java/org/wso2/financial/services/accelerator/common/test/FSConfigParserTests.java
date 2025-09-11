@@ -371,73 +371,80 @@ public class FSConfigParserTests {
     }
 
     @Test(priority = 50)
-    public void testIsPreInitiatedConsent() {
-
-        Assert.assertTrue(FinancialServicesConfigParser.getInstance()
-                .isPreInitiatedConsent());
-    }
-
-    @Test(priority = 51)
     public void testGetStatusWordingForExpiredConsents() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getStatusWordingForExpiredConsents());
     }
 
-    @Test(priority = 52)
+    @Test(priority = 51)
     public void testGetEligibleStatusesForConsentExpiry() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getEligibleStatusesForConsentExpiry());
     }
 
-    @Test(priority = 53)
+    @Test(priority = 52)
     public void testIsConsentAmendmentHistoryEnabled() {
 
         Assert.assertTrue(FinancialServicesConfigParser.getInstance()
                 .isConsentAmendmentHistoryEnabled());
     }
 
-    @Test(priority = 54)
+    @Test(priority = 53)
     public void testIsConsentExpirationPeriodicalJobEnabled() {
 
         Assert.assertTrue(FinancialServicesConfigParser.getInstance()
                 .isConsentExpirationPeriodicalJobEnabled());
     }
 
-    @Test(priority = 55)
+    @Test(priority = 54)
     public void testGetConsentExpiryCronExpression() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getConsentExpiryCronExpression());
     }
 
-    @Test(priority = 56)
+    @Test(priority = 55)
     public void testGetConsentIdExtractionJsonPath() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getConsentIdExtractionJsonPath());
     }
 
-    @Test(priority = 57)
+    @Test(priority = 56)
     public void testGetConsentIdExtractionRegexPattern() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getConsentIdExtractionRegexPattern());
     }
 
-    @Test(priority = 58)
+    @Test(priority = 57)
     public void testGetAuthFlowConsentIdSource() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getAuthFlowConsentIdSource());
     }
 
-    @Test(priority = 59)
+    @Test(priority = 58)
     public void testGetConsentIdExtractionKey() {
 
         Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
                 .getConsentIdExtractionKey());
+    }
+
+    @Test(priority = 59)
+    public void testGetPreInitiatedConsentScopes() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getPreInitiatedConsentScopes());
+    }
+
+    @Test(priority = 59)
+    public void testGetScopeBasedConsentScopes() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance()
+                .getScopeBasedConsentScopes());
     }
 
 }

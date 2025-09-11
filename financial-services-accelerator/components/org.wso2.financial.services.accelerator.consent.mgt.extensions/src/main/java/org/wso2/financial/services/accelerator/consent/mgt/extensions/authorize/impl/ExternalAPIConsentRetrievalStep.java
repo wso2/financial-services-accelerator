@@ -31,6 +31,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -51,6 +52,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,7 +62,8 @@ import java.util.UUID;
 public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final ConsentCoreService consentCoreService;
-    private final boolean isPreInitiatedConsent;
+    private final List<String> preInitiatedConsentScopes;
+    private final List<String> scopeBasedConsentScopes;
     private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentRetrievalStep.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -70,7 +73,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
         consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
-        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
+        scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
         authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
@@ -98,8 +102,14 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
         }
 
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+                ConsentAuthorizeUtil.retrieveScopes(consentData), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        if (log.isDebugEnabled()) {
+            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+        }
+
         try {
-            if (isPreInitiatedConsent) {
+            if (isPreInitiatedConsentFlow) {
                 setMandatoryConsentData(consentId, consentData);
             }
 
@@ -154,7 +164,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
 
             // Setting consent type as default for scope based consents
-            if (!isPreInitiatedConsent) {
+            if (!isPreInitiatedConsentFlow) {
+                log.debug("Setting consent type as DEFAULT for scope based consent");
                 consentData.setType(ConsentExtensionConstants.DEFAULT);
             }
 
