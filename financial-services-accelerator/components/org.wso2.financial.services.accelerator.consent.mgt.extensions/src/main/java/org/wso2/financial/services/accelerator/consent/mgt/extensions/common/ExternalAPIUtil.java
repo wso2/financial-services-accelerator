@@ -110,7 +110,7 @@ public class ExternalAPIUtil {
             String primaryAuthId, String primaryUserId) {
 
         String consentID = consentResource.getConsentID();
-        long updatedTime = System.currentTimeMillis();
+        long updatedTime = System.currentTimeMillis() / 1000;
 
         List<AuthorizationResource> authorizationResources =
                 buildAuthorizationResources(responseConsentResource.getAuthorizations(), consentID, primaryAuthId,
@@ -139,8 +139,8 @@ public class ExternalAPIUtil {
         String consentID = consentData.getConsentId();
         String clientID = consentData.getClientId();
         String receipt = new JSONObject(responseConsentResource.getReceipt()).toString();
-        long createdTime = System.currentTimeMillis();
-        long updatedTime = System.currentTimeMillis();
+        long createdTime = System.currentTimeMillis() / 1000;
+        long updatedTime = System.currentTimeMillis() / 1000;
 
         // Add common auth ID to consent attributes if available.
         Object commonAuthId = consentData.getMetaDataMap().get(ConsentExtensionConstants.COMMON_AUTH_ID);
