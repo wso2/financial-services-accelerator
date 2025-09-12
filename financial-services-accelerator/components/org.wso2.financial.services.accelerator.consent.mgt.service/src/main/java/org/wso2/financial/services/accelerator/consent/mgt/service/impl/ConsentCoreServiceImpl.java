@@ -1247,7 +1247,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 // Pass the previous status consent to persist as consent history
                 consentDataMap.put(ConsentCoreServiceConstants.CONSENT_AMENDMENT_HISTORY_RESOURCE,
                         retrievedDetailedConsentResource);
-                consentDataMap.put(ConsentCoreServiceConstants.CONSENT_AMENDMENT_TIME, System.currentTimeMillis());
+                consentDataMap.put(ConsentCoreServiceConstants.CONSENT_AMENDMENT_TIME,
+                        System.currentTimeMillis() / 1000);
 
                 // Create an audit record execute state change listener
                 ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO, consentID, userID,
@@ -2155,7 +2156,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             // Pass the previous consent to persist as consent amendment history
             consentDataMap.put(ConsentCoreServiceConstants.CONSENT_AMENDMENT_HISTORY_RESOURCE, detailedConsentResource);
-            consentDataMap.put(ConsentCoreServiceConstants.CONSENT_AMENDMENT_TIME, System.currentTimeMillis());
+            consentDataMap.put(ConsentCoreServiceConstants.CONSENT_AMENDMENT_TIME, System.currentTimeMillis() / 1000);
 
             ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO, consentID, userID,
                     ConsentCoreServiceConstants.CONSENT_AMENDED_STATUS, detailedConsentResource.getCurrentStatus(),

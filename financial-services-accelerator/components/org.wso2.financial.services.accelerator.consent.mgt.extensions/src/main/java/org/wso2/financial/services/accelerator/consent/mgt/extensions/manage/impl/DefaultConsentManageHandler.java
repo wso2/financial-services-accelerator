@@ -275,6 +275,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
                         consentManageData.getPayload().toString(), consentType,
                         ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
+                requestedConsent.setValidityPeriod(ConsentManageUtils.getValidityTime(consentManageData.getPayload(),
+                        consentType));
 
                 createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent, null,
                         ConsentExtensionConstants.CREATED_STATUS, ConsentExtensionConstants.DEFAULT_AUTH_TYPE,
