@@ -43,7 +43,7 @@ class PageObjects extends CommonPageObjects{
     public static final String CHK_PASSWORD_GRANT = "//input[@id='grant_password']"
 
     //Auth Flow page objects
-    public static final String CHK_SALARY_SAVER_ACC = "//input[@value='Salary Saver Account']"
+    public static final String CHK_SALARY_SAVER_ACC = "//input[contains(@id,'Salary Saver Account')]"
     public static final String BTN_SIGN_IN = "//button[contains(text(),'Sign In')]";
     public static final String BTN_APPROVE = "//input[@id='approve']"
     public static final String BTN_CONFIRM = "//input[@value='Confirm']"

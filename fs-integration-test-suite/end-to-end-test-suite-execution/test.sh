@@ -160,6 +160,8 @@ MVNSTATE=$((MVNSTATE+$?))
 mkdir -p ${OUTPUT_DIR}/scenarios/is-tests/dcr
 find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/is-tests/dcr \;
 
+sleep 1h
+
 cd ${IS_TEST_HOME}/token
 mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -fae -B -f pom.xml
 MVNSTATE=$((MVNSTATE+$?))
