@@ -199,10 +199,15 @@ public class IdentityCommonUtils {
     public static String getConsentIdFromAuthzRequestContext(OAuthAuthzReqMessageContext oauthAuthzMsgCtx)
             throws JsonProcessingException, ConsentManagementException {
 
-        boolean isPreInitiatedConsent = Boolean.parseBoolean((String) identityExtensionsDataHolder.getConfigurationMap()
-                .get(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT));
+        List<String> preInitiatedConsentScopes = getConfiguredScopeList(identityExtensionsDataHolder
+                .getConfigurationMap().get(FinancialServicesConstants.PRE_INITIATED_CONSENT_SCOPES));
+        List<String> scopeBasedConsentScopes = getConfiguredScopeList(identityExtensionsDataHolder
+                .getConfigurationMap().get(FinancialServicesConstants.SCOPE_BASED_CONSENT_SCOPES));
 
-        if (!isPreInitiatedConsent) {
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+                oauthAuthzMsgCtx.getApprovedScope(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+
+        if (!isPreInitiatedConsentFlow) {
             String commonAuthId = getCommonAuthIdFromCookies(oauthAuthzMsgCtx.getAuthorizationReqDTO().getCookie());
             return getConsentIdFromCommonAuthId(commonAuthId);
         }
@@ -219,6 +224,24 @@ public class IdentityCommonUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Get configured scope list from the config object.
+     *
+     * @param configObj config object
+     * @return configured scope list
+     */
+    private static List<String> getConfiguredScopeList(Object configObj) {
+
+        List<String> configuredScopeList = new ArrayList<>();
+        if (configObj instanceof List) {
+            configuredScopeList.addAll((List) configObj);
+        } else if (configObj instanceof String) {
+            configuredScopeList.add((String) configObj);
+        }
+
+        return configuredScopeList;
     }
 
     /**

@@ -81,7 +81,7 @@ public class ExternalAPIUtilTest {
                                                      int freq, long validity, boolean recurring, String status) {
 
         return new ConsentResource(consentId, clientId, receipt, type, freq, validity, recurring, status,
-                System.currentTimeMillis(), System.currentTimeMillis());
+                System.currentTimeMillis() / 1000, System.currentTimeMillis() / 1000);
     }
 
     @Test(expectedExceptions = ConsentException.class)

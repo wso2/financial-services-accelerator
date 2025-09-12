@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
@@ -54,13 +55,15 @@ import java.util.Set;
  */
 public class DefaultConsentPersistStep implements ConsentPersistStep {
 
-    private final boolean isPreInitiatedConsent;
+    private final List<String> preInitiatedConsentScopes;
+    private final List<String> scopeBasedConsentScopes;
     private static final Log log = LogFactory.getLog(DefaultConsentPersistStep.class);
 
     public DefaultConsentPersistStep() {
 
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
-        isPreInitiatedConsent = configParser.isPreInitiatedConsent();
+        preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
+        scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
     }
 
     @Override
@@ -76,7 +79,13 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            if (isPreInitiatedConsent && consentData.getConsentId() == null) {
+            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+                    consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+            if (log.isDebugEnabled()) {
+                log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+            }
+
+            if (isPreInitiatedConsentFlow && consentData.getConsentId() == null) {
                 log.error("Consent ID not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Consent ID not available in consent data", consentData.getState());
@@ -89,7 +98,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                 consentResource = consentData.getConsentResource();
             }
 
-            if (isPreInitiatedConsent && consentData.getAuthResource() == null) {
+            if (isPreInitiatedConsentFlow && consentData.getAuthResource() == null) {
                 log.error("Auth resource not available in consent data");
                 throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                         "Auth resource not available in consent data", consentData.getState());
@@ -122,10 +131,23 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
+        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
+                consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        if (log.isDebugEnabled()) {
+            log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
+        }
+
         // Create the consent if it is not pre initiated.
-        if (isPreInitiatedConsent) {
+        if (isPreInitiatedConsentFlow) {
             authorizationId = consentData.getAuthResource().getAuthorizationID();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Using existing authorization ID: %s", authorizationId.replaceAll("\n\r", "")));
+            }
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Creating new authorizable consent for client: %s",
+                        consentData.getClientId().replaceAll("\n\r", "")));
+            }
             DetailedConsentResource createdConsent = consentCoreService.createAuthorizableConsent(
                     consentResource, userId, authStatus, ConsentExtensionConstants.DEFAULT_AUTH_TYPE, true);
             String consentId = createdConsent.getConsentID();

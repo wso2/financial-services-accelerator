@@ -32,6 +32,7 @@ import org.wso2.financial.services.accelerator.common.constant.FinancialServices
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
@@ -49,7 +50,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -306,10 +306,12 @@ public class ConsentAuthorizeUtil {
         if (!displayValues.isEmpty()) {
             JSONObject permission = new JSONObject();
             permission.put(ConsentAuthorizeConstants.DISPLAY_VALUES, displayValues);
+            permission.put(ConsentAuthorizeConstants.UID, UUID.randomUUID().toString());
             permissions.put(permission);
         }
 
         consentDataJSON.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
+        consentDataJSON.put(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, true);
 
         return consentDataJSON;
     }
@@ -633,7 +635,7 @@ public class ConsentAuthorizeUtil {
                 if (ConsentExtensionConstants.OPENID_SCOPE.equals(item)) {
                     continue;
                 }
-                permissions.put(item.toUpperCase(Locale.ROOT));
+                permissions.put(item);
             }
         }
 
@@ -908,5 +910,18 @@ public class ConsentAuthorizeUtil {
         isReauthorization = isReauthorization != null && isReauthorization;
 
         consentPersistPayload.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, Boolean.TRUE.equals(isReauthorization));
+    }
+
+    /**
+     * Utility method to retrieve scopes from consent data.
+     *
+     * @param consentData  consent data
+     * @return scopes
+     */
+    public static String retrieveScopes(ConsentData consentData) {
+
+        log.debug("Retrieving scopes from request object");
+        String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+        return ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
     }
 }

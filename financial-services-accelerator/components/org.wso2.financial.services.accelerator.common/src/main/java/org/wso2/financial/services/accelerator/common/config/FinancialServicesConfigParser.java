@@ -1021,14 +1021,41 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
-     * Method to get if consents are pre initiated.
+     * Returns the list of scopes that will use pre initiated consent flow.
      *
-     * @return boolean
+     * @return List of scopes.
      */
-    public boolean isPreInitiatedConsent() {
+    public List<String> getPreInitiatedConsentScopes() {
 
-        Optional<String> config = getConfigurationFromKeyAsString(FinancialServicesConstants.IS_PRE_INITIATED_CONSENT);
-        return config.map(Boolean::parseBoolean).orElse(true);
+        Object preInitiatedConsentScopeObj = configuration.get(FinancialServicesConstants.
+                PRE_INITIATED_CONSENT_SCOPES);
+        List<String> preInitiatedConsentScopes = new ArrayList<>();
+        if (preInitiatedConsentScopeObj instanceof List) {
+            preInitiatedConsentScopes.addAll((List) preInitiatedConsentScopeObj);
+        } else if (preInitiatedConsentScopeObj instanceof String) {
+            preInitiatedConsentScopes.add((String) preInitiatedConsentScopeObj);
+        }
+
+        return preInitiatedConsentScopes;
+    }
+
+    /**
+     * Returns the list of scopes that will use scope based consent flow.
+     *
+     * @return List of scopes.
+     */
+    public List<String> getScopeBasedConsentScopes() {
+
+        Object scopeBasedConsentScopeObj = configuration.get(FinancialServicesConstants.
+                SCOPE_BASED_CONSENT_SCOPES);
+        List<String> scopeBasedConsentScopes = new ArrayList<>();
+        if (scopeBasedConsentScopeObj instanceof List) {
+            scopeBasedConsentScopes.addAll((List) scopeBasedConsentScopeObj);
+        } else if (scopeBasedConsentScopeObj instanceof String) {
+            scopeBasedConsentScopes.add((String) scopeBasedConsentScopeObj);
+        }
+
+        return scopeBasedConsentScopes;
     }
 
     /**
