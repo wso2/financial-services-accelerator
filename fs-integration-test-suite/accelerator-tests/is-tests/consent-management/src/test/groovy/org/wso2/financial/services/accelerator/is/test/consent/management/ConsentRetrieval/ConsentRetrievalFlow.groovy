@@ -72,8 +72,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
-    //TODO: Enable after fixing the IS issue:https://github.com/wso2-enterprise/wso2-iam-internal/issues/3473
-    @Test(enabled = false)
+    @Test
     void "Get Accounts Initiation With Invalid Authorization Header"() {
 
         def basicHeader = getBasicAuthHeader(configuration.getUserPSUName(),
@@ -90,7 +89,7 @@ class ConsentRetrievalFlow extends FSConnectorTest {
                 .get(consentPath + "/${consentId}")
 
         Assert.assertNotNull(consentId)
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_403)
     }
 
     @Test

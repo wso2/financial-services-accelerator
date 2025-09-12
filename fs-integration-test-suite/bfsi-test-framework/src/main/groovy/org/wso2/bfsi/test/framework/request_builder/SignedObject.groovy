@@ -132,6 +132,35 @@ class SignedObject {
     }
 
     /**
+     * Get Signed Request object for given claims
+     * @param claims
+     * @return
+     * @throws TestFrameworkException
+     */
+    String getSignedRequestWithTruststore(String claims) throws TestFrameworkException {
+
+        java.security.KeyStore keyStore = KeyStore.getKeyStore("/Users/ashirwadadayarathne/Ashirwada/WSO2/Repos/OB4/test-suite/wso2-financial-open-banking/fs-integration-test-suite/test-artifacts/client-truststore/client-truststore.jks", "wso2carbon")
+        Key signingKey = keyStore.getKey("wso2is", "wso2carbon".toCharArray())
+
+        java.security.KeyStore.PrivateKeyEntry pkEntry = (java.security.KeyStore.PrivateKeyEntry) keyStore.getEntry(
+                "wso2is", new java.security.KeyStore.PasswordProtection("wso2carbon".toCharArray()))
+        Certificate certificate = pkEntry.getCertificate();
+        String thumbprint = KeyStore.getJwkThumbPrintForSHA1(certificate)
+
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
+                .keyID(thumbprint).type(JOSEObjectType.JWT).build();
+
+        JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
+
+        JWSObject jwsObject = new JWSObject(header, new Payload(claims));
+
+        jwsObject.sign(signer);
+
+        return jwsObject.serialize()
+
+    }
+
+    /**
      * Generate a sign JWT for request object with defined certificates.
      *
      * @param claims claims

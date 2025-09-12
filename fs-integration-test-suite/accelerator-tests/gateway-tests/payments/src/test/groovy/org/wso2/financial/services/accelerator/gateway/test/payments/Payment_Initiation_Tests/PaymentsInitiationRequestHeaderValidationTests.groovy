@@ -125,7 +125,7 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
     }
 
     //TODO: https://github.com/wso2/financial-services-accelerator/issues/681
-    @Test (enabled = false)
+    @Test
     void "Validate Payments Initiation With Invalid Content-type"() {
 
         //initiation

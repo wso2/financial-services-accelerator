@@ -167,8 +167,7 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 "Missing Credentials")
     }
 
-    //TODO: Issue https://github.com/wso2/financial-services-accelerator/issues/709
-    @Test (enabled = false)
+    @Test
     void "OB-1725_Verify Consent Revoke for valid consent with Incorrect Consent ID"() {
 
         initialization()
@@ -194,8 +193,8 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(consentPath + "/${incorrectConsentID}")
 
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
-                ConnectorTestConstants.CONSENT_ID_INVALID_ERROR)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Invalid Request Path. Valid consent id not found.")
     }
 
     @Test
