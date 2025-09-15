@@ -46,7 +46,7 @@ class  RefreshTokenGrantAccessToken extends FSConnectorTest {
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 		//Consent initiation
-		consentResponse = doConsentInitiation(initiationPayload)
+		consentResponse = doConsentInitiation(initiationPayload, clientId)
 		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
 		Assert.assertNotNull(consentId)
 
