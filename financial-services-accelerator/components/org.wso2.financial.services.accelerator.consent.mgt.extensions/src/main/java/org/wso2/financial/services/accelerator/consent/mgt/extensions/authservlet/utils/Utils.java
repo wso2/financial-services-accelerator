@@ -290,8 +290,8 @@ public class Utils {
                 Constants.RE_AUTHENTICATION_DISCLAIMER_KEY));
         dataFromResourceBundle.put(Constants.IF_STOP_DATA_SHARING, i18n(resourceBundle,
                 Constants.IF_STOP_DATA_SHARING_KEY));
-        dataFromResourceBundle.put(Constants.OK_BUTTON, i18n(resourceBundle,
-                Constants.OK_BUTTON_KEY));
+        dataFromResourceBundle.put(Constants.CONFIRM_BUTTON, i18n(resourceBundle,
+                Constants.CONFIRM_BUTTON_KEY));
         dataFromResourceBundle.put(Constants.DENY_BUTTON, i18n(resourceBundle,
                 Constants.DENY_BUTTON_KEY));
         dataFromResourceBundle.put(Constants.GO_BACK_BUTTON, i18n(resourceBundle,

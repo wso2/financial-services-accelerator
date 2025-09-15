@@ -402,7 +402,7 @@ public class TestConstants {
             "   \"type\":\"test\"" +
             "}";
 
-    public static final String INVALID_REQUEST_OBJECT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aWF0.TIygRaBn7MUFR9Zzy3" +
+    public static final String INVALID_REQUEST_OBJECT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aWF0TIygRaBn7MUFR9Zzy3" +
             "yu9K8uKVe8KXdAty0Ckrg2vFI";
 
     public static final String VALID_REQUEST_OBJECT = "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkR3TUtkV01tajdQV2" +

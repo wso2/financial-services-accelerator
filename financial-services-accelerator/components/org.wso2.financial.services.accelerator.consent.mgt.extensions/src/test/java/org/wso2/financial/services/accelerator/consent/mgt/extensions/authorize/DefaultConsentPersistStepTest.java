@@ -80,7 +80,6 @@ public class DefaultConsentPersistStepTest {
 
         configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
-        Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         consentPersistStep = new DefaultConsentPersistStep();

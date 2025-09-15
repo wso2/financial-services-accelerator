@@ -174,7 +174,8 @@ public class FinancialServicesConstants {
     public static final String OAUTH2 = "OAuth2";
 
     // Consent ID extraction Constants
-    public static final String IS_PRE_INITIATED_CONSENT = "Consent.PreInitiatedConsent";
+    public static final String PRE_INITIATED_CONSENT_SCOPES = "Consent.PreInitiatedConsentScopes.Scope";
+    public static final String SCOPE_BASED_CONSENT_SCOPES = "Consent.ScopeBasedConsentScopes.Scope";
     public static final String AUTH_FLOW_CONSENT_ID_SOURCE = "Consent.AuthFlowConsentIdSource";
     public static final String CONSENT_ID_EXTRACTION_JSON_PATH = "Consent.ConsentIdExtraction.JsonPath";
     public static final String CONSENT_ID_EXTRACTION_KEY = "Consent.ConsentIdExtraction.Key";

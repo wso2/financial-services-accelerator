@@ -81,7 +81,6 @@ public class FSDefaultAuthServletImplTest {
         Map<String, Object> configs = new HashMap<String, Object>();
         when(resourceBundle.containsKey(any())).thenAnswer(k -> k);
         Mockito.doReturn(configs).when(configParserMock).getConfiguration();
-        Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         servletImpl = new FSDefaultAuthServletImpl();

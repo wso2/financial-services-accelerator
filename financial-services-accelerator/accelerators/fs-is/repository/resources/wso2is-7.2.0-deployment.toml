@@ -2,9 +2,9 @@
 hostname = "IS_HOSTNAME"
 node_ip = "127.0.0.1"
 base_path = "https://$ref{server.hostname}:${carbon.management.port}"
-serverDetails = "WSO2 IS as KM 7.0.0"
+serverDetails = "WSO2 IS as KM 7.2.0"
 mode = "single"
-userAgent = "WSO2 IS as KM 7.0.0"
+userAgent = "WSO2 IS as KM 7.2.0"
 offset = 3
 
 [tenant_mgt]
@@ -136,14 +136,14 @@ pool_options.defaultAutoCommit=false
 pool_options.commitOnReturn=true
 
 [keystore.primary]
-file_name = "wso2carbon.jks"
+file_name = "wso2carbon.p12"
 password = "wso2carbon"
-type="JKS"
+type="PKCS12"
 
 [truststore]
-file_name="client-truststore.jks"
+file_name="client-truststore.p12"
 password="wso2carbon"
-type="JKS"
+type="PKCS12"
 
 [account_recovery.endpoint.auth]
 hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
@@ -290,9 +290,6 @@ grant_handler = "org.wso2.carbon.identity.oauth2.token.handlers.grant.ClientCred
 [oauth.dcr]
 enable_fapi_enforcement=true
 ssa_jkws= "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/0015800001HQQrZAAX.jwks"
-
-[oauth.dcrm]
-return_null_fields_in_response=false
 
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
@@ -585,9 +582,6 @@ allowed_api_resources=["payment-consents"]
 [financial_services.consent.preserve_consent_link]
 enabled=false
 
-[financial_services.consent.authorize_jsp]
-path="fs_default.jsp"
-
 [financial_services.identity]
 consent_id_claim_name="consent_id"
 append_consent_id_to_token_id_token=false
@@ -599,7 +593,7 @@ append_consent_id_to_token_introspect_response=false
 servlet_extension="org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.FSDefaultAuthServletImpl"
 
 [financial_services.identity.extensions]
-# Uncomment these to get a default IS implementation of identity extensions ( Not required for OB scenarios)
+# Uncomment these to get a default implementation of identity extensions
 #request_object_validator="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.DefaultFSRequestObjectValidator"
 #response_type_handler="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler.impl.FSDefaultResponseTypeHandlerImpl"
 #claim_provider="org.wso2.financial.services.accelerator.identity.extensions.claims.FSDefaultClaimProvider"
