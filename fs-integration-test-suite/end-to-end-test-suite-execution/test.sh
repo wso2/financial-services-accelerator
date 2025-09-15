@@ -232,3 +232,4 @@ echo "-----------------End of Accelerator Scenarios with Dynamic Client Registra
 echo "-----------------End of Gateway tests----------------"
 
 find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
+
