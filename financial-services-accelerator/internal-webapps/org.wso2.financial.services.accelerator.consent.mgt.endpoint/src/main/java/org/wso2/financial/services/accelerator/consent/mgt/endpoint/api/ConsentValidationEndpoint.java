@@ -126,11 +126,10 @@ public class ConsentValidationEndpoint {
                 }
             } catch (ConsentManagementException e) {
                 log.error("Error while validating JWT signature", e);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while validating JWT " +
-                        "signature");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage());
             } catch (JSONException | ParseException e) {
                 log.error("Error while decoding validation JWT", e);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while decoding validation JWT");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage());
             }
         } else {
             try {
