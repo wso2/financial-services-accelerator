@@ -118,7 +118,6 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
     @Test
     void "Funds Confirmation Initiation With Invalid Authorization Header"() {
 
-        configuration.setPsuNumber(1)
         def accessToken = getBasicAuthHeader(configuration.getUserPSUName(),
                 configuration.getUserPSUPWD())
 

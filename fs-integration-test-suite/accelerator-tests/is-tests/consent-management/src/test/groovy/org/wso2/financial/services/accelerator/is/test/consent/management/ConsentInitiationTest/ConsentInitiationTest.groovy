@@ -73,7 +73,7 @@ class ConsentInitiationTest extends FSConnectorTest {
         //Consent Validate Request
         consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationAccountsPayload(GenerateBasicHeader(),
+                .body(signedObject.getSignedRequestWithTruststore(AccountsRequestPayloads.buildValidationAccountsPayload(GenerateBasicHeader(),
                         userId, consentId)))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, consentRequestBuilder.GenerateBasicHeader())
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
@@ -112,7 +112,7 @@ class ConsentInitiationTest extends FSConnectorTest {
         //Consent Validate Request
         consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationTransactionPayload(userId, consentId, host)))
+                .body(signedObject.getSignedRequestWithTruststore(AccountsRequestPayloads.buildValidationTransactionPayload(userId, consentId, host)))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, consentRequestBuilder.GenerateBasicHeader())
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
@@ -151,7 +151,7 @@ class ConsentInitiationTest extends FSConnectorTest {
         //Consent Validate Request
         consentValidateResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_JWT)
-                .body(signedObject.getSignedRequest(AccountsRequestPayloads.buildValidationBalancePayload(userId, consentId, host)))
+                .body(signedObject.getSignedRequestWithTruststore(AccountsRequestPayloads.buildValidationBalancePayload(userId, consentId, host)))
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, consentRequestBuilder.GenerateBasicHeader())
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
                 .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)

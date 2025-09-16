@@ -301,12 +301,15 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .body(initiationPayload)
                 .post(consentPath)
 
+
+        String clientId2 = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
+
         //initiation request 2
         consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, idempotencyKey)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, "testClientId")
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, clientId2)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .baseUri(configuration.getISServerUrl())
@@ -319,5 +322,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Client ID sent in the request does not match with the client ID in the retrieved consent. " +
                         "Hence this is not a valid idempotent request")
+
+        deleteApplication(clientId2, ConnectorTestConstants.PKJWT_AUTH_METHOD)
     }
 }
