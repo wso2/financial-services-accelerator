@@ -138,7 +138,7 @@ class SignedObject {
      * @return
      * @throws TestFrameworkException
      */
-    String getSignedRequestWithTruststore(String claims) throws TestFrameworkException {
+    String getSignedRequestWithDefinedCert(String claims) throws TestFrameworkException {
 
         try (FileInputStream is = new FileInputStream(configuration.getTransportTruststoreLocation())) {
             java.security.KeyStore keystore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());

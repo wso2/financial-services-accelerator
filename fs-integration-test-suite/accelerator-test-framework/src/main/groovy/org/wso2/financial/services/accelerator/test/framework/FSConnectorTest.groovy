@@ -524,7 +524,7 @@ class FSConnectorTest extends CommonTest{
                                 .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
 
                 .baseUri(configuration.getISServerUrl())
-                .body(signedObject.getSignedRequestWithTruststore(claims))
+                .body(signedObject.getSignedRequestWithDefinedCert(claims))
                 .post(validatePath)
 
         return consentValidateResponse
