@@ -121,6 +121,9 @@ public class RegistrationRequest {
     @SerializedName("backchannel_user_code_parameter_supported")
     private boolean backchannelUserCodeParameterSupported;
 
+    @SerializedName("authorization_signed_response_alg")
+    private String authorizationSignedResponseAlg;
+
     private SoftwareStatementBody softwareStatementBody;
 
     private Map<String, Object> requestParameters;
@@ -389,4 +392,13 @@ public class RegistrationRequest {
     public void setExp(String exp) {
         this.exp = exp;
     }
+
+    public String getAuthorizationSignedResponseAlg() {
+        return authorizationSignedResponseAlg;
+    }
+
+    public void setAuthorizationSignedResponseAlg(String authorizationSignedResponseAlg) {
+        this.authorizationSignedResponseAlg = authorizationSignedResponseAlg;
+    }
+
 }

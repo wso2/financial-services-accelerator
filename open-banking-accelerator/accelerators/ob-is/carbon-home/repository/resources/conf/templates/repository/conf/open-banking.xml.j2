@@ -840,6 +840,20 @@
                 </AllowedValues>
                 {% endif %}
             </BackchannelUserCodeParameterSupported>
+            <AuthorizationSignedResponseAlg>
+                {% if open_banking.dcr.registration.authorization_signed_response_alg.required is defined %}
+                <Required>{{open_banking.dcr.registration.authorization_signed_response_alg.required}}</Required>
+                {% else %}
+                <Required>false</Required>
+                {% endif %}
+                {% if open_banking.dcr.registration.authorization_signed_response_alg.allowed_values is defined %}
+                <AllowedValues>
+                    {% for value in open_banking.dcr.registration.authorization_signed_response_alg.allowed_values %}
+                        <Value>{{value}}</Value>
+                    {% endfor %}
+                </AllowedValues>
+                {% endif %}
+            </AuthorizationSignedResponseAlg>
         </RegistrationRequestParams>
     </DCR>
     <SignatureValidation>
