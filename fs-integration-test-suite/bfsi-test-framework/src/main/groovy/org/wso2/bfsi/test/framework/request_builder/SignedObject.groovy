@@ -42,6 +42,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
 import java.security.Security
 import java.security.UnrecoverableEntryException
+import java.security.UnrecoverableKeyException
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
 import java.security.spec.PKCS8EncodedKeySpec
@@ -129,6 +130,33 @@ class SignedObject {
 
         return jwsObject.serialize()
 
+    }
+
+    /**
+     * Get Signed Request object for given claims
+     * @param claims
+     * @return
+     * @throws TestFrameworkException
+     */
+    String getSignedRequestWithDefinedCert(String claims) throws TestFrameworkException {
+
+        try (FileInputStream is = new FileInputStream(configuration.getTransportTruststoreLocation())) {
+            java.security.KeyStore keystore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
+            keystore.load(is, configuration.getTransportTruststorePWD().toCharArray());
+            Key signingKey = keystore.getKey("iamvalidate", configuration.getTransportTruststorePWD().toCharArray());
+            JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
+                    .type(JOSEObjectType.JWT).build();
+
+            JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
+
+            JWSObject jwsObject = new JWSObject(header, new Payload(claims));
+
+            jwsObject.sign(signer);
+
+            return jwsObject.serialize()
+        } catch (IOException | CertificateException | KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            log.error("Error occurred while retrieving private key from keystore ", e);
+        }
     }
 
     /**

@@ -169,8 +169,8 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.INVALID_CREDENTIALS_ERROR)
     }
 
-    //TODO: https://github.com/wso2/financial-services-accelerator/issues/720
-    @Test (enabled = false)
+
+    @Test
     void "Initiation Request With Invalid Accept Header"() {
 
         def consentResponse = FSRestAsRequestBuilder.buildRequest()
@@ -184,7 +184,7 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("HTTP 406 Not Acceptable"))
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),

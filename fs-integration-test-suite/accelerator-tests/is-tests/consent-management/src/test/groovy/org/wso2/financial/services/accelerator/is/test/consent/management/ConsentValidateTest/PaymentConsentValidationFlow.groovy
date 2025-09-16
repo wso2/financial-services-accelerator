@@ -26,6 +26,7 @@ import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSConnectorTest
+import org.wso2.financial.services.accelerator.test.framework.constant.CofRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
@@ -269,5 +270,31 @@ class PaymentConsentValidationFlow extends FSConnectorTest {
                 "Forbidden")
         Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.HTTP_CODE),
                 "403")
+    }
+
+    @Test
+    void "Verify Validation of a created Consent invalid consent id in request"() {
+
+        //Consent Initiation
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        //Consent Authorisation
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
+
+        //Consent Validate Request
+        //Consent Validate Request
+        validationPayload = PaymentRequestPayloads.buildPaymentValidationPayload(accessToken, userId,
+                UUID.randomUUID().toString(), "clientId")
+        doConsentValidate(ConnectorTestConstants.PAYMENT_VALIDATE_PATH, validationPayload)
+
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "consent_default")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Consent details not found for the given consent id")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "400")
     }
 }
