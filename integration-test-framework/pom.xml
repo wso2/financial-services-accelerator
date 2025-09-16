@@ -16,9 +16,7 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2</groupId>
     <artifactId>integration-test-framework</artifactId>
@@ -27,7 +25,7 @@
     <parent>
         <groupId>com.wso2.openbanking.accelerator</groupId>
         <artifactId>open-banking</artifactId>
-        <version>3.3.26-SNAPSHOT</version>
+        <version>3.3.26</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modules>
@@ -298,7 +296,7 @@
                         <xmlOutput>true</xmlOutput>
                         <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
                         <plugins>
-                            <groupId>com.h3xstream.findsecbugs</groupId>-->
+                            <groupId>com.h3xstream.findsecbugs</groupId>--&gt;
                             <artifactId>findsecbugs-plugin</artifactId>
                             <version>${findsecbugs-plugin.version}</version>
                         </plugins>
