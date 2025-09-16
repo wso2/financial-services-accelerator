@@ -144,6 +144,10 @@ else
         echo "Not Required to install geckodriver"
 fi
 
+#--------------Build the project-----------------#
+cd ${PROJECT_HOME}
+mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
 #--------------Build the test framework and the project-----------------#
 cd ${ACCELERATOR_TESTS_HOME}
 mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
