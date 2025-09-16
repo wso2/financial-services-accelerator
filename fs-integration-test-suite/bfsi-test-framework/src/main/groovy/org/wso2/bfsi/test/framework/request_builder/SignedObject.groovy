@@ -143,7 +143,7 @@ class SignedObject {
         try (FileInputStream is = new FileInputStream(configuration.getTransportTruststoreLocation())) {
             java.security.KeyStore keystore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
             keystore.load(is, configuration.getTransportTruststorePWD().toCharArray());
-            Key signingKey = keystore.getKey("iamvalidate", configuration.getTransportTruststorePWD().toCharArray());
+            Key signingKey = keystore.getKey("iamValidate", configuration.getTransportTruststorePWD().toCharArray());
             JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
                     .type(JOSEObjectType.JWT).build();
 
