@@ -43,7 +43,7 @@ public class RegistrationResponse {
     protected String clientId = null;
 
     @SerializedName("client_id_issued_at")
-    protected String clientIdIssuedAt  = null;
+    protected Long clientIdIssuedAt  = null;
 
     @SerializedName("redirect_uris")
     protected List<String> redirectUris = new ArrayList<>();
@@ -112,12 +112,12 @@ public class RegistrationResponse {
     }
 
 
-    public String getClientIdIssuedAt() {
+    public Long getClientIdIssuedAt() {
 
         return clientIdIssuedAt;
     }
 
-    public void setClientIdIssuedAt(String clientIdIssuedAt) {
+    public void setClientIdIssuedAt(Long clientIdIssuedAt) {
 
         this.clientIdIssuedAt = clientIdIssuedAt;
     }

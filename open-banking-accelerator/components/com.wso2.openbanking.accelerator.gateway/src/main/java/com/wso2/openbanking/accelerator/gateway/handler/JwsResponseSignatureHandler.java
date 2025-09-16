@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -170,6 +171,17 @@ public class JwsResponseSignatureHandler extends AbstractSynapseHandler {
 
         if (payloadString.isPresent()) {
             try {
+                // If the signature header already exists, remove it before adding a new one.
+                // Headers are case-insensitive.
+                Iterator headersIterator = headers.entrySet().iterator();
+                while (headersIterator.hasNext()) {
+                    Map.Entry entry = (Map.Entry) headersIterator.next();
+                    if (entry.getKey() instanceof String &&
+                            ((String) entry.getKey()).equalsIgnoreCase(signatureHeaderName)) {
+                        headersIterator.remove();
+                        log.debug("Removing existing signature header: " + entry.getKey());
+                    }
+                }
                 headers.put(signatureHeaderName, generateJWSSignature(payloadString));
             } catch (JOSEException | OpenBankingException e) {
                 log.error("Unable to sign response", e);

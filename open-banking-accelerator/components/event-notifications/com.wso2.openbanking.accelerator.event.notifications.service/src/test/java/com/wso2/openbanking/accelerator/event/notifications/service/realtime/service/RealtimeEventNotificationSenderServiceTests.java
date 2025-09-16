@@ -98,7 +98,7 @@ public class RealtimeEventNotificationSenderServiceTests extends PowerMockTestCa
         CloseableHttpClient httpClientMock = Mockito.mock(CloseableHttpClient.class);
         doReturn(mockResponse).when(httpClientMock).execute(any());
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getRealtimeEventNotificationHttpsClient()).thenReturn(httpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(httpClientMock);
 
         new Thread(new RealtimeEventNotificationSenderService(EventNotificationTestConstants.SAMPLE_CALLBACK_URL,
                 EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD,
@@ -129,7 +129,7 @@ public class RealtimeEventNotificationSenderServiceTests extends PowerMockTestCa
         CloseableHttpClient httpClientMock = Mockito.mock(CloseableHttpClient.class);
         doReturn(mockResponse).when(httpClientMock).execute(any());
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getRealtimeEventNotificationHttpsClient()).thenReturn(httpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(httpClientMock);
 
         new Thread(new RealtimeEventNotificationSenderService(EventNotificationTestConstants.SAMPLE_CALLBACK_URL,
                 EventNotificationTestConstants.SAMPLE_NOTIFICATION_PAYLOAD,

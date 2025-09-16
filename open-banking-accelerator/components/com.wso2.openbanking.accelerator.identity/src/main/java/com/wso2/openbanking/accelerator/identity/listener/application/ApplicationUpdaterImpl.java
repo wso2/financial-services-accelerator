@@ -19,6 +19,7 @@
 package com.wso2.openbanking.accelerator.identity.listener.application;
 
 import com.google.gson.Gson;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.config.TextFileReader;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
@@ -225,7 +226,8 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
                 // Removing the added additional SP property to identify create and update requests
                 spProperties.remove(appCreateRequest);
                 serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
-            } else {
+            } else if (OpenBankingConfigParser.getInstance().isSetAuthenticatorsOnAppUpdateEnabled()) {
+                // Executes only if the enable_setting_authenticators_on_app_update set to true.
                 ApplicationManagementService applicationManagementService = IdentityExtensionsDataHolder.getInstance()
                         .getApplicationManagementService();
                 ServiceProvider existingSP = applicationManagementService

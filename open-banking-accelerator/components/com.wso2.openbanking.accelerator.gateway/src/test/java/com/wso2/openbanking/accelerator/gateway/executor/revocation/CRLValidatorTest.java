@@ -102,7 +102,7 @@ public class CRLValidatorTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
     }
 
     @Test
@@ -171,7 +171,7 @@ public class CRLValidatorTest extends PowerMockTestCase {
         Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         TPPCertValidatorDataHolder tppCertValidatorDataHolder = Mockito.mock(TPPCertValidatorDataHolder.class);
 
@@ -188,7 +188,7 @@ public class CRLValidatorTest extends PowerMockTestCase {
         Mockito.doThrow(IOException.class).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         TPPCertValidatorDataHolder tppCertValidatorDataHolder = Mockito.mock(TPPCertValidatorDataHolder.class);
 
@@ -205,7 +205,7 @@ public class CRLValidatorTest extends PowerMockTestCase {
         Mockito.doThrow(CertificateException.class).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         TPPCertValidatorDataHolder tppCertValidatorDataHolder = Mockito.mock(TPPCertValidatorDataHolder.class);
 
@@ -222,7 +222,7 @@ public class CRLValidatorTest extends PowerMockTestCase {
         Mockito.doThrow(CRLException.class).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         TPPCertValidatorDataHolder tppCertValidatorDataHolder = Mockito.mock(TPPCertValidatorDataHolder.class);
 
@@ -239,7 +239,7 @@ public class CRLValidatorTest extends PowerMockTestCase {
         Mockito.doThrow(MalformedURLException.class).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
-        PowerMockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        PowerMockito.when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClientMock);
 
         TPPCertValidatorDataHolder tppCertValidatorDataHolder = Mockito.mock(TPPCertValidatorDataHolder.class);
 

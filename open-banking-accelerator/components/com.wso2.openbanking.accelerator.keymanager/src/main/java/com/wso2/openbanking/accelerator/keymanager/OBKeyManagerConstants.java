@@ -24,5 +24,6 @@ package com.wso2.openbanking.accelerator.keymanager;
 public class OBKeyManagerConstants {
 
     public static final String CUSTOM_KEYMANAGER_TYPE = "ObKeyManager";
+    public static final String USE_USER_ID_FOR_DEFAULT_SUBJECT = "useUserIdForDefaultSubject";
 
 }

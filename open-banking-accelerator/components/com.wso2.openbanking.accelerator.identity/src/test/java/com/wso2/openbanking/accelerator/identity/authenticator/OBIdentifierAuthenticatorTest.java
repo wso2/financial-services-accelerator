@@ -1171,7 +1171,7 @@ public class OBIdentifierAuthenticatorTest {
         BufferedReader bufferedReader = mock(BufferedReader.class);
         StatusLine statusLine = mock(StatusLine.class);
         final HttpGet[] httpGet = {mock(HttpGet.class)};
-        when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClient);
+        when(HTTPClientUtils.getHttpsClientInstance()).thenReturn(closeableHttpClient);
 
         doAnswer(new Answer<Object>() {
             @Override

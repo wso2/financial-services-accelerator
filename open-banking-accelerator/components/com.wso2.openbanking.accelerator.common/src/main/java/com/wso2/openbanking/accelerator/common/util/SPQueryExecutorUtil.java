@@ -27,11 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -43,43 +42,45 @@ import java.util.Base64;
  */
 public class SPQueryExecutorUtil {
 
-        private static Log log = LogFactory.getLog(SPQueryExecutorUtil.class);
+    private static Log log = LogFactory.getLog(SPQueryExecutorUtil.class);
 
-        /**
-         * Executes the given query in SP.
-         *
-         * @param appName           Name of the siddhi app.
-         * @param query             Name of the query
-         * @param spUserName        Username for SP
-         * @param spPassword        Password for SP
-         * @param spApiHost         Hostname of the SP
-         * @return JSON object with result
-         * @throws IOException           IO Exception.
-         * @throws ParseException        Parse Exception.
-         * @throws OpenBankingException  OpenBanking Exception.
-         */
-        public static JSONObject executeQueryOnStreamProcessor(String appName, String query, String spUserName,
-                                                               String spPassword, String spApiHost)
-                throws IOException, ParseException, OpenBankingException {
-            byte[] encodedAuth = Base64.getEncoder()
-                    .encode((spUserName + ":" + spPassword).getBytes(StandardCharsets.ISO_8859_1));
-            String authHeader = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8.toString());
+    /**
+     * Executes the given query in SP.
+     *
+     * @param appName           Name of the siddhi app.
+     * @param query             Name of the query
+     * @param spUserName        Username for SP
+     * @param spPassword        Password for SP
+     * @param spApiHost         Hostname of the SP
+     * @return JSON object with result
+     * @throws IOException           IO Exception.
+     * @throws OpenBankingException  OpenBanking Exception.
+     */
+    public static JSONObject executeQueryOnStreamProcessor(String appName, String query, String spUserName,
+                                                           String spPassword, String spApiHost)
+            throws IOException, ParseException, OpenBankingException {
+        log.info("Executing query on Stream Processor for app: " + appName);
+        byte[] encodedAuth = Base64.getEncoder()
+                .encode((spUserName + ":" + spPassword).getBytes(StandardCharsets.ISO_8859_1));
+        String authHeader = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8.toString());
 
-            CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient();;
-            HttpPost httpPost = new HttpPost(spApiHost + OpenBankingConstants.SP_API_PATH);
-            httpPost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(OpenBankingConstants.APP_NAME_CC, appName);
-            jsonObject.put(OpenBankingConstants.QUERY, query);
-            StringEntity requestEntity = new StringEntity(jsonObject.toJSONString());
-            httpPost.setHeader(OpenBankingConstants.CONTENT_TYPE_TAG, OpenBankingConstants.JSON_CONTENT_TYPE);
-            httpPost.setEntity(requestEntity);
-            HttpResponse response;
+        HttpPost httpPost = new HttpPost(spApiHost + OpenBankingConstants.SP_API_PATH);
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(OpenBankingConstants.APP_NAME_CC, appName);
+        jsonObject.put(OpenBankingConstants.QUERY, query);
+        StringEntity requestEntity = new StringEntity(jsonObject.toJSONString());
+        httpPost.setHeader(OpenBankingConstants.CONTENT_TYPE_TAG, OpenBankingConstants.JSON_CONTENT_TYPE);
+        httpPost.setEntity(requestEntity);
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Executing query %s on SP", query));
+        }
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Executing query %s on SP", query));
+                log.debug("Received response from Stream Processor with status: " +
+                        response.getStatusLine().getStatusCode());
             }
-            response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 String error = String.format("Error while invoking SP rest api : %s %s",
@@ -92,3 +93,4 @@ public class SPQueryExecutorUtil {
             return (JSONObject) parser.parse(responseStr);
         }
     }
+}

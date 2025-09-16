@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.gateway.executor.impl.consent;
 import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
@@ -35,7 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
@@ -166,17 +167,23 @@ public class ConsentEnforcementExecutor implements OpenBankingGatewayExecutor {
     private String invokeConsentValidationService(String enforcementJWTPayload) throws IOException,
             OpenBankingException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Invoking consent validation service at endpoint: " + getValidationEndpoint());
+        }
         HttpPost httpPost = new HttpPost(getValidationEndpoint());
-        StringEntity params;
-        params = new StringEntity(enforcementJWTPayload);
+        StringEntity params = new StringEntity(enforcementJWTPayload);
         httpPost.setEntity(params);
         httpPost.setHeader(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JWT_CONTENT_TYPE);
         String userName = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_USERNAME);
         String password = GatewayUtils.getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
         httpPost.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-        HttpResponse response = GatewayDataHolder.getHttpClient().execute(httpPost);
-        InputStream in = response.getEntity().getContent();
-        return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(httpPost)) {
+            log.info("Successfully invoked consent validation service");
+            InputStream in = response.getEntity().getContent();
+            String responseContent = IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+            in.close();
+            return responseContent;
+        }
     }
 
     /**

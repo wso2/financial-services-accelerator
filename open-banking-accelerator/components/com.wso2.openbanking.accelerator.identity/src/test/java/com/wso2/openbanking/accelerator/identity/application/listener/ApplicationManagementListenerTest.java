@@ -18,6 +18,7 @@
 
 package com.wso2.openbanking.accelerator.identity.application.listener;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.config.TextFileReader;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
@@ -66,7 +68,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @PowerMockIgnore("jdk.internal.reflect.*")
 @WithCarbonHome
-@PrepareForTest({CarbonContext.class})
+@PrepareForTest({CarbonContext.class, OpenBankingConfigParser.class})
 public class ApplicationManagementListenerTest extends  PowerMockTestCase {
 
     private static final Log log = LogFactory.getLog(ApplicationManagementListenerTest.class);
@@ -80,6 +82,8 @@ public class ApplicationManagementListenerTest extends  PowerMockTestCase {
     ApplicationManagementService applicationManagementService;
 
     ApplicationUpdaterImpl applicationUpdater;
+
+    OpenBankingConfigParser openBankingConfigParserMock;
 
     @InjectMocks
     OBApplicationManagementListener applicationManagementListener = new OBApplicationManagementListener();
@@ -256,6 +260,13 @@ public class ApplicationManagementListenerTest extends  PowerMockTestCase {
         when(CarbonContext.getThreadLocalCarbonContext()).thenReturn(carbonContext);
         when(CarbonContext.getThreadLocalCarbonContext().getUsername()).thenReturn("admin");
 
+        openBankingConfigParserMock = Mockito.mock(OpenBankingConfigParser.class);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+        PowerMockito.when(OpenBankingConfigParser.getInstance().isSetAuthenticatorsOnAppUpdateEnabled())
+                .thenReturn(true);
+
+
         LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig =
                 new LocalAndOutboundAuthenticationConfig();
         when(identityExtensionsDataHolder.getOauthAdminService()).thenReturn(oAuthAdminService);
@@ -281,6 +292,12 @@ public class ApplicationManagementListenerTest extends  PowerMockTestCase {
         CarbonContext carbonContext = mock(CarbonContext.class);
         when(CarbonContext.getThreadLocalCarbonContext()).thenReturn(carbonContext);
         when(CarbonContext.getThreadLocalCarbonContext().getUsername()).thenReturn("admin");
+
+        openBankingConfigParserMock = Mockito.mock(OpenBankingConfigParser.class);
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+        PowerMockito.when(OpenBankingConfigParser.getInstance().isSetAuthenticatorsOnAppUpdateEnabled())
+                .thenReturn(true);
 
         LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig =
                 new LocalAndOutboundAuthenticationConfig();

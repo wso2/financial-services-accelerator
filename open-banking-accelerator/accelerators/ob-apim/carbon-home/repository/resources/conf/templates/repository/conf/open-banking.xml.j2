@@ -453,6 +453,9 @@
         {% if open_banking.http_connection_pool.max_connections_per_route is defined %}
         <MaxConnectionsPerRoute>{{open_banking.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
         {% endif %}
+        {% if open_banking.http_connection_pool.time_to_live is defined %}
+        <TimeToLive>{{open_banking.http_connection_pool.time_to_live}}</TimeToLive>
+        {% endif %}
     </HTTPConnectionPool>
     <Event>
     {% if open_banking.event.queue_size is defined %}

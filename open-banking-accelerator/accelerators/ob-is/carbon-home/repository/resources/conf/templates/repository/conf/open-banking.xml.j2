@@ -855,6 +855,13 @@
         </AllowedAlgorithms>
     </SignatureValidation>
     <SCA>
+        <AuthenticatorConfig>
+            {% if open_banking.sca.authenticator_config.enable_setting_authenticators_on_app_update is defined %}
+                <EnableSettingAuthenticatorsOnAppUpdate>{{open_banking.sca.authenticator_config.enable_setting_authenticators_on_app_update}}</EnableSettingAuthenticatorsOnAppUpdate>
+            {% else %}
+                <EnableSettingAuthenticatorsOnAppUpdate>true</EnableSettingAuthenticatorsOnAppUpdate>
+            {% endif %}
+        </AuthenticatorConfig>
         <PrimaryAuthenticator>
         {% if open_banking.sca.primaryauth.name is defined %}
             <Name>{{open_banking.sca.primaryauth.name}}</Name>
@@ -1008,6 +1015,9 @@
         {% endif %}
         {% if open_banking.http_connection_pool.max_connections_per_route is defined %}
         <MaxConnectionsPerRoute>{{open_banking.http_connection_pool.max_connections_per_route}}</MaxConnectionsPerRoute>
+        {% endif %}
+        {% if open_banking.http_connection_pool.time_to_live is defined %}
+        <TimeToLive>{{open_banking.http_connection_pool.time_to_live}}</TimeToLive>
         {% endif %}
     </HTTPConnectionPool>
     <PushAuthorisation>

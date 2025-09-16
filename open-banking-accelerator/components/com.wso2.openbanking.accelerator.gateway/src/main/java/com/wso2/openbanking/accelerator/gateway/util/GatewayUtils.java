@@ -30,6 +30,7 @@ import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.gateway.cache.GatewayCacheKey;
 import com.wso2.openbanking.accelerator.gateway.executor.exception.OpenBankingExecutorException;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
@@ -49,7 +50,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
@@ -209,11 +210,11 @@ public class GatewayUtils {
         String password = getAPIMgtConfig(GatewayConstants.API_KEY_VALIDATOR_PASSWORD);
 
         httpGet.setHeader(GatewayConstants.AUTH_HEADER, GatewayUtils.getBasicAuthHeader(userName, password));
-        HttpResponse response = null;
-        try {
-            response = GatewayDataHolder.getHttpClient().execute(httpGet);
+        try (CloseableHttpResponse response = HTTPClientUtils.getHttpsClientInstance().execute(httpGet)) {
             InputStream in = response.getEntity().getContent();
-            return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+            String responseContent = IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
+            in.close();
+            return responseContent;
         } catch (IOException | OpenBankingException e) {
             throw new OpenBankingRuntimeException("Failed to retrieve swagger definition from API", e);
         }
