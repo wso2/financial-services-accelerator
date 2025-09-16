@@ -756,8 +756,10 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
                         retrievedConsentIdList.add(resultSet.getString(ConsentMgtDAOConstants.CONSENT_ID));
                     }
                 } else {
-                    log.error("No records are found for the provided attribute key  :" + attributeName +
-                            " and value: " + attributeValue);
+                    if (log.isDebugEnabled()) {
+                        log.debug("No records are found for the provided attribute key  :" + attributeName +
+                                " and value: " + attributeValue);
+                    }
                     throw new OBConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG);
                 }
             } catch (SQLException e) {
