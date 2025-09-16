@@ -304,7 +304,14 @@ public class JWTUtils {
 
         try {
             JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-            return SignedJWT.parse(jwtString).verify(verifier);
+            boolean isValid = SignedJWT.parse(jwtString).verify(verifier);
+            if (!isValid) {
+                log.error("Invalid JWT signature");
+                throw new ConsentManagementException("Invalid JWT signature");
+            } else {
+                log.debug("Returning true since the JWT signature is valid.");
+                return true;
+            }
         } catch (JOSEException | ParseException e) {
             log.error("Error occurred while validating JWT signature", e);
             throw new ConsentManagementException("Error occurred while validating JWT signature");

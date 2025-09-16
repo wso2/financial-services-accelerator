@@ -1600,7 +1600,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
 
             // populate prepared statement
             int parameterIndex = 0;
-            preparedStatement.setString(++parameterIndex, ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE);
+            preparedStatement.setLong(++parameterIndex, System.currentTimeMillis() / 1000);
             for (String status : statusesEligibleForExpirationList) {
                 preparedStatement.setString(++parameterIndex, status);
             }

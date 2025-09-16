@@ -342,10 +342,9 @@ public class ConsentMgtCommonDBQueries {
 
     public String getSearchExpiringConsentPreparedStatement(String statusesEligibleForExpirationCondition) {
 
-        return "SELECT OBC.CONSENT_ID " +
-                " FROM   FS_CONSENT_ATTRIBUTE CA " +
-                " JOIN   FS_CONSENT OBC " +
-                " ON     CA.CONSENT_ID = OBC.CONSENT_ID " +
-                " WHERE  CA.ATT_KEY = ? AND OBC.CURRENT_STATUS IN " + statusesEligibleForExpirationCondition;
+        return "SELECT CONSENT_ID " +
+                " FROM   FS_CONSENT " +
+                " WHERE  VALIDITY_TIME > 0 AND VALIDITY_TIME <  ? " +
+                " AND CURRENT_STATUS IN " + statusesEligibleForExpirationCondition;
     }
 }

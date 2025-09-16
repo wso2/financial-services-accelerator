@@ -25,13 +25,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,9 +56,7 @@ public class ExpiredConsentStatusUpdateJobTests {
         ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID("123");
-        Map<String, String> consentAttributes = Map
-                .of(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE, "1746017102");
-        detailedConsentResource.setConsentAttributes(consentAttributes);
+        detailedConsentResource.setValidityPeriod(1746017102);
         detailedConsentResources.add(detailedConsentResource);
 
         when(consentCoreService.getConsentsEligibleForExpiration(Mockito.any()))
