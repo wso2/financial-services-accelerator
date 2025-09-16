@@ -86,6 +86,7 @@ class ConsentFlowTypesValidationTest extends FSConnectorTest {
 
         // Get Code From URL
         code = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        Assert.assertNotNull(code)
     }
 
     @Test (dependsOnMethods = "Authorise consent without a pre initiation step for accounts scope")

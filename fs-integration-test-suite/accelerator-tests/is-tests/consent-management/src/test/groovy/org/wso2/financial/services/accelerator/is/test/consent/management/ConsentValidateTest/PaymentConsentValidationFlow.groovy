@@ -290,7 +290,6 @@ class PaymentConsentValidationFlow extends FSConnectorTest {
         doConsentValidate(ConnectorTestConstants.PAYMENT_VALIDATE_PATH, validationPayload)
 
         Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "consent_default")
         Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
