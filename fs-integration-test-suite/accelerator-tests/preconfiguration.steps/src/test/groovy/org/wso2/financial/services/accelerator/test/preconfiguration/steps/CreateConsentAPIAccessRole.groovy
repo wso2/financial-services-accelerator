@@ -30,15 +30,19 @@ import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 
 import java.nio.charset.Charset
 
+/**
+ * This class is used to create OBInternalApiAccessRole role in WSO2 IS Console and
+ * assign the role to the Key Manager admin user.
+ */
 class CreateConsentAPIAccessRole extends FSAPIMConnectorTest {
 
     String roleManagementUrl
     String apiResourceUrl
     String roleId
     def basicHeader
-    String apiResourceName = "OB-internal-api-resource"
-    String scope = "ob-internal-api-access"
-    String roleName = "OBInternalApiAccessRole"
+    String apiResourceName = ConnectorTestConstants.OB_INTERNAL_API_RESOURCE
+    String scope = ConnectorTestConstants.OB_INTERNAL_API_SCOPE
+    String roleName = ConnectorTestConstants.OB_INTERNAL_API_ACCESS_ROLE
 
     @BeforeClass
     void init() {

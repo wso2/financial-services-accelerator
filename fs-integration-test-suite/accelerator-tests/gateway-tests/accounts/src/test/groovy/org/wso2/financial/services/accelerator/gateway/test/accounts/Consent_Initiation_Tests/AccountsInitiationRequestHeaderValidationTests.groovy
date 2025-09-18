@@ -380,6 +380,7 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertEquals(introspectResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
         Assert.assertEquals(TestUtil.parseResponseBody(introspectResponse, "active"), "false")
 
+        // Waiting till the gateway caches are updated
         sleep(1000)
         consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
