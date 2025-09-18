@@ -55,7 +55,7 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                com.wso2.open.banking.application.info.endpoint.api.ApplicationInformationApi
+                com.wso2.open.banking.application.info.endpoint.api.impl.ApplicationInformationApiServiceImpl
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
