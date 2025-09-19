@@ -55,7 +55,9 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                com.wso2.openbanking.accelerator.identity.dcr.endpoint.impl.api.ClientRegistrationApiImpl
+                com.wso2.openbanking.accelerator.event.notifications.endpoint.api.EventCreationEndpoint,
+                com.wso2.openbanking.accelerator.event.notifications.endpoint.api.EventPollingEndpoint,
+                com.wso2.openbanking.accelerator.event.notifications.endpoint.api.EventSubscriptionEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
