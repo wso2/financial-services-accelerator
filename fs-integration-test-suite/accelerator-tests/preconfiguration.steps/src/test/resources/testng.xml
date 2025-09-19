@@ -24,6 +24,7 @@
             <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreateKeyManager" />
             <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.PublishApis" />
             <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreatePsuUser" />
+            <class name="org.wso2.financial.services.accelerator.test.preconfiguration.steps.CreateConsentAPIAccessRole" />
         </classes>
     </test>
 </suite>
