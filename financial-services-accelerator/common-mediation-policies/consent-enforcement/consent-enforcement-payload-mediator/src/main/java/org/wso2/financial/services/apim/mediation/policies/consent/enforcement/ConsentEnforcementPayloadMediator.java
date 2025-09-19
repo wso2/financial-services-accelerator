@@ -50,6 +50,7 @@ public class ConsentEnforcementPayloadMediator extends AbstractMediator {
     @Override
     public boolean mediate(MessageContext messageContext) {
 
+        log.info("Starting consent enforcement payload mediation");
         org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext)
                 .getAxis2MessageContext();
         Map<String, String> headers = (Map<String, String>)
@@ -91,6 +92,7 @@ public class ConsentEnforcementPayloadMediator extends AbstractMediator {
                     .createValidationRequestPayload(jsonPayload, headers, additionalParams);
 
             String enforcementJWTPayload = ConsentEnforcementUtils.generateJWT(validationRequest.toString());
+            log.info("Consent enforcement JWT payload generated successfully");
             messageContext.setProperty("consentEnforcementJwtPayload", enforcementJWTPayload);
         } catch (JSONException e) {
             String errorDescription = "Invalid JSON payload";

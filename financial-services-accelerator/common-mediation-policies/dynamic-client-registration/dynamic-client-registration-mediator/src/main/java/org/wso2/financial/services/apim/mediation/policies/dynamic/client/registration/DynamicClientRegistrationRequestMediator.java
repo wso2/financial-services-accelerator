@@ -59,6 +59,7 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
     @Override
     public boolean mediate(MessageContext messageContext) {
 
+        log.info("Processing dynamic client registration request");
         org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext)
                 .getAxis2MessageContext();
         Map<String, Object> headers = (Map<String, Object>)
@@ -77,6 +78,7 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
             }
         }
 
+        log.debug("Processing DCR JWT validation and request alteration.");
         // Check if the HTTP method is POST or PUT to process DCR JWT validation and request alteration
         if (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod)) {
             try {
@@ -87,9 +89,11 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
                         contentType);
                 if (requestPayload.isPresent()) {
                     if (Objects.requireNonNull(contentType).contains(DCRConstants.JWT_CONTENT_TYPE)) {
+                        log.debug("Request content type is JWT, proceeding with JWT validation");
                         // Perform JWT Validation and Payload conversion and modification to JWT payloads
                         validateAndModifyPayload(messageContext, requestPayload.get(), headers);
                     } else {
+                        log.debug("Request content type is JSON, proceeding with JSON payload modification");
                         // Perform Payload conversion and modification to JSON payloads
                         modifyJsonPayload(messageContext, requestPayload.get(), headers);
                     }
@@ -166,6 +170,7 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
                                           Map<String, Object> headers)
             throws DCRHandlingException {
 
+        log.debug("Starting JWT payload validation and modification");
         //decode request jwt
         String decodedRequest = null;
         try {
@@ -203,6 +208,7 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
                 // Validate the request signature
                 DCRUtil.validateRequestSignature(requestPayload, decodedSSA, jwksEndpointName,
                         jwksEndpointTimeout);
+                log.info("Request signature validation successful");
             } catch (BadJOSEException | JOSEException | MalformedURLException e) {
                 log.error("Error occurred while validating the signature", e);
                 throw new DCRHandlingException(DCRConstants.INVALID_REQUEST,
@@ -227,6 +233,7 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
     private void modifyJsonPayload(MessageContext messageContext, String requestPayload,
                                        Map<String, Object> headers) throws DCRHandlingException {
 
+        log.debug("Starting JSON payload modification");
         JSONObject requestPayloadObj = new JSONObject(requestPayload);
         JSONObject decodedSSA = null;
         //Check whether the SSA exists and decode the SSA
@@ -237,6 +244,7 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
                                 .getString(DCRConstants.SOFTWARE_STATEMENT),
                         DCRConstants.JWT_BODY);
                 decodedSSA = new JSONObject(ssa);
+                log.debug("Successfully decoded Software Statement Assertion from JSON payload");
             } catch (ParseException e) {
                 log.error("Error occurred while decoding the provided jwt", e);
                 throw new DCRHandlingException(DCRConstants.INVALID_SSA,
@@ -258,6 +266,8 @@ public class DynamicClientRegistrationRequestMediator extends AbstractMediator {
     private void appendModifiedPayload(MessageContext messageContext, JSONObject decodedRequestObj,
                                        JSONObject decodedSSA, Map<String, Object> headers)
             throws DCRHandlingException {
+
+        log.debug("Appending modified payload to message context");
 
         try {
             org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext)

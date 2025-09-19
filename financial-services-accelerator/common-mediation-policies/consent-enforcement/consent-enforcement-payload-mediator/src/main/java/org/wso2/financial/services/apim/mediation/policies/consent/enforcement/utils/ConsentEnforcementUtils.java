@@ -55,6 +55,7 @@ public class ConsentEnforcementUtils {
      */
     public static Map<String, String> getResourceParamMap(MessageContext messageContext) {
 
+        log.debug("Constructing resource parameter map for validation service");
         Map<String, String> resourceMap = new HashMap<>();
         resourceMap.put(ConsentEnforcementConstants.RESOURCE_TAG, (String)
                 messageContext.getProperty(ConsentEnforcementConstants.REST_FULL_REQUEST_PATH));
@@ -76,6 +77,7 @@ public class ConsentEnforcementUtils {
     public static String extractConsentIdFromJwtToken(Map<String, String> headers, String consentIdClaimName)
             throws UnsupportedEncodingException {
 
+        log.debug("Attempting to extract consent ID from JWT token");
         String authHeader = headers.get(ConsentEnforcementConstants.AUTH_HEADER);
         if (authHeader != null && !authHeader.isEmpty() &&
                 isValidJWTToken(authHeader.replace(ConsentEnforcementConstants.BEARER_TAG, ""))) {
@@ -86,10 +88,12 @@ public class ConsentEnforcementUtils {
 
                 if (!jwtClaims.isNull(consentIdClaimName) && !jwtClaims.getString(consentIdClaimName).isEmpty()) {
                     consentIdClaim = jwtClaims.getString(consentIdClaimName);
+                    log.info("Consent ID extracted successfully from JWT token");
                 }
             }
             return consentIdClaim;
         }
+        log.debug("No valid JWT token found in authorization header");
         return null;
     }
 
@@ -105,6 +109,7 @@ public class ConsentEnforcementUtils {
                                                             Map<String, String> requestHeaders,
                                                             Map<String, Object> additionalParams) throws JSONException {
 
+        log.debug("Creating validation request payload");
         JSONObject validationRequest = new JSONObject();
         JSONObject headers = new JSONObject();
 
@@ -115,6 +120,7 @@ public class ConsentEnforcementUtils {
         validationRequest.put(ConsentEnforcementConstants.BODY_TAG, requestPayload);
 
         additionalParams.forEach(validationRequest::put);
+        log.debug("Validation request payload created successfully");
         return validationRequest;
     }
 
@@ -128,6 +134,7 @@ public class ConsentEnforcementUtils {
      */
     public static String generateJWT(String payload) throws ParseException, JOSEException {
 
+        log.debug("Generating JWT with provided payload");
         RSASSASigner signer = new RSASSASigner((PrivateKey) KeyStoreUtils.getSigningKey());
         JWTClaimsSet claimsSet = JWTClaimsSet.parse(payload);
 
@@ -137,6 +144,7 @@ public class ConsentEnforcementUtils {
 
         SignedJWT signedJWT = new SignedJWT(header, claimsSet);
         signedJWT.sign(signer);
+        log.info("JWT generated successfully");
         return signedJWT.serialize();
     }
 

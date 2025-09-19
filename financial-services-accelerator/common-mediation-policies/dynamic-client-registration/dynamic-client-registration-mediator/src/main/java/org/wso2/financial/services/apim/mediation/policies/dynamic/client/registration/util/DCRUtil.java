@@ -81,6 +81,7 @@ public class DCRUtil {
     public static Optional<String> buildMessagePayloadFromMessageContext(
             org.apache.axis2.context.MessageContext axis2MC, String contentType) throws DCRHandlingException {
 
+        log.debug("Building message payload from message context");
         String requestPayload = null;
         boolean isMessageContextBuilt = isMessageContextBuilt(axis2MC);
         if (!isMessageContextBuilt) {
@@ -111,6 +112,8 @@ public class DCRUtil {
                     }
 
                 } catch (IOException e) {
+                    log.error(String.format("Unable to read payload stream: %s",
+                            e.getMessage().replaceAll("[\r\n]", "")), e);
                     throw new DCRHandlingException("Unable to read payload stream", "server_error", "500", e);
                 }
             }
@@ -198,6 +201,10 @@ public class DCRUtil {
                                                     int jwksConnectionTimeOut)
             throws ParseException, BadJOSEException, JOSEException, MalformedURLException {
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Validating JWT signature against JWKS URI: %s",
+                    jwksUri.replaceAll("[\r\n]", "")));
+        }
         int defaultConnectionTimeout = 3000;
         int defaultReadTimeout = 3000;
         ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();

@@ -63,6 +63,7 @@ public class KeyStoreUtils {
         if (key == null) {
             synchronized (ConsentEnforcementUtils.class) {
                 if (key == null) {
+                    log.debug("Initializing signing key from keystore");
                     try (FileInputStream is = new FileInputStream(getKeyStoreLocation())) {
                         KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
                         keystore.load(is, getKeyStorePassword());
