@@ -83,6 +83,10 @@ class ConfigConstants {
     public static final String TRANSPORT_TRUSTSTORE_LOCATION = "Location"
     public static final String TRANSPORT_TRUSTSTORE_TYPE = "Type"
     public static final String TRANSPORT_TRUSTSTORE_PWD = "Password"
+    public static final String TRANSPORT_KEYSTORE = "KeyStore"
+    public static final String TRANSPORT_KEYSTORE_LOCATION = "Location"
+    public static final String TRANSPORT_KEYSTORE_TYPE = "Type"
+    public static final String TRANSPORT_KEYSTORE_PWD = "Password"
 
     // NonRegulatoryApplication config constants
     public static final String NON_REGULATORY_APP = "NonRegulatoryApplication";
