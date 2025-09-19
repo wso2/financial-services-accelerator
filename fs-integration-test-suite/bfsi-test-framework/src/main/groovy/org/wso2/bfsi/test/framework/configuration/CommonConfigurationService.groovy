@@ -596,6 +596,36 @@ class CommonConfigurationService {
     }
 
     /**
+     * Get Transport Keystore Location
+     * @return
+     */
+    String getTransportKeystoreLocation() {
+        return configuration.get(
+                ConfigConstants.TRANSPORT + "." + ConfigConstants.TRANSPORT_KEYSTORE + "."
+                        + ConfigConstants.TRANSPORT_KEYSTORE_LOCATION)
+    }
+
+    /**
+     * Get Transport Keystore Type
+     * @return
+     */
+    String getTransportKeystoreType() {
+        return configuration.get(
+                ConfigConstants.TRANSPORT + "." + ConfigConstants.TRANSPORT_KEYSTORE + "."
+                        + ConfigConstants.TRANSPORT_KEYSTORE_TYPE)
+    }
+
+    /**
+     * Get Transport Keystore Password
+     * @return
+     */
+    String getTransportKeystorePWD() {
+        return configuration.get(
+                ConfigConstants.TRANSPORT + "." + ConfigConstants.TRANSPORT_KEYSTORE + "."
+                        + ConfigConstants.TRANSPORT_KEYSTORE_PWD)
+    }
+
+    /**
      * Read Test Artifact Location.
      *
      * @return test artifact folder location
