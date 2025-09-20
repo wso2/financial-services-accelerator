@@ -5,7 +5,7 @@
 Prerequisites:
 1. [Download](https://wso2.com/api-manager/#) the WSO2 API Manager product 
 2. Build the repository completely using the below command to create accelerator zip files.
-<code>mvn clean install -P Solution</code>
+<code>mvn clean install</code>
 3. Locate the Accelerator Zip file (wso2-fsam-accelerator-4.0.0.zip) from 
 the <code>target</code> folder in this directory
 4. Setup MySQL database server
