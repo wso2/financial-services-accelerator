@@ -140,10 +140,10 @@ class SignedObject {
      */
     String getSignedRequestWithDefinedCert(String claims) throws TestFrameworkException {
 
-        try (FileInputStream is = new FileInputStream(configuration.getTransportTruststoreLocation())) {
+        try (FileInputStream is = new FileInputStream(configuration.getTransportKeystoreLocation())) {
             java.security.KeyStore keystore = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
-            keystore.load(is, configuration.getTransportTruststorePWD().toCharArray());
-            Key signingKey = keystore.getKey("iamvalidate", configuration.getTransportTruststorePWD().toCharArray());
+            keystore.load(is, configuration.getTransportKeystorePWD().toCharArray());
+            Key signingKey = keystore.getKey("wso2carbon", configuration.getTransportKeystorePWD().toCharArray());
             JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(getSigningAlgorithm()))
                     .type(JOSEObjectType.JWT).build();
 

@@ -39,6 +39,7 @@ class EndToEndConsentManagementFlowTest extends FSConnectorTest {
     EndToEndConsentManagementFlowTest(Map<String, String> map) {
 
         this.map = map
+        configuration.setPsuNumber(0)
     }
 
     @Test
