@@ -96,8 +96,61 @@
                                     </fileset>
                                 </copy>
 
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/mtls-enforcement/mtls-header-enforcement-mediator/target">
+                                        <filename
+                                                regex="mtls-header-enforcement-mediator-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/consent-enforcement/consent-enforcement-payload-mediator/target">
+                                        <filename
+                                                regex="consent-enforcement-payload-mediator-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/dynamic-client-registration/dynamic-client-registration-mediator/target">
+                                        <filename
+                                                regex="dynamic-client-registration-mediator-\d+\.\d+\.\d+(?:-[A-Za-z0-9]+)*(?&lt;!-javadoc)\.jar"/>
+                                    </fileset>
+                                </copy>
+
                                 <unzip src="../../internal-webapps/org.wso2.financial.services.accelerator.demo.backend/target/api#fs#backend.war"
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#fs#backend/"/>
+
+                                <copy todir="${project.basedir}/repository/resources/mediation-policies" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/mtls-enforcement/">
+                                        <filename regex="mtlsEnforcementPolicy.j2"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/repository/resources/mediation-policies" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/consent-enforcement/">
+                                        <filename regex="consentEnforcementPolicy.j2"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/repository/resources/mediation-policies" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/dynamic-client-registration/">
+                                        <filename regex="dynamicClientRegistrationRequestPolicy.j2"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/repository/resources/mediation-policies" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/dynamic-client-registration/">
+                                        <filename regex="dynamicClientRegistrationResponsePolicy.j2"/>
+                                    </fileset>
+                                </copy>
+                                <copy todir="${project.basedir}/repository/resources/mediation-policies" overwrite="true">
+                                    <fileset
+                                            dir="../../common-mediation-policies/dynamic-endpoint/">
+                                        <filename regex="dynamicEndpointPolicy.j2"/>
+                                    </fileset>
+                                </copy>
                             </target>
                         </configuration>
                         <goals>
