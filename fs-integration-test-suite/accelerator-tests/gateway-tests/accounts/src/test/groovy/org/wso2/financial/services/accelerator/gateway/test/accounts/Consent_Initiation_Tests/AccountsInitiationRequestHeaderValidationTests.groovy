@@ -381,7 +381,7 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         Assert.assertEquals(TestUtil.parseResponseBody(introspectResponse, "active"), "false")
 
         // Waiting till the gateway caches are updated
-        sleep(5000)
+        sleep(10000)
         consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID,ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
