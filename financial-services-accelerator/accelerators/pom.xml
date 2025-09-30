@@ -34,5 +34,6 @@
 
     <modules>
         <module>fs-is</module>
+        <module>fs-apim</module>
     </modules>
 </project>
