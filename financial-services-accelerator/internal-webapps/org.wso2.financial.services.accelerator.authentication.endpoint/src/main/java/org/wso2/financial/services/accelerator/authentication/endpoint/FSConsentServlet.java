@@ -199,6 +199,7 @@ public class FSConsentServlet extends HttpServlet {
                     RequestDispatcher dispatcher = this.getServletContext()
                             .getRequestDispatcher("/fs_default_account_selection.jsp");
                     dispatcher.forward(originalRequest, response);
+                    return;
                 } else {
                     log.debug("Handling consent in default flow, forwarding to default consent page");
 
@@ -206,6 +207,7 @@ public class FSConsentServlet extends HttpServlet {
                     RequestDispatcher dispatcher = this.getServletContext()
                             .getRequestDispatcher("/fs_default.jsp");
                     dispatcher.forward(originalRequest, response);
+                    return;
                 }
             }
         }
