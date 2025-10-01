@@ -185,7 +185,7 @@ public class FSConsentServlet extends HttpServlet {
         updatedValues.forEach(originalRequest.getSession()::setAttribute);
 
         // If the account selection is to be handled separately, forward to the account selection JSP
-        Object consentDataObj = dataSet.get(ConsentAuthorizeConstants.CONSENT_DATA);
+        Object consentDataObj = dataSet.opt(ConsentAuthorizeConstants.CONSENT_DATA);
         if (consentDataObj instanceof JSONObject) {
             JSONObject consentData = (JSONObject) consentDataObj;
             if (consentData.has(ConsentAuthorizeConstants.HANDLE_ACCOUNT_SELECTION_SEPARATELY)) {
@@ -210,6 +210,11 @@ public class FSConsentServlet extends HttpServlet {
                     return;
                 }
             }
+        } else {
+            log.error("Consent data is not available or not in the expected format");
+            request.getSession().invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Error while processing request");
+            return;
         }
 
         // dispatch
