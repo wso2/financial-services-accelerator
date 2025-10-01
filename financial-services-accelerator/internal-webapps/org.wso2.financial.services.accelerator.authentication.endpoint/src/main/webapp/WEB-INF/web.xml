@@ -119,4 +119,16 @@
         <url-pattern>/retry.do</url-pattern>
     </servlet-mapping>
 
+    <!--  7 -->
+
+    <servlet>
+        <servlet-name>fs_default.do</servlet-name>
+        <jsp-file>/fs_default.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>fs_default.do</servlet-name>
+        <url-pattern>/fs_default.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>

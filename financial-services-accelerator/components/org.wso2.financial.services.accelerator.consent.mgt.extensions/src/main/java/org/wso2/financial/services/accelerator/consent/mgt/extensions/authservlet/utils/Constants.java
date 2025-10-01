@@ -66,6 +66,7 @@ public class Constants {
     public static final String IF_STOP_DATA_SHARING_KEY = "if.stop.data.sharing";
     public static final String DO_YOU_CONFIRM_KEY = "do.you.confirm";
     public static final String CONFIRM_BUTTON_KEY = "button.confirm";
+    public static final String NEXT_BUTTON_KEY = "button.next";
     public static final String DENY_BUTTON_KEY = "button.deny";
     public static final String GO_BACK_BUTTON_KEY = "button.goback";
     public static final String APP_REQUESTS_DETAILS = "appRequestsDetails";
@@ -79,6 +80,7 @@ public class Constants {
     public static final String IF_STOP_DATA_SHARING = "ifStopDataSharing";
     public static final String DO_YOU_CONFIRM = "doYouConfirm";
     public static final String CONFIRM_BUTTON = "buttonConfirm";
+    public static final String NEXT_BUTTON = "buttonNext";
     public static final String DENY_BUTTON = "buttonDeny";
     public static final String GO_BACK_BUTTON = "buttonGoBack";
 }
