@@ -42,7 +42,7 @@ public class ExternalAPIConsentAdminUtils {
     private static final String ENRICH_SEARCH_RESULT = "enrichedSearchResult";
 
     /**
-     * Method to call external service for revoke
+     * Method to call external service for revoke.
      *
      * @param requestDTO - Request DTO
      * @return - ExternalAPIAdminConsentRevokeResponseDTO respomse
@@ -57,7 +57,7 @@ public class ExternalAPIConsentAdminUtils {
     }
 
     /**
-     * Method to call external service for search
+     * Method to call external service for search.
      *
      * @param requestDTO - Request DTO
      * @return - ExternalAPIAdminConsentSearchResponseDTO response
@@ -74,7 +74,7 @@ public class ExternalAPIConsentAdminUtils {
     }
 
     /**
-     * Method to call external service with a json
+     * Method to call external service with a json.
      *
      * @param requestJson - Request json
      * @return -JSONObject respomse

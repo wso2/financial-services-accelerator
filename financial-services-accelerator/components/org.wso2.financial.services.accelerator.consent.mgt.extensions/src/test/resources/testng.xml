@@ -32,8 +32,8 @@
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ExternalAPIConsentPersistStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ExternalAPIConsentRetrievalStepTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.DefaultConsentPersistStepTest"/>
+            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentAuthorizeUtilTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.DefaultConsentValidatorTest"/>
-            <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.ConsentValidatorServiceExtensionTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.DefaultConsentAdminHandlerTest"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.idempotency.IdempotencyValidatorTests"/>
             <class name="org.wso2.financial.services.accelerator.consent.mgt.extensions.job.ExpiredConsentStatusUpdateJobTests"/>

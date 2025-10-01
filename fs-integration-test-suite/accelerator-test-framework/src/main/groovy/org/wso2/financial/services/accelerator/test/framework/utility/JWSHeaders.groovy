@@ -25,7 +25,7 @@ class JWSHeaders {
 
     static final ConfigurationService configuration = new ConfigurationService()
     static final def algorithm = configuration.getCommonSigningAlgorithm()
-    static final def clientKeyId = KeyStore.getApplicationCertificateKeyId()
+    static final def clientKeyId = configuration.getAppKeyStoreSigningKid()
     static final def clientSubjectDN = KeyStore.getApplicationCertificateSubjectDn()
     static final def trustAnchorDns = "openbanking.org.uk"
 
@@ -98,9 +98,7 @@ class JWSHeaders {
                 ],
                 "http://openbanking.org.uk/iat": ${getIat()},
                 "http://openbanking.org.uk/tan": "${trustAnchorDns}",
-                "http://openbanking.org.uk/iss": "${clientSubjectDN}",
-                "def": 123,
-                "ghi": 789
+                "http://openbanking.org.uk/iss": "${clientSubjectDN}"
             }""".stripIndent()
 
     final static String jwsHeaderWithMissingIssInCrit = """{

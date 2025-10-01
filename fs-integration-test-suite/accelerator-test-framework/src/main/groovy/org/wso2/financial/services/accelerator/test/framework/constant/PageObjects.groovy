@@ -43,7 +43,7 @@ class PageObjects extends CommonPageObjects{
     public static final String CHK_PASSWORD_GRANT = "//input[@id='grant_password']"
 
     //Auth Flow page objects
-    public static final String CHK_SALARY_SAVER_ACC = "//input[@id='Salary Saver Account']"
+    public static final String CHK_SALARY_SAVER_ACC = "//input[contains(@id,'Salary Saver Account')]"
     public static final String BTN_SIGN_IN = "//button[contains(text(),'Sign In')]";
     public static final String BTN_APPROVE = "//input[@id='approve']"
     public static final String BTN_CONFIRM = "//input[@value='Confirm']"
@@ -53,7 +53,44 @@ class PageObjects extends CommonPageObjects{
     public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']"
     public static final String AUTH_CONTINUE_XPATH = "//input[@value=\"Continue\"]"
     public static final String ACCOUNTS_PAGE_TXT = "//h5[contains(@class,'ui body')]"
-    static final String PAYMENTS_SELECT_XPATH = """//option[@value="30080012343456"]"""
+    static final String PAYMENTS_SELECT_XPATH = """//option[@value="Salary Saver Account"]"""
     public static final String LBL_REDIRECT_ERROR = "//h3/following-sibling::p"
     static final String SUBMIT_XPATH = """//*[@id="approve"]"""
+
+    //APIM Console
+    static final String CONSOLE_USERNAME = """//input[@id="txtUserName"]"""
+    static final String CONSOLE_PASSWORD = """//input[@id="txtPassword"]"""
+    static final String BTN_CONSOLE_SIGN_IN = """//input[@value="Sign-in"]"""
+    static final String BTN_ADD_USERS_ROLES = """//a[contains(@href,'user_mgt_menu_add')]"""
+    static final String BTN_ADD_NEW_ROLE = """//a[text()="Add New Role"]"""
+    static final String DD_DOMAIN = """//select[@id="domain"]"""
+    static final String TXT_ROLE_NAME = """//input[@name="roleName"]"""
+    static final String BTN_FINISH = """//input[@value="Finish"]"""
+
+    //APIM Devportal
+    static final String ID_DEVPORTAL_SIGN_IN = "itest-devportal-sign-in"
+    static final String TXT_DEVPORTAL_USERNAME = "username"
+    static final String TXT_DEVPORTAL_PASSWORD = "password"
+    static final String BTN_DEVPORTAL_CONTINUE = """//button[contains(text(),"Continue")]"""
+    static final String BTN_ADD_NEW_APPLICATION = """//button[contains(text(),"Add New Application")]"""
+    static final String TXT_APPLICATION_NAME = "application-name"
+    static final String DD_APP_TOKEN_QUOTA = "per-token-quota"
+    static final String BTN_CREATE_APP_SAVE = "itest-application-create-save"
+    static final String TAB_SANDBOX_KEYS = "sandbox-keys"
+    static final String CHK_REFRESH_TOKEN = "refresh_token"
+    static final String CHK_CODE = "authorization_code"
+    static final String TXT_REDIRECT_URL = "callbackURL"
+    static final String DD_REGULATORY_TYPE = "regulatory"
+    static final String BTN_GENERATE_KEYS = "generate-keys"
+    static final String TXT_SP_CERTIFICATE = "sp_certificate"
+    static final String TXT_CONSUMER_KEY = """//input[@id="consumer-key"]"""
+    static final String TXT_CONSUMER_SECRET = """//input[@id="consumer-secret"]"""
+
+    //APIM Publisher
+    static final String PUBLISHER_TXT_USERNAME = """//input[@id="username"]"""
+    static final String PUBLISHER_TXT_PASSWORD = """//input[@id="password"]"""
+    static final String BTN_PUBLISHER_CONTINUE = """//button[contains(text(),'Continue')]"""
+    static final String BTN_CREATE_API = """//button[@id='itest-create-api-menu-button']"""
+    static final String BTN_DEPLOY_SAMPLE_API = """//button[@id='itest-id-deploy-sample']"""
+    static final String LBL_API_NAME = """//h1[@id='itest-api-name-version']"""
 }

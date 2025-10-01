@@ -51,7 +51,8 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 configuration.getAppInfoClientID(), scopeList)
     }
 
-    @Test
+    //TODO:https://github.com/wso2/financial-services-accelerator/issues/681
+    //@Test
     void "Funds Confirmation Initiation with invalid content-type"() {
 
         consentResponse = FSRestAsRequestBuilder.buildRequest()
@@ -110,18 +111,19 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token do not align. Please ensure the claims match."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Claim Mismatch")
     }
 
     @Test
     void "Funds Confirmation Initiation Without Authorization Header"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID,ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
@@ -132,11 +134,12 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Make sure your API invocation call has a header: 'Authorization"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                "'null : Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900902")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.MISSING_CREDENTIALS_ERROR)
     }
 
@@ -158,24 +161,25 @@ class InitiationRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .post(consentPath)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/cbpii, version: v3.1 status: (900901)"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.INVALID_CREDENTIALS_ERROR)
     }
+
 
     @Test
     void "Initiation Request With Invalid Accept Header"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID,ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, TestUtil.generateUUID())
-                .accept(ContentType.XML)
+                .accept(ContentType.TEXT)
                 .baseUri(configuration.getServerBaseURL())
                 .body(initiationPayload)
                 .post(consentPath)

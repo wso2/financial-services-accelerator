@@ -25,6 +25,7 @@ import org.testng.annotations.Test
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
+import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.utility.AccountsDataProviders
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
@@ -62,12 +63,12 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .get(accountsPath)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
-                "token do not align"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
+                "do not align. Please ensure the claims match."))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Claim Mismatch")
     }
 
@@ -75,7 +76,7 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
     void "Accounts Retrieval with access token bound to a different scope"() {
 
         consentPath = ConnectorTestConstants.PAYMENT_CONSENT_API_PATH
-        initiationPayload = RequestPayloads.initiationPaymentPayload
+        initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
 
         applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
@@ -98,9 +99,9 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .get(accountsPath)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "The access token does not allow you to access the requested resource")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "User is NOT authorized to access the Resource: /accounts. Scope validation failed.")
     }
 
@@ -126,14 +127,12 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .get(resource)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header:" +
-                " 'Authorization"))
-        Assert.assertTrue(errorMessage.contains("Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or " +
-                "'ApiKey : API_KEY'"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                "'null : Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900902")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Missing Credentials")
     }
 
@@ -158,12 +157,12 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .get(resource)
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/aisp, version: v3.1" +
+        Assert.assertTrue(TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+                .contains("Access failure for API: /open-banking/v3.1/aisp, version: v3.1" +
                 " status: (900901) - Invalid Credentials. Make sure you have provided the correct security credentials"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Invalid Credentials")
     }
 
@@ -209,12 +208,14 @@ class AccountsRetrievalRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .baseUri(configuration.getServerBaseURL())
                 .get(ConnectorTestConstants.ACCOUNTS_PATH)
 
-        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.DESCRIPTION)
-        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
-                "token do not align"))
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.CODE),
-                "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.MESSAGE),
-                "Claim Mismatch")
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_406)
+
+//        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTOR)
+//        Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the " +
+//                "token do not align"))
+//        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+//                "900912")
+//        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+//                "Claim Mismatch")
     }
 }

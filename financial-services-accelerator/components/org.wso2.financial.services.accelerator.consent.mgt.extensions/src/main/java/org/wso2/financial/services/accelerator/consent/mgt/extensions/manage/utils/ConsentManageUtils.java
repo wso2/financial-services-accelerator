@@ -20,19 +20,27 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ut
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for consent manage module.
@@ -41,6 +49,7 @@ public class ConsentManageUtils {
 
     private static final Log log = LogFactory.getLog(ConsentManageUtils.class);
     private static final FinancialServicesConfigParser parser = FinancialServicesConfigParser.getInstance();
+    private static final Pattern UUID_PATTERN = Pattern.compile(FinancialServicesConstants.UUID_REGEX);
 
     public static boolean isConsentExpirationTimeValid(String expDateVal) {
 
@@ -217,5 +226,61 @@ public class ConsentManageUtils {
 
         ConsentManageBuilder consentManageBuilder = ConsentExtensionExporter.getConsentManageBuilder();
         return consentManageBuilder.getConsentManageValidator();
+    }
+
+    /**
+     * Extract consent id from resource path.
+     *
+     * @param resourcePath      addressed resource path
+     * @param consentOperation  consent operation using this method
+     * @return  consent id
+     */
+    public static String extractConsentIdFromPath(String resourcePath, ConsentOperationEnum consentOperation) {
+        // Retrieve first UUID in request path as consent id
+        if (resourcePath != null && !resourcePath.isEmpty()) {
+            for (String part : resourcePath.split("/")) {
+                if (UUID_PATTERN.matcher(part).matches()) {
+                    return part;
+                }
+            }
+        }
+
+        log.error("Invalid Request Path. Valid consent id not found.");
+        throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                "Invalid Request Path. Valid consent id not found.",
+                consentOperation);
+    }
+
+    /**
+     * Get validity time in epoch seconds. For payments validity time is 0. For other consent types, if the
+     * Expiration Date Time is sent in the request, the values will be converted to epoch timestamp and returned.
+     * If not, the current timestamp + 90 days will be returned.
+     *
+     * @param payload      request payload
+     * @param consentType  consent type
+     * @return  validity time in epoch seconds
+     */
+    public static long getValidityTime(Object payload, String consentType) {
+
+        if (ConsentExtensionConstants.PAYMENTS.equals(consentType)) {
+            return 0L;
+        } else {
+            JSONObject requestPayload = (JSONObject) payload;
+            JSONObject data = requestPayload.getJSONObject(ConsentExtensionConstants.DATA);
+
+            if (data.has(ConsentExtensionConstants.EXPIRATION_DATE)) {
+                String expirationDateTime = data.getString(ConsentExtensionConstants.EXPIRATION_DATE);
+
+                // Convert to Instant
+                Instant instant = OffsetDateTime.parse(expirationDateTime).toInstant();
+
+                // Get epoch value In seconds
+                return instant.getEpochSecond();
+            } else {
+
+                // Get epoch seconds by adding days to current time stamp
+                return Instant.now().plus(90, ChronoUnit.DAYS).getEpochSecond();
+            }
+        }
     }
 }

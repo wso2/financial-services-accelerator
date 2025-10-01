@@ -27,19 +27,32 @@ import org.wso2.bfsi.test.framework.constant.ConfigConstants
  */
 class CommonConfigurationService {
 
-    //Setting up path to Test Configuration file
-    File configXml = new File(this.getClass().getClassLoader().getResource("TestConfiguration.xml").getFile())
-    // Get Instance of Configuration Parser
-    private ConfigParser configParser = ConfigParser.getInstance(configXml.path)
+    private static ConfigParser configParser
+    private static List<Object> applicationConfig
+    private static List<Object> psuConfig
+    protected static Map<String, Object> configuration
 
-    /**
-     *  Retrieve Configuration data from Config parser
-     */
+    static {
+        InputStream inputStream = CommonConfigurationService.class.getClassLoader().getResourceAsStream("TestConfiguration.xml")
+        if (inputStream == null) {
+            throw new FileNotFoundException("TestConfiguration.xml not found in classpath")
+        }
 
-    private List<Object> applicationConfig = configParser.getApplicationConfig()
-    private List<Object> psuConfig = configParser.getPsuConfig()
+        // Extract to temporary file
+        File tempFile = File.createTempFile("TestConfiguration", ".xml")
+        tempFile.deleteOnExit()
+        tempFile.withOutputStream { out ->
+            out << inputStream
+        }
 
-    protected Map<String, Object> configuration = configParser.getConfigurationMap()
+        // Initialize config parser
+        configParser = ConfigParser.getInstance(tempFile.absolutePath)
+
+        // Load config
+        applicationConfig = configParser.getApplicationConfig()
+        psuConfig = configParser.getPsuConfig()
+        configuration = configParser.getConfigurationMap()
+    }
 
     /**
      * Get OB Configuration File
@@ -583,6 +596,36 @@ class CommonConfigurationService {
     }
 
     /**
+     * Get Transport Keystore Location
+     * @return
+     */
+    String getTransportKeystoreLocation() {
+        return configuration.get(
+                ConfigConstants.TRANSPORT + "." + ConfigConstants.TRANSPORT_KEYSTORE + "."
+                        + ConfigConstants.TRANSPORT_KEYSTORE_LOCATION)
+    }
+
+    /**
+     * Get Transport Keystore Type
+     * @return
+     */
+    String getTransportKeystoreType() {
+        return configuration.get(
+                ConfigConstants.TRANSPORT + "." + ConfigConstants.TRANSPORT_KEYSTORE + "."
+                        + ConfigConstants.TRANSPORT_KEYSTORE_TYPE)
+    }
+
+    /**
+     * Get Transport Keystore Password
+     * @return
+     */
+    String getTransportKeystorePWD() {
+        return configuration.get(
+                ConfigConstants.TRANSPORT + "." + ConfigConstants.TRANSPORT_KEYSTORE + "."
+                        + ConfigConstants.TRANSPORT_KEYSTORE_PWD)
+    }
+
+    /**
      * Read Test Artifact Location.
      *
      * @return test artifact folder location
@@ -609,6 +652,15 @@ class CommonConfigurationService {
     String getIsVersion() {
         return configuration.get(ConfigConstants.COMMON + "." + ConfigConstants.IS_VERSION)
     }
+
+    String getUserIsAsKeyManagerAdminName() {
+        return configuration.get(ConfigConstants.IS_AS_KEY_MANAGER + "." + ConfigConstants.USERS_USER_NAME)
+    }
+
+    String getUserIsAsKeyManagerAdminPWD() {
+        return configuration.get(ConfigConstants.IS_AS_KEY_MANAGER + "." + ConfigConstants.USERS_PWD)
+    }
+
 
 }
 

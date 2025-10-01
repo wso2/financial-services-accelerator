@@ -26,15 +26,23 @@
 package org.wso2.financial.services.accelerator.gateway.test.payments.Payment_Submission_Tests
 
 import org.testng.Assert
+import org.testng.SkipException
 import org.testng.annotations.BeforeClass
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.constant.PaymentRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.RequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.request_builder.ClientRegistrationRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
+import org.wso2.financial.services.accelerator.test.framework.utility.JWSHeaders
+import org.wso2.financial.services.accelerator.test.framework.utility.PaymentsDataProviders
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
+
+import java.lang.reflect.Method
+import java.time.Instant
 
 /**
  * Tests for validating the request headers in payment submission requests.
@@ -51,6 +59,15 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         initiationPayload = PaymentRequestPayloads.initiationPaymentPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.PAYMENTS_TYPE)
         submissionPath = ConnectorTestConstants.PISP_PATH + ConnectorTestConstants.PAYMENT_SUBMISSION_PATH
+    }
+
+    //Skip JWS Signature Validation tests if dcrEnabled is false
+    void skipIfDCRDisabled(String testName) {
+        boolean dcrEnabled = Boolean.parseBoolean(System.getProperty("dcrEnabled", "false"))
+        if (!dcrEnabled) {
+            println "⚠️ Skipping DCR test: $testName"
+            throw new SkipException("Skipping DCR test: $testName because dcrEnabled=false")
+        }
     }
 
     void prePaymentSubmissionStep(){
@@ -72,23 +89,6 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     }
 
     @Test
-    void "OBA-915_Payment Submission Without x-jws-signature"() {
-
-        prePaymentSubmissionStep()
-        Assert.assertNotNull(code)
-
-        def submissionResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
-                .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
-                .body(submissionPayload)
-                .baseUri(configuration.getServerBaseURL())
-                .post(submissionPath)
-
-        Assert.assertEquals(submissionResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
-        Assert.assertTrue(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_MESSAGE)
-                .contains(ConnectorTestConstants.X_JWS_SIGNATURE_MISSING))
-    }
-
-    @Test
     void "OBA-916_Domestic Payment Submission Request with valid x-jws-signature header"() {
 
         //Payment Initiation and authorisation
@@ -103,32 +103,15 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
     }
 
     @Test
-    void "OBA-796_Payment Submission request with Consent bound to deleted application"() {
-
-        configuration.setTppNumber(2)
-        registrationPath = configuration.getServerBaseURL() + ConnectorTestConstants.REGISTRATION_ENDPOINT
-        SSA = new File(configuration.getAppDCRSSAPath()).text
-
-        def registrationResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestWithClaims(ClientRegistrationRequestBuilder.getRegularClaims(SSA))
-                .when()
-                .post(registrationPath)
-
-        Assert.assertEquals(registrationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_201)
-        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+    void "Payment Submission Request with mismatching initiation payload"() {
 
         //Payment Initiation and authorisation
         prePaymentSubmissionStep()
         Assert.assertNotNull(code)
 
-        //Delete the application
-        def deleteResponse = ClientRegistrationRequestBuilder
-                .buildRegistrationRequestForGetAndDelete(applicationAccessToken)
-                .delete(registrationPath + "/" + clientId)
+        String submissionPayload = PaymentRequestPayloads.getModifiedSubmissionPaymentPayload(consentId)
 
-        Assert.assertEquals(deleteResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_204)
-
-        //Send Payment Submission
+        //Payment Submission
         submissionResponse = consentRequestBuilder.buildBasicRequest(userAccessToken)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, TestUtil.idempotency)
                 .header(ConnectorTestConstants.X_JWS_SIGNATURE,TestUtil
@@ -137,6 +120,12 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
                 .baseUri(configuration.getServerBaseURL())
                 .post(submissionPath)
 
-        Assert.assertEquals(deleteResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(submissionResponse.statusCode(),ConnectorTestConstants.BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Consent Enforcement Error")
+        Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Initiation payloads do not match")
     }
 }

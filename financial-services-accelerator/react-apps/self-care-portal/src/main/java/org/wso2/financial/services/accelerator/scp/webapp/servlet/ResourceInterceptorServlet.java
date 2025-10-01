@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.scp.webapp.servlet;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
@@ -26,6 +27,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.json.JSONObject;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
+import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.model.SelfCarePortalError;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,9 +65,16 @@ public class ResourceInterceptorServlet extends HttpServlet {
 
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
     @Override
+    @SuppressFBWarnings({"SERVLET_QUERY_STRING", "IMPROPER_UNICODE"})
+    // Suppressed content - req.getQueryString(), req.getRequestURI()
+    // Suppressed content - !HttpHeaders.AUTHORIZATION.toUpperCase().equals(h.toUpperCase())
+    // Suppression reason - False Positive :These parameters are read only
+    // Suppressed warning count - 2
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            LOG.debug("New request received: " + req.getRequestURI() + "?" + req.getQueryString());
+            LOG.debug(String.format("New request received: %s ? %s",
+                    req.getRequestURI().replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
+                    req.getQueryString().replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
             if (resourceInterceptorService.isAccessTokenExpired(req)) {
                 // access token is expired, refreshing access token
                 Optional<String> optRefreshToken = resourceInterceptorService.constructRefreshTokenFromCookies(req);
@@ -112,7 +122,8 @@ public class ResourceInterceptorServlet extends HttpServlet {
                     // add existing req headers to new request
                     Map<String, String> headers = Collections.list(req.getHeaderNames())
                             .stream()
-                            .filter(h -> !HttpHeaders.AUTHORIZATION.equalsIgnoreCase(h))
+                            .filter(h -> !HttpHeaders.AUTHORIZATION.toUpperCase(Locale.ROOT)
+                                    .equals(h.toUpperCase(Locale.ROOT)))
                             .collect(Collectors.toMap(h -> h, req::getHeader));
 
                     // add authorization headers to request

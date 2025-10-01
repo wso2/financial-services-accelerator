@@ -43,6 +43,9 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+/**
+ * Unit test class for ExternalAPIUtil.
+ */
 public class ExternalAPIUtilTest {
 
     private static ExternalServiceResponse createErrorResponse(int code, ObjectNode dataNode) {
@@ -78,7 +81,7 @@ public class ExternalAPIUtilTest {
                                                      int freq, long validity, boolean recurring, String status) {
 
         return new ConsentResource(consentId, clientId, receipt, type, freq, validity, recurring, status,
-                System.currentTimeMillis(), System.currentTimeMillis());
+                System.currentTimeMillis() / 1000, System.currentTimeMillis() / 1000);
     }
 
     @Test(expectedExceptions = ConsentException.class)

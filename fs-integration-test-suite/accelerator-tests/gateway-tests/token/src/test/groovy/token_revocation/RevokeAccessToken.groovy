@@ -68,9 +68,10 @@ class RevokeAccessToken extends FSAPIMConnectorTest{
         Assert.assertEquals(introspectResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
         Assert.assertEquals(TestUtil.parseResponseBody(introspectResponse, "active"), "false")
 
+        //TODO: https://github.com/wso2/financial-services-accelerator/issues/689
         //Create Accounts Initiation
-        doDefaultAccountInitiation()
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+//        doDefaultAccountInitiation()
+//        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
     }
 
     @Test
@@ -183,6 +184,46 @@ class RevokeAccessToken extends FSAPIMConnectorTest{
         //Revoke the user access token
         Response revokeResponse = TokenRequestBuilder.doTokenRevocation(invalidAccessToken,clientId)
         Assert.assertEquals(revokeResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+    }
+
+    @Test
+    void "Not revoking access token upon creation of new token when the renew_token_without_revoking_existing configuration is enabled"(){
+
+        //Get User Access Token
+        authoriseConsent()
+
+        //Introspect the access token to verify it is revoked
+        def userAccessToken1 = userAccessToken
+
+        Response introspectResponse1 = getTokenIntrospectionResponse(userAccessToken1)
+        Assert.assertEquals(introspectResponse1.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(TestUtil.parseResponseBody(introspectResponse1, "active"), "true")
+
+        //Get a New User Access Token
+        authoriseConsent()
+
+        //Introspect the access token to verify it is revoked
+        def userAccessToken2 = userAccessToken
+
+        //Introspect the second access token to verify it is revoked
+        Response introspectResponse2 = getTokenIntrospectionResponse(userAccessToken2)
+        Assert.assertEquals(introspectResponse2.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(TestUtil.parseResponseBody(introspectResponse2, "active"), "true")
+
+        //Verify the first access token is not revoked
+        Response introspectResponseForFirstToken = getTokenIntrospectionResponse(userAccessToken1)
+        Assert.assertEquals(introspectResponseForFirstToken.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(TestUtil.parseResponseBody(introspectResponseForFirstToken, "active"), "true")
+
+        //Retrieve accounts from first user access token
+        accountsPath = ConnectorTestConstants.TRANSACTIONS_SINGLE_PATH
+        doAccountRetrievalWithDefinedAccessToken(userAccessToken1)
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
+
+        //Retrieve accounts from second user access token
+        accountsPath = ConnectorTestConstants.TRANSACTIONS_SINGLE_PATH
+        doAccountRetrievalWithDefinedAccessToken(userAccessToken2)
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
 
     /**

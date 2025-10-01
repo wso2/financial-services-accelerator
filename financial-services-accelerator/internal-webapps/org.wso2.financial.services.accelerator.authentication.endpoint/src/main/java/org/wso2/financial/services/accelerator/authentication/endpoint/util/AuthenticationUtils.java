@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.financial.services.accelerator.authentication.endpoint.FSConsentConfirmServlet;
+import org.wso2.financial.services.accelerator.authentication.endpoint.i18n.UTF8Control;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
@@ -89,8 +90,7 @@ public class AuthenticationUtils {
 
     @Generated(message = "Encapsulated method for unit test")
     public static ResourceBundle getResourceBundle(Locale locale) {
-
-        return ResourceBundle.getBundle(BUNDLE, locale);
+        return ResourceBundle.getBundle(BUNDLE, locale, new UTF8Control());
     }
 
     /**

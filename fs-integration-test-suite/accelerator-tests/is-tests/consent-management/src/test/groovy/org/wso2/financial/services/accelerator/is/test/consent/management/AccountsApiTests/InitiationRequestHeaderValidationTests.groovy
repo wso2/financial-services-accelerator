@@ -117,7 +117,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
     @Test
     void "Initiation Request Without Authorization Header"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())
@@ -131,8 +131,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 "AuthenticationHandler not found.")
     }
 
-    //TODO: Enable after fixing the IS issue:https://github.com/wso2-enterprise/wso2-iam-internal/issues/3473
-    @Test(enabled = false)
+    @Test
     void "Initiation Request With Invalid Authorization Header"() {
 
         def authHeader = getBasicAuthHeader(configuration.getUserPSUName(),
@@ -148,9 +147,9 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
-        Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertEquals(errorMessage, "Operation is not permitted. You do not have permissions to make this request.")
     }
 
     @Test
@@ -171,7 +170,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
     @Test
     void "Initiation Request With Invalid Content Type"() {
 
-        consentResponse = FSRestAsRequestBuilder.buildRequest()
+        def consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.XML)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
                 .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, configuration.getAppInfoClientID())

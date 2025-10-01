@@ -29,13 +29,24 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.DefaultConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerDataDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -69,7 +80,6 @@ public class DefaultConsentPersistStepTest {
 
         configParser = Mockito.mockStatic(FinancialServicesConfigParser.class);
         FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
-        Mockito.doReturn(true).when(configParserMock).isPreInitiatedConsent();
         configParser.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
         consentPersistStep = new DefaultConsentPersistStep();
@@ -132,61 +142,117 @@ public class DefaultConsentPersistStepTest {
 
     @Test(priority = 4)
     public void testConsentPersistSuccessScenarioWithApprovalTrue() {
+        PopulateConsentAuthorizeScreenDTO storedResponse = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        ConsumerAccountDTO account =  new ConsumerAccountDTO();
+        PermissionDTO permission = new PermissionDTO();
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(TestUtil.getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
-                TestConstants.SAMPLE_AUTH_ID)).when(consentDataMock).getAuthResource();
+        account.setDisplayName("acc-1");
+        account.setAccountId("acc-1");
+        consumerData.setAccounts(Collections.singletonList(account));
 
-        doReturn(true).when(consentPersistDataMock).getApproval();
-        doReturn(new JSONObject(TestConstants.ACCOUNT_PERSIST_PAYLOAD)).when(consentPersistDataMock).getPayload();
+        permission.setDisplayValues(Collections.singletonList("ReadAccountBalance"));
+        consentData.setPermissions(Collections.singletonList(permission));
+
+        storedResponse.setConsentData(consentData);
+        storedResponse.setConsumerData(consumerData);
+
+        Map<String, Object> metadataMap = new HashMap<>();
+        metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE, storedResponse);
+
+        mockCommonConsentData(true,
+                String.format(TestConstants.ACCOUNT_PERSIST_PAYLOAD_WITH_ACCOUNT, "P3RM1SS10N-H4SH", "acc-1"),
+                metadataMap);
 
         consentPersistStep.execute(consentPersistDataMock);
     }
 
     @Test(priority = 5)
     public void testConsentPersistSuccessScenarioWithApprovalFalse() {
+        PopulateConsentAuthorizeScreenDTO storedResponse = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        ConsumerAccountDTO account =  new ConsumerAccountDTO();
+        PermissionDTO permission = new PermissionDTO();
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(TestUtil.getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
-                TestConstants.SAMPLE_AUTH_ID)).when(consentDataMock).getAuthResource();
+        account.setDisplayName("acc-1");
+        account.setAccountId("acc-1");
+        consumerData.setAccounts(Collections.singletonList(account));
 
-        doReturn(false).when(consentPersistDataMock).getApproval();
-        doReturn(new JSONObject(TestConstants.ACCOUNT_PERSIST_PAYLOAD)).when(consentPersistDataMock).getPayload();
+        permission.setDisplayValues(Collections.singletonList("ReadAccountBalance"));
+        consentData.setPermissions(Collections.singletonList(permission));
+
+        storedResponse.setConsentData(consentData);
+        storedResponse.setConsumerData(consumerData);
+
+        Map<String, Object> metadataMap = new HashMap<>();
+        metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE, storedResponse);
+
+        mockCommonConsentData(false,
+                String.format(TestConstants.ACCOUNT_PERSIST_PAYLOAD_WITHOUT_ACCOUNT, "P3RM1SS10N-H4SH"),
+                metadataMap);
 
         consentPersistStep.execute(consentPersistDataMock);
     }
 
-    @Test(priority = 4)
+    @Test(priority = 6)
     public void testConsentPersistSuccessScenarioForPayments() {
+        PopulateConsentAuthorizeScreenDTO storedResponse = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        ConsumerDataDTO consumerData = new ConsumerDataDTO();
+        ConsumerAccountDTO account =  new ConsumerAccountDTO();
 
-        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
-        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentDataMock).getConsentId();
-        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
-        doReturn(TestUtil.getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
-                TestConstants.SAMPLE_AUTH_ID)).when(consentDataMock).getAuthResource();
+        account.setDisplayName("acc-1");
+        account.setAccountId("acc-1");
+        consumerData.setAccounts(Collections.singletonList(account));
 
-        doReturn(true).when(consentPersistDataMock).getApproval();
-        doReturn(new JSONObject(TestConstants.PAYMENT_PERSIST_PAYLOAD)).when(consentPersistDataMock).getPayload();
+        storedResponse.setConsentData(consentData);
+        storedResponse.setConsumerData(consumerData);
+
+        Map<String, Object> metadataMap = new HashMap<>();
+        metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE, storedResponse);
+
+        mockCommonConsentData(true,
+                String.format(TestConstants.PAYMENT_PERSIST_PAYLOAD, "acc-1"),
+                metadataMap);
 
         consentPersistStep.execute(consentPersistDataMock);
     }
 
-    @Test(priority = 4)
+    @Test(priority = 7)
     public void testConsentPersistSuccessScenarioForCoF() {
+        PopulateConsentAuthorizeScreenDTO storedResponse = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        AccountDTO account =  new AccountDTO();
 
+        account.setDisplayName("acc-1");
+        account.setAccountId("acc-1");
+        consentData.setInitiatedAccountsForConsent(Collections.singletonList(account));
+
+        storedResponse.setConsentData(consentData);
+
+        Map<String, Object> metadataMap = new HashMap<>();
+        metadataMap.put(ConsentAuthorizeConstants.EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE, storedResponse);
+
+        mockCommonConsentData(true,
+                String.format(TestConstants.COF_PERSIST_PAYLOAD),
+                metadataMap);
+
+        consentPersistStep.execute(consentPersistDataMock);
+    }
+
+    private void mockCommonConsentData(boolean approval, String payloadJSON, Map<String, Object> metadataMap) {
         doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
         doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentDataMock).getConsentId();
+        doReturn("sample-user").when(consentDataMock).getUserId();
         doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
         doReturn(TestUtil.getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
                 TestConstants.SAMPLE_AUTH_ID)).when(consentDataMock).getAuthResource();
 
-        doReturn(true).when(consentPersistDataMock).getApproval();
-        doReturn(new JSONObject(TestConstants.COF_PERSIST_PAYLOAD)).when(consentPersistDataMock).getPayload();
+        doReturn(approval).when(consentPersistDataMock).getApproval();
+        doReturn(new JSONObject(payloadJSON)).when(consentPersistDataMock).getPayload();
 
-        consentPersistStep.execute(consentPersistDataMock);
+        doReturn(metadataMap).when(consentDataMock).getMetaDataMap();
     }
 }

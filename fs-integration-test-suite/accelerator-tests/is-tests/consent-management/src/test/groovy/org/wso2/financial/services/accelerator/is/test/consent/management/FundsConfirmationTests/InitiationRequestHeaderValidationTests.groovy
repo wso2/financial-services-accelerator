@@ -115,11 +115,9 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
         Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
     }
 
-    //TODO: Enable after fixing the IS issue:https://github.com/wso2-enterprise/wso2-iam-internal/issues/3473
-    @Test(enabled = false)
+    @Test
     void "Funds Confirmation Initiation With Invalid Authorization Header"() {
 
-        configuration.setPsuNumber(1)
         def accessToken = getBasicAuthHeader(configuration.getUserPSUName(),
                 configuration.getUserPSUPWD())
 
@@ -133,10 +131,9 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest {
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
         def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
-        Assert.assertEquals(errorMessage, "Authorization failure. Authorization information was " +
-                "invalid or missing from your request.")
+        Assert.assertEquals(errorMessage, "Operation is not permitted. You do not have permissions to make this request.")
     }
 
     @Test

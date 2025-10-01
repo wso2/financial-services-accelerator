@@ -29,10 +29,13 @@ import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.impl.ExternalAPIConsentPersistStep;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AmendedResources;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
@@ -41,6 +44,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreSe
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +57,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
+/**
+ * Unit test class for ExternalAPIConsentPersistStep.
+ */
 public class ExternalAPIConsentPersistStepTest {
 
     private static class MockContext {
@@ -75,6 +82,14 @@ public class ExternalAPIConsentPersistStepTest {
         return data;
     }
 
+    private static Map<String, Object> getValidMetadataMap() {
+        PopulateConsentAuthorizeScreenDTO responseDTO = new PopulateConsentAuthorizeScreenDTO();
+        ConsentDataDTO consentData = new ConsentDataDTO();
+        consentData.setInitiatedAccountsForConsent(List.of(new AccountDTO()));
+        responseDTO.setConsentData(consentData);
+        return new HashMap<>(Map.of("externalAPIPreConsentAuthorizeResponse", responseDTO));
+    }
+
     private static ConsentPersistData createPersistData(ConsentData consentData) {
         JSONObject payload = new JSONObject().put("foo", "bar");
         ConsentPersistData persistData = new ConsentPersistData(payload, new HashMap<>(), true, consentData);
@@ -82,13 +97,16 @@ public class ExternalAPIConsentPersistStepTest {
         return persistData;
     }
 
-    private MockContext mockPreInitiatedMode(boolean preInitiated, FinancialServicesConfigParser configMock,
+    private MockContext mockPreInitiatedMode(List<String> preInitiatedConsentScopes,
+                                             List<String> scopeBasedConsentScopes,
+                                             FinancialServicesConfigParser configMock,
                                              ConsentCoreService consentCoreService) {
         MockContext context = new MockContext();
 
         context.configStatic = mockStatic(FinancialServicesConfigParser.class);
         context.configStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configMock);
-        when(configMock.isPreInitiatedConsent()).thenReturn(preInitiated);
+        when(configMock.getPreInitiatedConsentScopes()).thenReturn(preInitiatedConsentScopes);
+        when(configMock.getScopeBasedConsentScopes()).thenReturn(scopeBasedConsentScopes);
 
         context.dataHolderStatic = mockStatic(ConsentExtensionsDataHolder.class);
         ConsentExtensionsDataHolder dataHolder = mock(ConsentExtensionsDataHolder.class);
@@ -102,9 +120,11 @@ public class ExternalAPIConsentPersistStepTest {
     public void testExecute_withPreInitiatedConsent_success() throws Exception {
         FinancialServicesConfigParser configMock = mock(FinancialServicesConfigParser.class);
         ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
-        MockContext mocks = mockPreInitiatedMode(true, configMock, consentCoreService);
+        MockContext mocks = mockPreInitiatedMode(Collections.singletonList("accounts"), Collections.emptyList(),
+                configMock, consentCoreService);
 
         ConsentData consentData = createConsentData("cid-123", "user1", true);
+        consentData.setScopeString("accounts");
         ConsentPersistData persistData = createPersistData(consentData);
 
         DetailedConsentResource detailed = new DetailedConsentResource();
@@ -149,7 +169,8 @@ public class ExternalAPIConsentPersistStepTest {
 
         FinancialServicesConfigParser configMock = mock(FinancialServicesConfigParser.class);
         ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
-        MockContext mocks = mockPreInitiatedMode(true, configMock, consentCoreService);
+        MockContext mocks = mockPreInitiatedMode(Collections.emptyList(), Collections.emptyList(), configMock,
+                consentCoreService);
 
         try {
             new ExternalAPIConsentPersistStep().execute(persistData);
@@ -163,9 +184,11 @@ public class ExternalAPIConsentPersistStepTest {
     public void testExecute_nonPreInitiated_withConsentId_shouldPersist() throws Exception {
         FinancialServicesConfigParser configMock = mock(FinancialServicesConfigParser.class);
         ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
-        MockContext mocks = mockPreInitiatedMode(false, configMock, consentCoreService);
+        MockContext mocks = mockPreInitiatedMode(Collections.emptyList(), Collections.singletonList("accounts"),
+                configMock, consentCoreService);
 
         ConsentData consentData = createConsentData("cid-nonpre", "userZ", false);
+        consentData.setScopeString("accounts");
         ConsentPersistData persistData = createPersistData(consentData);
 
         DetailedConsentResource dummyConsent = new DetailedConsentResource();
@@ -203,11 +226,13 @@ public class ExternalAPIConsentPersistStepTest {
     public void testExecute_nonPreInitiated_withoutConsentId_shouldGenerateAndPersist() throws Exception {
         FinancialServicesConfigParser configMock = mock(FinancialServicesConfigParser.class);
         ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
-        MockContext mocks = mockPreInitiatedMode(false, configMock, consentCoreService);
+        MockContext mocks = mockPreInitiatedMode(Collections.emptyList(), Collections.singletonList("scope"),
+                configMock, consentCoreService);
 
         ConsentData consentData = new ConsentData("sessionKey", "user2", "req", "scope", "appX", new HashMap<>());
         consentData.setRedirectURI(new URI("https://localhost/return"));
         consentData.setState("state-x");
+        consentData.setMetaDataMap(getValidMetadataMap());
         ConsentPersistData persistData = createPersistData(consentData);
 
         ExternalAPIConsentResourceResponseDTO responseConsent = new ExternalAPIConsentResourceResponseDTO();
@@ -245,9 +270,11 @@ public class ExternalAPIConsentPersistStepTest {
     public void testExecute_withAmendments_shouldPersistAmendedResources() throws Exception {
         FinancialServicesConfigParser configMock = mock(FinancialServicesConfigParser.class);
         ConsentCoreService consentCoreService = mock(ConsentCoreService.class);
-        MockContext mocks = mockPreInitiatedMode(true, configMock, consentCoreService);
+        MockContext mocks = mockPreInitiatedMode(Collections.singletonList("accounts"), Collections.emptyList(),
+                configMock, consentCoreService);
 
         ConsentData consentData = createConsentData("cid-amend", "userA", true);
+        consentData.setScopeString("accounts");
         ConsentPersistData persistData = createPersistData(consentData);
 
         DetailedConsentResource detailed = new DetailedConsentResource();

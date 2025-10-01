@@ -524,7 +524,7 @@ class FSConnectorTest extends CommonTest{
                                 .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
 
                 .baseUri(configuration.getISServerUrl())
-                .body(signedObject.getSignedRequest(claims))
+                .body(signedObject.getSignedRequestWithDefinedCert(claims))
                 .post(validatePath)
 
         return consentValidateResponse
@@ -1073,6 +1073,10 @@ class FSConnectorTest extends CommonTest{
         String assertionString = generator.getClientAssertionJwt(clientId)
         String scopes = scopeString.collect { it.scopeString }.join(' ')
 
+        if (algorithm != null) {
+            generator.setSigningAlgorithm(algorithm)
+        }
+
         //Generate Request Object Claim
         JWT getRequestObjectClaim = generator.getRequestObjectClaim(scopes, consentId, redirectUrl, clientId, responseType,
                 true, UUID.randomUUID().toString())
@@ -1083,10 +1087,6 @@ class FSConnectorTest extends CommonTest{
                 (ConnectorTestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
                 (ConnectorTestConstants.REQUEST_KEY)         : getRequestObjectClaim.getParsedString()
         ]
-
-        if (algorithm != null) {
-            generator.setSigningAlgorithm(algorithm)
-        }
 
         if (isStateParamRequired) {
 

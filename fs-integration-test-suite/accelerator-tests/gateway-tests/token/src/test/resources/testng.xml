@@ -17,11 +17,15 @@
  -->
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="WSO2 Financial Solutions - OB Accelerator Schema Validation Test">
-  <test name="Token - Grant Types" parallel="false" enabled="true" group-by-instances="true">
+<suite name="WSO2 Financial Solutions - OB Accelerator Schema Validation Test" parallel="none" preserve-order="true">
+  <test name="Token - Authorisation Grant Type" parallel="false" enabled="true" group-by-instances="true">
     <classes>
-      <class name="grant_type_validation.AuthorisationCodeGrantAccessTokenTest"/>
-      <class name="grant_type_validation.RefreshTokenGrantAccessToken"/>
+      <class name="grant_types.AuthorisationCodeGrantAccessTokenTest"/>
+    </classes>
+  </test>
+  <test name="Token - Refresh Token Grant Type" parallel="false" enabled="true" group-by-instances="true">
+    <classes>
+      <class name="grant_types.RefreshTokenGrantAccessToken"/>
     </classes>
   </test>
   <test name="Token Revocation" parallel="false" enabled="true" group-by-instances="true">

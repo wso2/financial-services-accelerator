@@ -23,7 +23,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 import java.util.Map;
 
 /**
- * ExternalAPIAdminConsentRevokeRequestDTO -Request DTO for extension of admin consent revocation
+ * ExternalAPIAdminConsentRevokeRequestDTO -Request DTO for extension of admin consent revocation.
  */
 public class ExternalAPIAdminConsentRevokeRequestDTO {
 

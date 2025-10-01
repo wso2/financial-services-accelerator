@@ -126,11 +126,10 @@ public class ConsentValidationEndpoint {
                 }
             } catch (ConsentManagementException e) {
                 log.error("Error while validating JWT signature", e);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while validating JWT " +
-                        "signature");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage());
             } catch (JSONException | ParseException e) {
                 log.error("Error while decoding validation JWT", e);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Error while decoding validation JWT");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage());
             }
         } else {
             try {
@@ -179,9 +178,14 @@ public class ConsentValidationEndpoint {
         try {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
             consentValidateData.setComprehensiveConsent(consentResource);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Successfully retrieved consent details for consent ID: %s",
+                        consentId.replaceAll("\n\r", "")));
+            }
         } catch (ConsentManagementException e) {
-            log.error("Exception while getting consent", e);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Exception while getting consent");
+            log.error("Consent details not found for the given consent id", e);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Consent details not found for the given consent id");
         }
 
         ConsentValidationResult validationResult = new ConsentValidationResult();

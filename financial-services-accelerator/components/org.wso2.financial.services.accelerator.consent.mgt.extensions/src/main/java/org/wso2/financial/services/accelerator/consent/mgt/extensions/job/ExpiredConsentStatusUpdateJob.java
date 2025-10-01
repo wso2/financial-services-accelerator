@@ -27,7 +27,6 @@ import org.quartz.JobExecutionException;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
@@ -36,7 +35,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.service.constants.Con
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Scheduled Task to read and update expired consents in the DB
@@ -55,10 +53,10 @@ public class ExpiredConsentStatusUpdateJob implements Job {
             FinancialServicesConfigParser.getInstance().getEligibleStatusesForConsentExpiry();
 
     /**
-     * Method used to enforce periodic statues update of consents
+     * Method used to enforce periodic statues update of consents.
      *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
+     * @param jobExecutionContext      the job execution context
+     * @throws JobExecutionException   if an error occurs during job execution
      */
     @Generated(message = "Ignoring since method contains no unit testable logics")
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -71,7 +69,7 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     }
 
     /**
-     * Method to update statues of consents
+     * Method to update statues of consents.
      */
     public static void updateExpiredStatues() throws ConsentManagementException {
 
@@ -93,25 +91,22 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     }
 
     /**
-     * Check if the consents is expired based on the consent attribute value
+     * Check if the consents is expired based on the consent attribute value.
      *
-     * @param detailedConsentResource
-     * @return
+     * @param detailedConsentResource  the detailed consent resource
+     * @return true if the consent is expired, false otherwise
      */
     private static boolean isExpired(DetailedConsentResource detailedConsentResource) {
 
-        Map<String, String> consentAttributes = detailedConsentResource.getConsentAttributes();
-        if (consentAttributes.containsKey(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE)) {
-            // Read the UTC expiry timestamp in long
-            long expiryTimestamp = Long.parseLong(
-                    consentAttributes.get(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE));
+        long validityPeriod = detailedConsentResource.getValidityPeriod();
+        if (validityPeriod > 0) {
             // Compare with current UTC timestamp in long
             Instant instant = Instant.now();
             long currentTimeStampSeconds = instant.getEpochSecond();
-            if (currentTimeStampSeconds >= expiryTimestamp) {
+            if (currentTimeStampSeconds >= validityPeriod) {
                 String info = "Consent " + detailedConsentResource.getConsentID() +
-                        " is identified as expired based on the " + "given consent expiration time : " +
-                        expiryTimestamp;
+                        " is identified as expired based on the given consent validity time : " +
+                        validityPeriod;
                 log.info(info.replaceAll("[\r\n]", ""));
                 return true;
             }
@@ -120,7 +115,7 @@ public class ExpiredConsentStatusUpdateJob implements Job {
     }
 
     /**
-     * Update the expired consents in DB
+     * Update the expired consents in DB.
      *
      * @param detailedConsentResource
      * @return

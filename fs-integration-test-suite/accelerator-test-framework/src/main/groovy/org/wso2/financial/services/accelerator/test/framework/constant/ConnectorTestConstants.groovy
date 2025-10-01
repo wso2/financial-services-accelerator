@@ -80,7 +80,6 @@ class ConnectorTestConstants extends Constants{
     static final String ERROR_ERRORS_MSG = "error.message"
     static final String ERROR_ERRORS_DESCRIPTION = "error.description"
     static final String ERROR_CODE = "errorCode"
-    static final String CODE = "code"
     static final String MESSAGE = "message"
     static final String DESCRIPTION = "description"
     static final String ERROR_MESSAGE = "errorMessage"
@@ -126,6 +125,7 @@ class ConnectorTestConstants extends Constants{
 
     static final String IS_CARBON_URL = configurationService.getISServerUrl() + "/carbon"
     static final String DEVPORTAL_URL = configurationService.getApimServerUrl() + "/devportal"
+    static final String PUBLISHER_URL = configurationService.getApimServerUrl() + "/publisher"
 
     //Token Payload Constants
     static final String KID = "kid"
@@ -331,7 +331,6 @@ class ConnectorTestConstants extends Constants{
     public static final String DATA_PAYMENT_ID = "Data.PaymentId"
     public static final String AISP_CONSENT_PATH = AISP_PATH + "account-access-consents"
     public static final String INVALID_CREDENTIALS = "Invalid Credentials"
-    static final String CODE = "code"
     public static final String INTERACTION_ID = UUID.randomUUID().toString()
     public static final String PIZZA_SHACK_PATH = "pizzashack/1.0.0/"
     public static final String PIZZA_SHACK_MENU_PATH = PIZZA_SHACK_PATH + "menu"
@@ -354,5 +353,22 @@ class ConnectorTestConstants extends Constants{
     //File Path
     static final File CONFIG_FILE = new File(System.getProperty("user.dir").toString()
             .concat("/../../../accelerator-test-framework/src/main/resources/TestConfiguration.xml"))
+    static final String INTERNAL_APIM_DCR_ENDPOINT = "/client-registration/v0.17/register"
+    static final String INTERNAL_APIM_ADMIN_ENDPOINT_V4 = "/api/am/admin/v4"
+    static final String INTERNAL_APIM_SCIME2_USER_ENDPOINT = "/scim2/Users"
+    static final String INTERNAL_APIM_SCIME2_ROLES_ENDPOINT = "/scim2/v2/Roles"
+    static final String INTERNAL_APIM_DEVPORTAL_ENDPOINT = "/api/am/devportal/v3"
+    public static final String REST_API_PUBLISHER_ENDPOINT = "/api/am/publisher/v4"
+    public static final String INTERNAL_API_RESOURCE_ENDPOINT = "/api/server/v1/api-resources"
 
+    public static final String OB_INTERNAL_API_RESOURCE = "OB-internal-api-resource"
+    public static final String OB_INTERNAL_API_SCOPE = "ob-internal-api-access"
+    public static final String OB_INTERNAL_API_ACCESS_ROLE = "OBInternalApiAccessRole"
+
+    static final String ADMIN_PORTAL_CLIENT_NAME = "rest_api_admin"
+    static final String PUBLISHER_CLIENT_NAME = "rest_api_publisher"
+    static final String DEVPORTAL_CLIENT_NAME = "rest_api_devportal"
+    static final String MTLS_ENFORCEMENT_ERROR = "MTLS Enforcement Error"
+
+    static final String JWS_HEADER_VALIDATION_ERROR = "JWS Header Validation Error"
 }

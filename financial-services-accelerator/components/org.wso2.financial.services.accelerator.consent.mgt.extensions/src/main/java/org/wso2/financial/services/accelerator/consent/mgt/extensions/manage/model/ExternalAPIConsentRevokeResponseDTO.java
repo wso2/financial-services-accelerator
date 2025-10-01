@@ -18,7 +18,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
 /**
- * ExternalAPIConsentRevokeResponseDTO
+ * ExternalAPIConsentRevokeResponseDTO.
  */
 public class ExternalAPIConsentRevokeResponseDTO {
 

@@ -116,7 +116,7 @@ public class ConsentCoreServiceUtil {
             String userIdValue = StringUtils.isNotBlank(userID) ? userID : null;
 
             AuthorizationResource authorizationResource = new AuthorizationResource(consentID, userIdValue, authStatus,
-                    authType, System.currentTimeMillis());
+                    authType, System.currentTimeMillis() / 1000);
 
             if (log.isDebugEnabled()) {
                 log.debug(("Storing authorization resource for consent of ID: " + authorizationResource

@@ -84,8 +84,7 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 "AuthenticationHandler not found.")
     }
 
-    //TODO: Enable after fixing the IS issue:https://github.com/wso2-enterprise/wso2-iam-internal/issues/3473
-    @Test(enabled = false)
+    @Test
     void "Initiation Request With Invalid Authorization Header"() {
 
         def authHeader = getBasicAuthHeader(configuration.getUserPSUName(),
@@ -102,9 +101,9 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .body(initiationPayload)
                 .post(consentPath)
 
-        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_DESCRIPTION)
-        Assert.assertEquals(errorMessage, "AuthenticationHandler not found.")
+        Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.DESCRIPTION)
+        Assert.assertEquals(errorMessage, "Operation is not permitted. You do not have permissions to make this request.")
     }
 
     @Test
@@ -302,12 +301,15 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
                 .body(initiationPayload)
                 .post(consentPath)
 
+        configuration.setTppNumber(1)
+        String clientId2 = createApplication(configuration.getAppDCRSoftwareId(), ConnectorTestConstants.PKJWT_AUTH_METHOD)
+
         //initiation request 2
         consentResponse = FSRestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.JSON)
                 .header(ConnectorTestConstants.X_IDEMPOTENCY_KEY, idempotencyKey)
                 .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, "testClientId")
+                .header(ConnectorTestConstants.X_WSO2_CLIENT_ID_KEY, clientId2)
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER, basicHeader)
                 .header(ConnectorTestConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString())
                 .baseUri(configuration.getISServerUrl())
@@ -320,5 +322,8 @@ class InitiationRequestHeaderValidationTests extends FSConnectorTest{
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
                 "Client ID sent in the request does not match with the client ID in the retrieved consent. " +
                         "Hence this is not a valid idempotent request")
+
+        deleteApplication(clientId2, ConnectorTestConstants.PKJWT_AUTH_METHOD)
+        configuration.setTppNumber(0)
     }
 }

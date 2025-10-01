@@ -46,7 +46,7 @@ class DCREndToEndFlowJWTPayload extends FSConnectorTest {
     void setup() {
 
         registrationPath = configuration.getServerBaseURL() + DCRConstants.REGISTRATION_ENDPOINT
-        configuration.setTppNumber(1)
+        configuration.setTppNumber(0)
         SSA = new File(configuration.getAppDCRSSAPath()).text
     }
 
@@ -71,8 +71,13 @@ class DCREndToEndFlowJWTPayload extends FSConnectorTest {
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
-
-
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"client_name"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"token_type_extension"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"require_signed_request_object"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"tls_client_certificate_bound_access_tokens"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"jwks_uri"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"ext_application_display_name"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_allow_reuse_pvt_key_jwt"));
     }
 
     @Test(groups = "SmokeTest", dependsOnMethods = "Invoke registration request structured as a JWS")
@@ -97,9 +102,16 @@ class DCREndToEndFlowJWTPayload extends FSConnectorTest {
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"grant_types"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"scope"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"software_statement"));
-//        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
+        Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"client_name"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"token_type_extension"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"require_signed_request_object"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"tls_client_certificate_bound_access_tokens"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"jwks_uri"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"ext_application_display_name"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_allow_reuse_pvt_key_jwt"));
     }
 
     @Test(groups = "SmokeTest", dependsOnMethods = "Retrieve registration details with a valid clientId and access token")
@@ -122,6 +134,13 @@ class DCREndToEndFlowJWTPayload extends FSConnectorTest {
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"application_type"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"id_token_signed_response_alg"));
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse,"request_object_signing_alg"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"client_name"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"token_type_extension"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"require_signed_request_object"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"tls_client_certificate_bound_access_tokens"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"jwks_uri"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"ext_application_display_name"));
+        Assert.assertNull(TestUtil.parseResponseBody(registrationResponse,"token_endpoint_allow_reuse_pvt_key_jwt"));
     }
 
     @Test (groups = "SmokeTest", dependsOnMethods = "Update client request with a valid details")

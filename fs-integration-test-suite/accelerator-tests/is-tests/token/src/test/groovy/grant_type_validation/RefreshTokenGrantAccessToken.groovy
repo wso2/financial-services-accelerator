@@ -46,12 +46,12 @@ class  RefreshTokenGrantAccessToken extends FSConnectorTest {
 		consentPath = ConnectorTestConstants.ACCOUNT_CONSENT_PATH
 		initiationPayload = RequestPayloads.initiationPayload
 		//Consent initiation
-		consentResponse = doConsentInitiation(initiationPayload)
+		consentResponse = doConsentInitiation(initiationPayload, client_id)
 		consentId = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DATA_CONSENT_ID).toString()
 		Assert.assertNotNull(consentId)
 
 		//Consent Authorisation
-		doConsentAuthorisation(clientId, true, consentScopes)
+		doConsentAuthorisation(client_id, true, consentScopes)
 		Assert.assertNotNull(code)
     }
 
@@ -330,7 +330,7 @@ class  RefreshTokenGrantAccessToken extends FSConnectorTest {
 		Assert.assertNotNull(refreshToken)
 
 		//Get Refresh Token Grant User Access Token
-		Response refreshTokenResponse = TokenRequestBuilder.getRefreshGrantTokenResponseWithoutClientId(consentScopes,
+		Response refreshTokenResponse = getRefreshGrantTokenResponse(ConnectorTestConstants.TLS_AUTH_METHOD, null, [scope],
 				refreshToken.toString())
 
 		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)

@@ -18,14 +18,19 @@
 
 package org.wso2.financial.services.accelerator.gateway.test.accounts.Consent_Authorisation_Tests
 
+import com.nimbusds.jwt.JWT
+import com.nimbusds.jwt.SignedJWT
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.bfsi.test.framework.request_builder.SignedObject
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.automation.consent.AuthorizationFlowNavigationAutomationStep
+import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.AccountsRequestPayloads
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
 import org.wso2.financial.services.accelerator.test.framework.request_builder.AuthorisationBuilder
+import org.wso2.financial.services.accelerator.test.framework.request_builder.JWTGenerator
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
 
 import java.nio.file.Paths
@@ -41,6 +46,8 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
         consentPath = ConnectorTestConstants.AISP_CONSENT_PATH
         initiationPayload = AccountsRequestPayloads.initiationPayload
         scopeList = ConsentMgtTestUtils.getApiScopesForConsentType(ConnectorTestConstants.ACCOUNTS_TYPE)
+
+        generator = new JWTGenerator()
 
         //Get application access token
         applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
@@ -66,9 +73,7 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
     void "Generate authorization code when Request Object is signed with expired certificate"() {
 
         String appKeystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
-                "expired-certs", "signing-keystore", "signing.jks")
-        String password = "wso2carbon"
-        String alias = "tpp4-sig"
+                "expired-certs", "signing-keystore", "obsigning.key")
 
         //Create Consent
         doDefaultAccountInitiation()
@@ -77,8 +82,9 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
 
         //Authorise Consent
         AuthorisationBuilder acceleratorAuthorisationBuilder = new AuthorisationBuilder()
-        String authoriseUrl = acceleratorAuthorisationBuilder.getOAuthRequestWithDefinedCert(configuration.getAppInfoClientID(),
-                scopeList, appKeystoreLocation, password, alias, consentId).toURI().toString()
+
+        String authoriseUrl = acceleratorAuthorisationBuilder.getOAuthRequestWithDefinedPemCert(configuration.getAppInfoClientID(),
+                scopeList, appKeystoreLocation, consentId).toURI().toString()
         automation = getBrowserAutomation(ConnectorTestConstants.DEFAULT_DELAY)
                 .addStep(new AuthorizationFlowNavigationAutomationStep(authoriseUrl))
                 .addStep { driver, context ->

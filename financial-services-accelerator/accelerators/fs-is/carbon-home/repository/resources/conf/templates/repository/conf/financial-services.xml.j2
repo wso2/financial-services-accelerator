@@ -47,9 +47,16 @@
         {% endif %}
     </JDBCPersistenceManager>
     <Consent>
-        {% if financial_services.consent.is_pre_initiated_consent is defined %}
-        <PreInitiatedConsent>{{financial_services.consent.is_pre_initiated_consent}}</PreInitiatedConsent>
-        {% endif %}
+        <PreInitiatedConsentScopes>
+            {% for scope in financial_services.consent.pre_initiated.scopes %}
+            <Scope>{{scope}}</Scope>
+            {% endfor %}
+        </PreInitiatedConsentScopes>
+        <ScopeBasedConsentScopes>
+            {% for scope in financial_services.consent.scope_based.scopes %}
+            <Scope>{{scope}}</Scope>
+            {% endfor %}
+        </ScopeBasedConsentScopes>
         {% if financial_services.consent.auth_flow_consent_id_source is defined %}
         <AuthFlowConsentIdSource>{{financial_services.consent.auth_flow_consent_id_source}}</AuthFlowConsentIdSource>
         {% endif %}
@@ -103,6 +110,11 @@
                 {% endif %}
             </Persist>
         </AuthorizeSteps>
+        {% if financial_services.consent.authorize_jsp.path is defined %}
+        <AuthorizeJSP>
+            <Path>{{financial_services.consent.authorize_jsp.path}}</Path>
+        </AuthorizeJSP>
+        {% endif %}
         <Validation>
             {% if financial_services.consent.validation.validator is defined %}
             <Validator>{{financial_services.consent.validation.validator}}</Validator>

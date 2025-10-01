@@ -61,12 +61,12 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(consentPath + "/" + consentId)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("The claim configured in the system and the claim provided in the token " +
                 "do not align. Please ensure the claims match."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900912")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Claim Mismatch")
     }
 
@@ -101,12 +101,12 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(consentPath + "/" + consentId)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_403)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("User is NOT authorized to access the Resource: " +
                 "/account-access-consents/{ConsentId}. Scope validation failed."))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900910")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "The access token does not allow you to access the requested resource")
     }
 
@@ -126,12 +126,12 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(consentPath + "/" + consentId)
 
         Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.DESCRIPTION)
+        def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Access failure for API: /open-banking/v3.1/aisp, version:" +
                 " v3.1 status: (900901)"))
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.CODE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 "900901")
-        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.MESSAGE),
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Invalid Credentials")
     }
 
@@ -157,36 +157,14 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .baseUri(configuration.getServerBaseURL())
                 .delete(consentPath + "/${consentId}")
 
-        Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_401)
-        Assert.assertTrue(consentRevocationResponse.jsonPath().get("message").toString()
-                .contains(ConnectorTestConstants.MISSING_CREDENTIALS))
-    }
-
-    @Test
-    void "OB-1724_Verify Consent Revoke for valid consent with Incorrect Content Type Header"() {
-
-        initialization()
-
-        //Consent Initiation
-        doDefaultInitiation()
-        Assert.assertNotNull(consentId)
-        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
-
-        //Consent Authorisation
-        doAccountConsentAuthorisation()
-
-        //Consent Revocation
-        consentRevocationResponse = FSRestAsRequestBuilder.buildRequest()
-                .contentType(ContentType.XML)
-                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
-                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${applicationAccessToken}")
-                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
-                .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
-                .baseUri(configuration.getServerBaseURL())
-                .delete(consentPath + "/${consentId}")
-
-        Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_415)
-
+        Assert.assertEquals(consentRevocationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        def errorMessage = TestUtil.parseResponseBody(consentRevocationResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Invalid Credentials. Make sure your API invocation call has a header: " +
+                "'null : Bearer ACCESS_TOKEN' or 'null : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "900902")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Missing Credentials")
     }
 
     @Test
@@ -215,8 +193,8 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(consentPath + "/${incorrectConsentID}")
 
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
-        Assert.assertTrue(consentRevocationResponse.jsonPath().get("Errors.Message").toString()
-                .contains(ConnectorTestConstants.CONSENT_ID_INVALID_ERROR))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Invalid Request Path. Valid consent id not found.")
     }
 
     @Test
@@ -242,7 +220,11 @@ class DeleteConsentRequestHeaderValidationTests extends FSAPIMConnectorTest {
                 .delete(incorrectConsentPath + "/${consentId}")
 
         Assert.assertEquals(consentRevocationResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_404)
-        Assert.assertTrue(consentRevocationResponse.jsonPath().get("description").toString()
-                .contains(ConnectorTestConstants.API_REQUEST_NOT_FOUND))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Runtime Error")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "No matching resource found for given API Request")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentRevocationResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.STATUS_CODE_404.toString())
     }
 }

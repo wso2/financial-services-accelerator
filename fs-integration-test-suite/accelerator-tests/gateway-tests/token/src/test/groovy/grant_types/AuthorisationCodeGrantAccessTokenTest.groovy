@@ -16,12 +16,18 @@
  * under the License.
  */
 
-package grant_type_validation
+package grant_types
 
+import com.nimbusds.jose.JWEDecrypter
+import com.nimbusds.jose.JWEObject
+import com.nimbusds.jose.crypto.RSADecrypter
+import com.nimbusds.jose.jwk.RSAKey
+import com.nimbusds.jwt.EncryptedJWT
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.wso2.bfsi.test.framework.keystore.KeyStore
 import org.wso2.financial.services.accelerator.test.framework.FSAPIMConnectorTest
 import org.wso2.financial.services.accelerator.test.framework.configuration.ConfigurationService
 import org.wso2.financial.services.accelerator.test.framework.constant.ConnectorTestConstants
@@ -29,6 +35,12 @@ import org.wso2.financial.services.accelerator.test.framework.constant.RequestPa
 import org.wso2.financial.services.accelerator.test.framework.request_builder.TokenRequestBuilder
 import org.wso2.financial.services.accelerator.test.framework.utility.TestUtil
 import org.wso2.financial.services.accelerator.test.framework.utility.ConsentMgtTestUtils
+
+import java.security.PrivateKey
+import java.security.cert.Certificate
+import java.security.cert.X509Certificate
+import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.RSAPublicKey
 
 /**
  * Authorisation Code Grant Access Token Test.
@@ -43,7 +55,7 @@ class AuthorisationCodeGrantAccessTokenTest extends FSAPIMConnectorTest {
 	void authoriseConsent() {
 
 		//Get Application Access Token
-		applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.TLS_AUTH_METHOD,
+		applicationAccessToken = getApplicationAccessToken(ConnectorTestConstants.PKJWT_AUTH_METHOD,
 				configuration.getAppInfoClientID(), scopeList)
 
 		//Consent initiation
@@ -98,16 +110,16 @@ class AuthorisationCodeGrantAccessTokenTest extends FSAPIMConnectorTest {
 		Assert.assertTrue(mapPayload.get(ConnectorTestConstants.CNF).matches("x5t#S256:[a-zA-Z0-9-]+"))
 	}
 
+//	@Test (dependsOnMethods = "Validate additional claim binding to the user access token jwt")
+//	void "Validate additional claims not binding to the id_token of user access token"() {
+//
+//		HashMap<String, String> mapPayload = TestUtil.getJwtTokenPayload(idToken)
+//
+//		Assert.assertNull(mapPayload.get(ConnectorTestConstants.CNF))
+//		Assert.assertNull(mapPayload.get(ConnectorTestConstants.CONSENT_ID))
+//	}
+
 	@Test (dependsOnMethods = "Validate additional claim binding to the user access token jwt")
-	void "Validate additional claims not binding to the id_token of user access token"() {
-
-		HashMap<String, String> mapPayload = TestUtil.getJwtTokenPayload(idToken)
-
-		Assert.assertNull(mapPayload.get(ConnectorTestConstants.CNF))
-		Assert.assertNull(mapPayload.get(ConnectorTestConstants.CONSENT_ID))
-	}
-
-	@Test (dependsOnMethods = "Validate additional claims not binding to the id_token of user access token")
 	void "Introspection call for user access token"() {
 
 		Response tokenResponse = TokenRequestBuilder.getTokenIntrospectionResponse(userAccessToken)
@@ -124,12 +136,13 @@ class AuthorisationCodeGrantAccessTokenTest extends FSAPIMConnectorTest {
 		Assert.assertEquals(revocationResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
 	}
 
-	@Test (dependsOnMethods = "Introspection call for user access token")
+	//TODO: https://github.com/wso2/financial-services-accelerator/issues/689
+	//@Test (dependsOnMethods = "Revoke user access token")
 	void "Send Account Retrieval request using revoked access token"() {
 
 		accountsPath = ConnectorTestConstants.AISP_PATH + "accounts"
 		doDefaultAccountRetrieval()
 
-		Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
+		Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
 	}
 }

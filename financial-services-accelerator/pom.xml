@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.wso2.financial.services.accelerator</groupId>
         <artifactId>financial-services</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -46,5 +46,9 @@
         <module>internal-webapps/org.wso2.financial.services.accelerator.event.notifications.endpoint</module>
         <module>internal-webapps/org.wso2.financial.services.accelerator.demo.backend</module>
         <module>react-apps</module>
+        <!-- Common Mediation policies required for basic flows -->
+        <module>common-mediation-policies/mtls-enforcement/mtls-header-enforcement-mediator</module>
+        <module>common-mediation-policies/consent-enforcement/consent-enforcement-payload-mediator</module>
+        <module>common-mediation-policies/dynamic-client-registration/dynamic-client-registration-mediator</module>
     </modules>
 </project>

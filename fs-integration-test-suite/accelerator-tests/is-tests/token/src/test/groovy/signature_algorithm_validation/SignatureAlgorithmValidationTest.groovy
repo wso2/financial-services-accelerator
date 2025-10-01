@@ -85,6 +85,8 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
     @Test
     void "Validate token request contains client assertion signed with unsupported signature algorithm"() {
 
+        authoriseConsent(clientId)
+
         JWTGenerator acceleratorJWTGenerator = new JWTGenerator()
         acceleratorJWTGenerator.setScopes(consentScopes)
         acceleratorJWTGenerator.setSigningAlgorithm("RS256")
@@ -124,7 +126,7 @@ class SignatureAlgorithmValidationTest extends FSConnectorTest {
 
         String keystoreLocation = Paths.get(configuration.getTestArtifactLocation(),
                 "expired-certs", "signing-keystore", "signing.jks")
-        String alias = "tpp4-sig"
+        String alias = "tpp6-signing"
         String password = "wso2carbon"
 
         def tokenResponse = TokenRequestBuilder.getUserAccessTokenWithDefinedCert(configuration.getCommonSigningAlgorithm(),
