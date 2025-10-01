@@ -193,19 +193,19 @@ public class FSConsentServlet extends HttpServlet {
                         .optBoolean(ConsentAuthorizeConstants.HANDLE_ACCOUNT_SELECTION_SEPARATELY, false);
 
                 if (handleAccountSelectionSeparately) {
+                    log.debug("Handling account selection separately, forwarding to account selection page");
 
                     // dispatch
                     RequestDispatcher dispatcher = this.getServletContext()
                             .getRequestDispatcher("/fs_default_account_selection.jsp");
                     dispatcher.forward(originalRequest, response);
-                    return;
                 } else {
+                    log.debug("Handling consent in default flow, forwarding to default consent page");
 
                     // dispatch
                     RequestDispatcher dispatcher = this.getServletContext()
                             .getRequestDispatcher("/fs_default.jsp");
                     dispatcher.forward(originalRequest, response);
-                    return;
                 }
             }
         }
