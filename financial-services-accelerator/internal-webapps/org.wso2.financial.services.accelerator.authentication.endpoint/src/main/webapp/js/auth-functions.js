@@ -29,6 +29,11 @@ function approvedConsent() {
     document.getElementById("oauth2_authz_confirm").submit();
 }
 
+// Confirm accounts selected
+function accountsSelected() {
+    document.getElementById("oauth2_authz_account_selection").submit();
+}
+
 // Set permission uids as names for account inputs before submission
 function updateAccountNamesFromPermissions() {
     const hiddenPermissions = document.querySelectorAll('input[type="hidden"][name^="permission-"]');

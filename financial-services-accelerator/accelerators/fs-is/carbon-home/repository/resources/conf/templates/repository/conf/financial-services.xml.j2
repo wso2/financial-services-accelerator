@@ -239,6 +239,11 @@
                 <Enabled>false</Enabled>
             {% endif %}
         </AmendmentHistory>
+        <AuthorizeJSP>
+            {% if financial_services.consent.authorize_jsp.path is defined %}
+                <Path>{{financial_services.consent.authorize_jsp.path}}</Path>
+            {% endif %}
+        </AuthorizeJSP>
     </Consent>
     <Identity>
         <AuthenticationWebApp>
