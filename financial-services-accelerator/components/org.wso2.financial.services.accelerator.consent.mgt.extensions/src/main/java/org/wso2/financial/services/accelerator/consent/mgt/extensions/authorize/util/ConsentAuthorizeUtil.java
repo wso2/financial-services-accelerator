@@ -23,6 +23,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,17 +32,26 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.data.publisher.constants.DataPublishingConstants;
+import org.wso2.financial.services.accelerator.data.publisher.util.FSDataPublisherUtil;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 
 /**
  * Util class for consent authorize operations.
@@ -78,6 +89,7 @@ public class ConsentAuthorizeUtil {
 
     /**
      * Method to extract the consent id from the request.
+     *
      * @param requestObject Request object
      * @return consentId
      * @throws ConsentException Consent Exception
@@ -619,4 +631,82 @@ public class ConsentAuthorizeUtil {
 
         return receipt.toString();
     }
+
+    /**
+     * Publishes consent approval or denial data for abandoned consent flow metrics.
+     *
+     * @param consentPersistData consent persist data
+     */
+    public static void publishConsentApprovalStatus(ConsentPersistData consentPersistData) {
+        if (Boolean.parseBoolean((String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
+            ConsentData consentData = consentPersistData.getConsentData();
+            String requestUriKey = ConsentAuthorizeUtil.getRequestUriKeyFromQueryParams(consentData.getSpQueryParams());
+            long unixTimestamp = Instant.now().getEpochSecond();
+            boolean isUserGranted = consentPersistData.getApproval();
+            String authStatus;
+            if (isUserGranted) {
+                authStatus = "APPROVED";
+            } else {
+                authStatus = "REJECTED";
+            }
+
+            Map<String, Object> consentAuthorizationData = new HashMap<>();
+            consentAuthorizationData.put("consentId", consentData.getConsentId());
+            consentAuthorizationData.put("userId", consentData.getUserId());
+            consentAuthorizationData.put("clientId", consentData.getClientId());
+            consentAuthorizationData.put("requestUriKey", requestUriKey);
+            consentAuthorizationData.put("authorizationStatus", authStatus);
+            consentAuthorizationData.put("consentResource", consentData.getConsentResource());
+            consentAuthorizationData.put("additionalDAuthFlowData", consentPersistData.getPayload());
+            //consentAuthorizationData.put("userInteractionTime",);
+            consentAuthorizationData.put("timestamp", unixTimestamp);
+
+
+            FSDataPublisherUtil.publishData("", "", consentAuthorizationData);
+        } else {
+            log.debug("Data publishing is disabled");
+        }
+
+    }
+
+    /**
+     * Returns the request URI key after retrieving from the spQueryParams.
+     *
+     * @param spQueryParams query params
+     * @return request URI key
+     */
+    public static String getRequestUriKeyFromQueryParams(String spQueryParams) {
+
+        List<NameValuePair> params = URLEncodedUtils.parse(spQueryParams, StandardCharsets.UTF_8);
+
+        for (NameValuePair param : params) {
+            if (ConsentAuthorizeConstants.REQUEST_URI.equals(param.getName())) {
+                return getRequestUriKey(param.getValue());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Method to retrieve the request URI key from the request URI.
+     *
+     * @param requestUri request URI
+     * @return request URI key
+     */
+    public static String getRequestUriKey(String requestUri) {
+
+        if (StringUtils.isBlank(requestUri)) {
+            log.error("Request URI not found.");
+            return null;
+        }
+
+        String[] uriParts = requestUri.split(":");
+        String requestUriKey = uriParts[uriParts.length - 1];
+
+        return StringUtils.isBlank(requestUriKey) ? null : requestUriKey;
+    }
+
+
 }

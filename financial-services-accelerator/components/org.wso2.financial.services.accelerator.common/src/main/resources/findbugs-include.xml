@@ -15,3 +15,8 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
+<FindBugsFilter>
+    <Match>
+        <Bug category="SECURITY"/>
+    </Match>
+</FindBugsFilter>

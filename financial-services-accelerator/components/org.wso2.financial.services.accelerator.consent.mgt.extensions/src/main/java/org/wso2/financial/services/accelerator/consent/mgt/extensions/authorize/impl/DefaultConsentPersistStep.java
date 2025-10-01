@@ -31,6 +31,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -89,6 +90,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
 
             consentPersist(consentPersistData, consentResource);
+            ConsentAuthorizeUtil.publishConsentApprovalStatus(consentPersistData);
 
         } catch (ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,

@@ -21,8 +21,10 @@ package org.wso2.financial.services.accelerator.common.internal;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.event.executor.FSEventQueue;
 
 import java.security.KeyStore;
+import java.util.Map;
 
 /**
  * Data holder for Common module.
@@ -34,6 +36,8 @@ public class FinancialServicesCommonDataHolder {
     private int commonCacheModifiedExpiry;
     private KeyStore trustStore = null;
     private PoolingHttpClientConnectionManager connectionManager;
+    private FSEventQueue fsEventQueue;
+    private Map<Integer, String> fsEventExecutors;
 
     private FinancialServicesCommonDataHolder() {
 
@@ -41,6 +45,13 @@ public class FinancialServicesCommonDataHolder {
                 .get(FinancialServicesConstants.COMMON_IDENTITY_CACHE_ACCESS_EXPIRY));
         setCommonCacheModifiedExpiry((String) FinancialServicesConfigParser.getInstance().getConfiguration()
                 .get(FinancialServicesConstants.COMMON_IDENTITY_CACHE_MODIFY_EXPIRY));
+        int queueSize = Integer.parseInt((String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                .get(FinancialServicesConstants.EVENT_QUEUE_SIZE));
+        int workerThreadCount =
+                Integer.parseInt((String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                        .get(FinancialServicesConstants.EVENT_WORKER_THREAD_COUNT));
+        fsEventQueue = new FSEventQueue(queueSize, workerThreadCount);
+        fsEventExecutors = FinancialServicesConfigParser.getInstance().getFinancialServicesEventExecutors();
     }
 
     public static FinancialServicesCommonDataHolder getInstance() {
@@ -53,6 +64,16 @@ public class FinancialServicesCommonDataHolder {
             }
         }
         return instance;
+    }
+
+    public Map<Integer, String> getFSEventExecutors() {
+
+        return fsEventExecutors;
+    }
+
+    public void setFSEventExecutor(Map<Integer, String> fsEventExecutors) {
+
+        this.fsEventExecutors = fsEventExecutors;
     }
 
     public int getCommonCacheAccessExpiry() {
@@ -89,5 +110,15 @@ public class FinancialServicesCommonDataHolder {
 
     public void setConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
+    }
+
+    public FSEventQueue getFSEventQueue() {
+
+        return fsEventQueue;
+    }
+
+    public void setFSEventQueue(FSEventQueue obEventQueue) {
+
+        this.fsEventQueue = obEventQueue;
     }
 }

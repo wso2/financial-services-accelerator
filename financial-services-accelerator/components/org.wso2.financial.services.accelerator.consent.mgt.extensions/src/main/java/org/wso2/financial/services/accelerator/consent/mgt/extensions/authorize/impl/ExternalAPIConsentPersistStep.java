@@ -40,6 +40,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -49,6 +50,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +139,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             ExternalAPIPreConsentPersistResponseDTO responseDTO = callExternalService(requestDTO);
             ExternalAPIConsentResourceResponseDTO responseConsentResource = responseDTO.getConsentResource();
             persistConsent(responseConsentResource, consentData);
+            ConsentAuthorizeUtil.publishConsentApprovalStatus(consentPersistData);
 
         } catch (FinancialServicesException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,

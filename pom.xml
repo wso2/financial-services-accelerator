@@ -323,6 +323,11 @@
                 <version>${commons-collections.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
                 <version>${spotbugs.annotations.version}</version>
@@ -479,6 +484,11 @@
                 <version>${carbon.identity.framework.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.identity.framework</groupId>
+                <artifactId>org.wso2.carbon.identity.event</artifactId>
+                <version>${carbon.event.identity.framework.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
                 <version>${org.wso2.carbon.apimgt.version}</version>
@@ -493,6 +503,11 @@
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.common.gateway</artifactId>
                 <version>${org.wso2.carbon.apimgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.databridge.agent</artifactId>
+                <version>${org.wso2.carbon.analytics.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
@@ -533,6 +548,11 @@
             <dependency>
                 <groupId>org.wso2.financial.services.accelerator</groupId>
                 <artifactId>org.wso2.financial.services.accelerator.event.notifications.service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.financial.services.accelerator</groupId>
+                <artifactId>org.wso2.financial.services.accelerator.data.publisher</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Test Dependencies -->
@@ -602,6 +622,7 @@
         <org.wso2.orbit.nimbus.version>7.9.0.wso2v1</org.wso2.orbit.nimbus.version>
         <hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
         <commons-collections.version>4.4</commons-collections.version>
+        <commons-pool.version>2.12.1</commons-pool.version>
         <spotbugs.annotations.version>4.7.3</spotbugs.annotations.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
         <org.json.version>3.0.0.wso2v4</org.json.version>
@@ -627,12 +648,14 @@
         <jjwt.version>0.9.1</jjwt.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
+        <carbon.event.identity.framework.version>7.8.23</carbon.event.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>
         <identity.inbound.auth.oauth.version>7.0.229</identity.inbound.auth.oauth.version>
         <identity.inbound.auth.oauth.version.range>[6.13.0, 7.1.0)</identity.inbound.auth.oauth.version.range>
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
         <wso2.is7.key.manager.version>2.0.5</wso2.is7.key.manager.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
+        <org.wso2.carbon.analytics.version>5.2.61</org.wso2.carbon.analytics.version>
         <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.31.100)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>

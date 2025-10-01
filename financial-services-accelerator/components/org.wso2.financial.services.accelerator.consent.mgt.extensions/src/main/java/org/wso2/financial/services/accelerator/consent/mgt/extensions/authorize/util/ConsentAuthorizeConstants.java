@@ -30,4 +30,6 @@ public class ConsentAuthorizeConstants {
     public static final String CONSENT_EXPIRED = "Provided consent is expired";
     public static final String ACCOUNT_ID_NOT_FOUND_ERROR = "Account IDs not available in persist request";
     public static final String ACCOUNT_ID_FORMAT_ERROR = "Account IDs format error in persist request";
+    public static final String REQUEST_URI = "request_uri";
+    public static final String REQUEST_URI_KEY = "requestUriKey";
 }

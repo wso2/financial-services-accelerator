@@ -67,6 +67,9 @@ public final class FinancialServicesConfigParser {
     private final Map<String, Map<String, Object>> dcrParams = new HashMap<>();
     private final Map<String, Map<String, Object>> dcrValidators = new HashMap<>();
     private final Map<String, Map<String, String>> keyManagerAdditionalProperties = new HashMap<>();
+    private static final Map<String, Map<Integer, String>> dataPublishingStreams = new HashMap<>();
+    private static final Map<String, Map<String, Object>> dataPublishingValidationMap = new HashMap<>();
+    private static Map<Integer, String> fsEventExecutors = new HashMap<>();
     private SecretResolver secretResolver;
     private OMElement rootElement;
     private static FinancialServicesConfigParser parser;
@@ -133,9 +136,11 @@ public final class FinancialServicesConfigParser {
             secretResolver = SecretResolverFactory.create(rootElement, true);
             readChildElements(rootElement, nameStack);
             buildFSExecutors();
+            buildDataPublishingStreams();
             buildConsentAuthSteps();
             buildDCRConfigs();
             buildKeyManagerProperties();
+            buildFSEventExecutors();
         } catch (IOException | XMLStreamException | OMException e) {
             throw new FinancialServicesRuntimeException("Error occurred while building configuration from " +
                     "financial-services.xml", e);
@@ -205,6 +210,53 @@ public final class FinancialServicesConfigParser {
         }
     }
 
+    private void buildFSEventExecutors() {
+
+        OMElement eventElement = rootElement.getFirstChildWithName(
+                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                        FinancialServicesConstants.EVENT_CONFIG_TAG));
+
+        if (eventElement != null) {
+
+            OMElement financialServicesEventExecutors = eventElement.getFirstChildWithName(
+                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                            FinancialServicesConstants.EVENT_EXECUTOR_CONFIG_TAG));
+
+            if (financialServicesEventExecutors != null) {
+                //obtaining each executor element under EventExecutors tag
+                //Ordering the executors based on the priority number
+                Iterator<OMElement> eventExecutor = financialServicesEventExecutors.getChildrenWithName(
+                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                FinancialServicesConstants.EXECUTOR_CONFIG_TAG));
+                if (eventExecutor != null) {
+                    while (eventExecutor.hasNext()) {
+                        OMElement executorElement = eventExecutor.next();
+                        //Retrieve class name and priority from executor config
+                        String obExecutorClass = executorElement.getAttributeValue(new QName("class"));
+                        String obExecutorPriority = executorElement.getAttributeValue(new QName("priority"));
+
+                        if (StringUtils.isEmpty(obExecutorClass)) {
+                            //Throwing exceptions since we cannot proceed without invalid executor names
+                            throw new FinancialServicesRuntimeException("Event Executor class is not defined " +
+                                    "correctly in open-banking.xml");
+                        }
+                        int priority = Integer.MAX_VALUE;
+                        if (!StringUtils.isEmpty(obExecutorPriority)) {
+                            priority = Integer.parseInt(obExecutorPriority);
+                        }
+                        fsEventExecutors.put(priority, obExecutorClass);
+                    }
+                }
+                //Ordering the executors based on the priority number
+                fsEventExecutors = fsEventExecutors.entrySet()
+                        .stream()
+                        .sorted(comparingByKey())
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                                LinkedHashMap::new));
+            }
+        }
+    }
+
     private void buildConsentAuthSteps() {
 
         OMElement consentElement = rootElement.getFirstChildWithName(
@@ -253,6 +305,89 @@ public final class FinancialServicesConfigParser {
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
                                     LinkedHashMap::new));
                     authorizeSteps.put(consentTypeName, priorityMap);
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to build Data Publishing Configurations.
+     */
+
+    protected void buildDataPublishingStreams() {
+
+        OMElement dataPublishingElement = rootElement.getFirstChildWithName(
+                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                        FinancialServicesConstants.DATA_PUBLISHING_CONFIG_TAG));
+
+        if (dataPublishingElement != null) {
+            OMElement thriftElement = dataPublishingElement.getFirstChildWithName(
+                    new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                            FinancialServicesConstants.THRIFT_CONFIG_TAG));
+
+            if (thriftElement != null) {
+                OMElement streams = thriftElement.getFirstChildWithName(
+                        new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                FinancialServicesConstants.STREAMS_CONFIG_TAG));
+
+                if (streams != null) {
+                    Iterator dataStreamElement = streams.getChildElements();
+                    while (dataStreamElement.hasNext()) {
+                        OMElement dataStream = (OMElement) dataStreamElement.next();
+                        String dataStreamName = dataStream.getLocalName();
+                        Map<Integer, String> attributes = new HashMap<>();
+                        //obtaining attributes under each stream
+                        Iterator<OMElement> attribute = dataStream.getChildrenWithName(
+                                new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
+                                        FinancialServicesConstants.ATTRIBUTE_CONFIG_TAG));
+                        if (attribute != null) {
+                            while (attribute.hasNext()) {
+                                OMElement attributeElement = attribute.next();
+                                //Retrieve attribute name and priority from config
+                                String attributeName = attributeElement.getAttributeValue(new QName("name"));
+                                String attributePriority = attributeElement.
+                                        getAttributeValue(new QName("priority"));
+                                String isRequired = attributeElement.getAttributeValue(new QName("required"));
+                                String type = attributeElement.getAttributeValue(new QName("type"));
+
+                                if (StringUtils.isEmpty(attributeName)) {
+                                    //Throwing exceptions since we cannot proceed without valid attribute names
+                                    throw new FinancialServicesRuntimeException(
+                                            "Data publishing attribute name is not defined " +
+                                                    "correctly in financial-services.xml");
+                                }
+                                int priority = Integer.MAX_VALUE;
+                                if (!StringUtils.isEmpty(attributePriority)) {
+                                    priority = Integer.parseInt(attributePriority);
+                                }
+                                boolean required = false;
+                                if (!StringUtils.isEmpty(isRequired)) {
+                                    required = Boolean.parseBoolean(isRequired);
+                                }
+
+                                String attributeType = "string";
+                                if (!StringUtils.isEmpty(type)) {
+                                    attributeType = type;
+                                }
+
+                                Map<String, Object> metadata = new HashMap<>();
+                                metadata.put(FinancialServicesConstants.REQUIRED, required);
+                                metadata.put(FinancialServicesConstants.ATTRIBUTE_TYPE, attributeType);
+
+                                attributes.put(priority, attributeName);
+                                String attributeKey = dataStreamName + "_" + attributeName;
+                                dataPublishingValidationMap.put(attributeKey, metadata);
+                            }
+                        }
+                        //Ordering the attributes based on the priority number
+                        LinkedHashMap<Integer, String> priorityMap = attributes.entrySet()
+                                .stream()
+                                .sorted(comparingByKey())
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                                        (e1, e2) -> e2,
+                                        LinkedHashMap::new));
+                        dataPublishingStreams.put(dataStreamName, priorityMap);
+                    }
                 }
             }
         }
@@ -562,6 +697,16 @@ public final class FinancialServicesConfigParser {
     public Map<String, Map<String, String>> getKeyManagerAdditionalProperties() {
 
         return Collections.unmodifiableMap(keyManagerAdditionalProperties);
+    }
+
+    public Map<String, Map<Integer, String>> getDataPublishingStreams() {
+
+        return Collections.unmodifiableMap(dataPublishingStreams);
+    }
+
+    public Map<String, Map<String, Object>> getDataPublishingValidationMap() {
+
+        return Collections.unmodifiableMap(dataPublishingValidationMap);
     }
 
     public String getDataSourceName() {
@@ -877,7 +1022,7 @@ public final class FinancialServicesConfigParser {
 
         Optional<String> source = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.EVENT_NOTIFICATION_GENERATOR);
-        return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications." +
+        return source.map(String::trim).orElse("org.wso2.financial.services.accelerator.event.notifications." +
                 "service.service.DefaultEventNotificationGenerator");
     }
 
@@ -890,7 +1035,7 @@ public final class FinancialServicesConfigParser {
 
         Optional<String> source = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.REALTIME_EVENT_NOTIFICATION_REQUEST_GENERATOR);
-        return source.map(String::trim).orElse("com.wso2.openbanking.accelerator.event.notifications.service." +
+        return source.map(String::trim).orElse("org.wso2.financial.services.accelerator.event.notifications.service." +
                 "realtime.service.DefaultRealtimeEventNotificationRequestGenerator");
     }
 
@@ -1006,6 +1151,16 @@ public final class FinancialServicesConfigParser {
         Optional<String> config = getConfigurationFromKeyAsString(
                 FinancialServicesConstants.SERVICE_EXTENSIONS_BASIC_AUTH_PASSWORD);
         return config.map(String::trim).orElse(null);
+    }
+
+    /**
+     * Method to get event executors
+     *
+     * @return Map of event executors
+     */
+    public Map<Integer, String> getFinancialServicesEventExecutors() {
+
+        return Collections.unmodifiableMap(fsEventExecutors);
     }
 
     /**

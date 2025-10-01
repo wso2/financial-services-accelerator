@@ -57,6 +57,10 @@
             <artifactId>org.wso2.financial.services.accelerator.consent.mgt.service</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
+            <artifactId>org.wso2.financial.services.accelerator.data.publisher</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
             <artifactId>encoder</artifactId>
         </dependency>
@@ -205,6 +209,8 @@
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.data.publisher.common.constants.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.data.publisher.common.util.*;version="${project.version}",
                             com.fasterxml.jackson.databind;version="${jackson.databinding.version}",
                             com.fasterxml.jackson.core;version="${jackson.databinding.version}",
                             org.owasp.encoder;version="${encoder.wso2.version}"

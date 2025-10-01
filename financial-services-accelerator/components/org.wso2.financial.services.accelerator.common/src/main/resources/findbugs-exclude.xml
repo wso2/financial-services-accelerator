@@ -94,4 +94,15 @@
         <Class name="org.wso2.financial.services.accelerator.common.util.HTTPClientUtils"/>
         <Bug pattern="DC_PARTIALLY_CONSTRUCTED"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.event.executor.model.FSEvent"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <!--Java Executor Services return a Future object when submitting the executor services. Since we are expecting
+    the executorService.submit() of EventQueue class to run asynchronously and we are not doing anything with
+    the returned Future object the following bug pattern is excluded.-->
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.common.event.executor.FSEventQueue"/>
+        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+    </Match>
 </FindBugsFilter>
