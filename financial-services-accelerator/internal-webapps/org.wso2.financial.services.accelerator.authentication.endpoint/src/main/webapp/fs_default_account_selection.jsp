@@ -48,7 +48,7 @@
     session.setAttribute("doYouConfirm", request.getAttribute("doYouConfirm"));
     session.setAttribute("handleAccountSelectionSeparately", request.getAttribute("handleAccountSelectionSeparately"));
     session.setAttribute("onFollowingAccounts", request.getAttribute("onFollowingAccounts"));
-    session.setAttribute("buttonOk", request.getAttribute("buttonOk"));
+    session.setAttribute("buttonConfirm", request.getAttribute("buttonConfirm"));
 %>
 
 <html>
