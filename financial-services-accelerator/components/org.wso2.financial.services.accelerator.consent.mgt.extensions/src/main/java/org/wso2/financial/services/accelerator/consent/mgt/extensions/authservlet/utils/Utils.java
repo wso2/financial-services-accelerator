@@ -179,6 +179,7 @@ public class Utils {
         List<Object> initiatedAccountsForConsent = null;
         Boolean isReauthorization = false;
         Boolean allowMultipleAccounts = false;
+        Boolean handleAccountSelectionSeparately = false;
         String type = null;
 
         if (consentData != null) {
@@ -192,6 +193,8 @@ public class Utils {
                     ConsentAuthorizeConstants.IS_REAUTHORIZATION, false);
             allowMultipleAccounts = (Boolean) consentData.getOrDefault(
                     ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, false);
+            handleAccountSelectionSeparately = (Boolean) consentData.getOrDefault(
+                    ConsentAuthorizeConstants.HANDLE_ACCOUNT_SELECTION_SEPARATELY, false);
             type = (String) consentData.getOrDefault(
                     ConsentAuthorizeConstants.TYPE, null);
         }
@@ -207,6 +210,8 @@ public class Utils {
         attributeMap.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, initiatedAccountsForConsent);
         attributeMap.put(Constants.CONSUMER_ACCOUNTS, consumerAccounts);
         attributeMap.put(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, allowMultipleAccounts);
+        attributeMap.put(ConsentAuthorizeConstants.HANDLE_ACCOUNT_SELECTION_SEPARATELY,
+                handleAccountSelectionSeparately);
         attributeMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, isReauthorization);
         attributeMap.put(ConsentAuthorizeConstants.TYPE, type);
         attributeMap.put(ConsentAuthorizeConstants.HAS_MULTIPLE_PERMISSIONS,
@@ -292,6 +297,8 @@ public class Utils {
                 Constants.IF_STOP_DATA_SHARING_KEY));
         dataFromResourceBundle.put(Constants.CONFIRM_BUTTON, i18n(resourceBundle,
                 Constants.CONFIRM_BUTTON_KEY));
+        dataFromResourceBundle.put(Constants.NEXT_BUTTON, i18n(resourceBundle,
+                Constants.NEXT_BUTTON_KEY));
         dataFromResourceBundle.put(Constants.DENY_BUTTON, i18n(resourceBundle,
                 Constants.DENY_BUTTON_KEY));
         dataFromResourceBundle.put(Constants.GO_BACK_BUTTON, i18n(resourceBundle,

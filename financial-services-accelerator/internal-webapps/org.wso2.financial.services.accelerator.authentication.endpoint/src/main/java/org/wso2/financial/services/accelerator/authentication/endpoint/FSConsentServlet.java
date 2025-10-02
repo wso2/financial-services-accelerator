@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.AuthenticationUtils;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.Constants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.FSAuthServletInterface;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.ConsentMgrAuthServletImpl;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authservlet.impl.ISDefaultAuthServletImpl;
@@ -183,10 +184,42 @@ public class FSConsentServlet extends HttpServlet {
         updatedValues = fsAuthServlet.updateSessionAttribute(request, dataSet, resourceBundle);
         updatedValues.forEach(originalRequest.getSession()::setAttribute);
 
+        // If the account selection is to be handled separately, forward to the account selection JSP
+        Object consentDataObj = dataSet.opt(ConsentAuthorizeConstants.CONSENT_DATA);
+        if (consentDataObj instanceof JSONObject) {
+            JSONObject consentData = (JSONObject) consentDataObj;
+            if (consentData.has(ConsentAuthorizeConstants.HANDLE_ACCOUNT_SELECTION_SEPARATELY)) {
+                boolean handleAccountSelectionSeparately = consentData
+                        .optBoolean(ConsentAuthorizeConstants.HANDLE_ACCOUNT_SELECTION_SEPARATELY, false);
+
+                if (handleAccountSelectionSeparately) {
+                    log.debug("Handling account selection separately, forwarding to account selection page");
+
+                    // dispatch
+                    RequestDispatcher dispatcher = this.getServletContext()
+                            .getRequestDispatcher("/fs_default_account_selection.jsp");
+                    dispatcher.forward(originalRequest, response);
+                    return;
+                } else {
+                    log.debug("Handling consent in default flow, forwarding to default consent page");
+
+                    // dispatch
+                    RequestDispatcher dispatcher = this.getServletContext()
+                            .getRequestDispatcher("/fs_default.jsp");
+                    dispatcher.forward(originalRequest, response);
+                    return;
+                }
+            }
+        } else {
+            log.error("Consent data is not available or not in the expected format");
+            request.getSession().invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Error while processing request");
+            return;
+        }
+
         // dispatch
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(fsAuthServlet.getJSPPath());
         dispatcher.forward(originalRequest, response);
-
     }
 
     /**

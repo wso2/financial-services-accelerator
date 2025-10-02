@@ -59,14 +59,20 @@
                                             <%--Display basic consent data--%>
                                             <jsp:include page="includes/basic-consent-data.jsp"/>
 
-                                            <c:if test="${not empty permissions}">
-                                                <%-- If permissions are specified --%>
-                                                <jsp:include page="includes/accounts-with-permissions.jsp"/>
-                                            </c:if>
-                                            <c:if test="${empty permissions}">
-                                                <%-- If permissions are not specified --%>
-                                                <jsp:include page="includes/accounts.jsp"/>
-                                            </c:if>
+                                            <c:choose>
+                                                <c:when test="${handleAccountSelectionSeparately}">
+                                                    <%-- If account selection is handled separately --%>
+                                                    <jsp:include page="includes/selected-accounts.jsp"/>
+                                                </c:when>
+                                                <c:when test="${not empty permissions}">
+                                                    <%-- If permissions are specified --%>
+                                                    <jsp:include page="includes/accounts-with-permissions.jsp"/>
+                                                </c:when>
+                                                <c:when test="${empty permissions}">
+                                                    <%-- If permissions are not specified --%>
+                                                    <jsp:include page="includes/accounts.jsp"/>
+                                                </c:when>
+                                            </c:choose>
                                         </div>
                                     </div>
 
