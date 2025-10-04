@@ -88,7 +88,8 @@
                             org.wso2.carbon.databridge.agent.*; version="${carbon.analytics.common.version.range}",
                             org.wso2.carbon.databridge.commons.*; version="${carbon.analytics.common.version.range}",
                             com.wso2.openbanking.accelerator.common.*; version="${project.version}",
-                            org.apache.commons.pool2.*; version="${commons-pool2.version}"
+                            org.apache.commons.pool2.*; version="${commons-pool2.version}",
+                            org.apache.commons.logging; version="${commons.logging.version}"
                         </Import-Package>
                         <Export-Package>
                             !com.wso2.openbanking.accelerator.data.publisher.common.internal,
