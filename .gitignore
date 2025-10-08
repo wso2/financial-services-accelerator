@@ -69,3 +69,4 @@ node_modules/
 
 fs-integration-test-suite/accelerator-test-framework/src/main/resources/TestConfiguration.xml
 
+financial-services-accelerator/accelerators/fs-apim/repository/resources/mediation-policies/
