@@ -64,7 +64,7 @@ public class ConsentLCEventExecutor implements FSEventExecutor {
 
     @Override
     public void processEvent(FSEvent fsEvent) {
-
+        log.debug("Processing consent lifecycle event");
         Map<String, Object> eventData = fsEvent.getEventData();
 
 
@@ -75,9 +75,11 @@ public class ConsentLCEventExecutor implements FSEventExecutor {
         DetailedConsentResource detailedConsentResource = (DetailedConsentResource) consentDataMap
                 .get(DETAILED_CONSENT_RESOURCE);
 
-        log.debug("Publishing consent data for metrics.");
-
         String consentId = (String) eventData.get(CONSENT_ID);
+        if (log.isDebugEnabled()) {
+            log.info("Processing consent lifecycle event for consent ID: " + consentId);
+        }
+
         String primaryUserId;
         try {
             primaryUserId = getPrimaryUserForConsent(detailedConsentResource, consentId);
@@ -87,6 +89,9 @@ public class ConsentLCEventExecutor implements FSEventExecutor {
         }
 
         if (StringUtils.isBlank(primaryUserId)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Primary user ID is blank for consent ID: " + consentId);
+            }
             return;
         }
 
@@ -111,6 +116,9 @@ public class ConsentLCEventExecutor implements FSEventExecutor {
                 publishedEventIdentifierCache.put(eventIdentifier, Boolean.TRUE);
             }
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Publishing consent lifecycle data for consent ID: " + consentId);
+        }
         //publish consent lifecycle data
         publishReportingData(consentData);
     }
@@ -133,7 +141,9 @@ public class ConsentLCEventExecutor implements FSEventExecutor {
 
     private String getPrimaryUserForConsent(DetailedConsentResource detailedConsentResource, String consentId)
             throws ConsentManagementException {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving primary user for consent ID: " + consentId);
+        }
         String primaryUser = null;
         if (detailedConsentResource == null) {
             detailedConsentResource = this.consentCoreService.getDetailedConsent(consentId);

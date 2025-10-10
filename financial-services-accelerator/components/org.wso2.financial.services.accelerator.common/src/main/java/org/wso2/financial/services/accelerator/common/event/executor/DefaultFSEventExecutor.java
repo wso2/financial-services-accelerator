@@ -18,16 +18,20 @@
 
 package  org.wso2.financial.services.accelerator.common.event.executor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import  org.wso2.financial.services.accelerator.common.event.executor.model.FSEvent;
 
 /**
  * Open banking event executor default implementation.
  */
 public class DefaultFSEventExecutor implements FSEventExecutor {
-
+    private static final Log log = LogFactory.getLog(DefaultFSEventExecutor.class);
     @Override
     public void processEvent(FSEvent fsEvent) {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Processing FSEvent: " + fsEvent);
+        }
     }
 
 }

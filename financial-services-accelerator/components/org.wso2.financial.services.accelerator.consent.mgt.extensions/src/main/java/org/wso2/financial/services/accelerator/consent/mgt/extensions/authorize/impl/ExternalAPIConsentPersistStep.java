@@ -186,9 +186,13 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             ExternalAPIPreConsentPersistResponseDTO responseDTO = callExternalService(requestDTO);
             ExternalAPIConsentResourceResponseDTO responseConsentResource = responseDTO.getConsentResource();
             persistConsent(responseConsentResource, consentData);
+            if (log.isDebugEnabled()) {
+                log.info("Consent persisted successfully for consent ID: " + consentData.getConsentId());
+            }
             ConsentAuthorizeUtil.publishConsentApprovalStatus(consentPersistData);
 
         } catch (FinancialServicesException e) {
+            log.error("Failed to persist consent: " + e);
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
                     e.getMessage(), consentData.getState());
         } catch (JsonProcessingException e) {

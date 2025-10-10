@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.data.publisher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -31,16 +33,17 @@ import org.wso2.financial.services.accelerator.data.publisher.internal.FSAnalyti
 public class DataPublisherFactory<FinancialServicesDataPublisher> extends
         BasePooledObjectFactory<FinancialServicesDataPublisher> {
 
+    private static final Log log = LogFactory.getLog(DataPublisherFactory.class);
     @Override
     public FinancialServicesDataPublisher create() {
-
+        log.debug("Creating new FinancialServicesDataPublisher instance");
         return (FinancialServicesDataPublisher) FSAnalyticsDataHolder.getInstance().getFinancialServicesDataPublisher();
     }
 
     @Override
     public PooledObject<FinancialServicesDataPublisher> wrap(FinancialServicesDataPublisher
                                                                      financialServicesDataPublisher) {
-
+        log.debug("Wrapping FinancialServicesDataPublisher instance in pooled object");
         return new DefaultPooledObject<FinancialServicesDataPublisher>(financialServicesDataPublisher);
     }
 }

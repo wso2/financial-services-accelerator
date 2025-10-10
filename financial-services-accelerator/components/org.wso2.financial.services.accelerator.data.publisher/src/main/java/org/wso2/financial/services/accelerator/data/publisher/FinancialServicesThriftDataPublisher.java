@@ -54,6 +54,7 @@ public class FinancialServicesThriftDataPublisher implements FinancialServicesDa
     private Map<String, Object> obConfigurations;
 
     public FinancialServicesThriftDataPublisher() {
+        log.debug("Initializing FinancialServicesThriftDataPublisher");
         this.init();
     }
 

@@ -49,18 +49,22 @@ public class FSQueueWorker implements Runnable {
 
     @Override
     public void run() {
-
+        log.debug("FSQueueWorker started processing events");
         ThreadPoolExecutor threadPoolExecutor = ((ThreadPoolExecutor) executorService);
 
         do {
             FSEvent event = eventQueue.poll();
             if (event != null) {
+                log.debug("Processing FSEvent from queue");
                 Map<Integer, String> fsEventExecutors = FinancialServicesCommonDataHolder.getInstance().
                         getFSEventExecutors();
                 List<FSEventExecutor> executorList = fsEventExecutors.keySet().stream()
                         .map(integer -> (FSEventExecutor) FinancialServicesUtils
                                 .getClassInstanceFromFQN(fsEventExecutors.get(integer))).collect(Collectors.toList());
                 for (FSEventExecutor obEventExecutor : executorList) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Executing event with executor: " + obEventExecutor.getClass().getSimpleName());
+                    }
                     obEventExecutor.processEvent(event);
                 }
             } else {

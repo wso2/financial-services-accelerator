@@ -35,8 +35,8 @@
         <module>components/org.wso2.financial.services.accelerator.common</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.dao</module>
         <module>components/org.wso2.financial.services.accelerator.consent.mgt.service</module>
-        <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.data.publisher</module>
+        <module>components/org.wso2.financial.services.accelerator.consent.mgt.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.identity.extensions</module>
         <module>components/org.wso2.financial.services.accelerator.gateway</module>
         <module>components/org.wso2.financial.services.accelerator.keymanager</module>

@@ -38,14 +38,17 @@ public class EventQueue {
     private final ExecutorService publisherExecutorService;
 
     public EventQueue(int queueSize, int workerThreadCount) {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing EventQueue with queueSize: " + queueSize + " and workerThreadCount: " +
+                    workerThreadCount);
+        }
         // Note : Using a fixed worker thread pool and a bounded queue to control the load on the server
         publisherExecutorService = Executors.newFixedThreadPool(workerThreadCount);
         eventQueue = new ArrayBlockingQueue<>(queueSize);
     }
 
     public void put(FSAnalyticsEvent fsAnalyticsEvent) {
-
+        log.debug("Attempting to add analytics event to queue");
         try {
             if (eventQueue.offer(fsAnalyticsEvent)) {
                 publisherExecutorService.submit(new QueueWorker(eventQueue, publisherExecutorService));
@@ -59,6 +62,7 @@ public class EventQueue {
 
     @Override
     protected void finalize() throws Throwable {
+        log.debug("Shutting down publisher executor service");
         publisherExecutorService.shutdown();
         super.finalize();
     }

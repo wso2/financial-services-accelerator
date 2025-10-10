@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.data.publisher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -28,10 +30,15 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
  */
 public class DataPublisherPool<FinancialServicesDataPublisher> extends
         GenericObjectPool<FinancialServicesDataPublisher> {
+    private static final Log log = LogFactory.getLog(DataPublisherPool.class);
 
     public DataPublisherPool(PooledObjectFactory<FinancialServicesDataPublisher> factory,
                              GenericObjectPoolConfig<FinancialServicesDataPublisher> config) {
 
         super(factory, config);
+        if (log.isDebugEnabled()) {
+            log.debug("DataPublisherPool initialized with max total: " + config.getMaxTotal() +
+                    ", max idle: " + config.getMaxIdle());
+        }
     }
 }

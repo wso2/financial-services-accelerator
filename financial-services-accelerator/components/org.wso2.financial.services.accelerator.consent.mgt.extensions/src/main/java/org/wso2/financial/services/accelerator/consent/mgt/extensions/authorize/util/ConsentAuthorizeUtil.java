@@ -33,15 +33,13 @@ import org.wso2.financial.services.accelerator.common.config.FinancialServicesCo
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
-
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
@@ -56,10 +54,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -674,6 +668,9 @@ public class ConsentAuthorizeUtil {
      * @param consentPersistData consent persist data
      */
     public static void publishConsentApprovalStatus(ConsentPersistData consentPersistData) {
+        if (log.isDebugEnabled()) {
+            log.debug("Publishing consent approval status for consent: " + consentPersistData.getConsentData().getConsentId());
+        }
         if (Boolean.parseBoolean((String) FinancialServicesConfigParser.getInstance().getConfiguration()
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
             ConsentData consentData = consentPersistData.getConsentData();
@@ -700,6 +697,10 @@ public class ConsentAuthorizeUtil {
 
 
             FSDataPublisherUtil.publishData("", "", consentAuthorizationData);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully published consent authorization data for consent: " +
+                        consentData.getConsentId());
+            }
         } else {
             log.debug("Data publishing is disabled");
         }
@@ -738,13 +739,15 @@ public class ConsentAuthorizeUtil {
             return null;
         }
 
+        log.debug("Extracting request URI key from request URI");
+
         String[] uriParts = requestUri.split(":");
         String requestUriKey = uriParts[uriParts.length - 1];
 
         return StringUtils.isBlank(requestUriKey) ? null : requestUriKey;
     }
 
-     * Builds authorized data object from account and permission parameters.
+     /* Builds authorized data object from account and permission parameters.
      *
      * @param consentPersistPayload payload sent to consent persistence
      * @param metaDataMap   consent meta data map

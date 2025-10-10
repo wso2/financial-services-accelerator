@@ -142,6 +142,7 @@ public final class FinancialServicesConfigParser {
             buildKeyManagerProperties();
             buildFSEventExecutors();
         } catch (IOException | XMLStreamException | OMException e) {
+            log.error("Error occurred while building configuration from financial-services.xml" , e);
             throw new FinancialServicesRuntimeException("Error occurred while building configuration from " +
                     "financial-services.xml", e);
         } finally {
@@ -211,7 +212,7 @@ public final class FinancialServicesConfigParser {
     }
 
     private void buildFSEventExecutors() {
-
+        log.debug("Building Financial Services Event Executors configuration");
         OMElement eventElement = rootElement.getFirstChildWithName(
                 new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                         FinancialServicesConstants.EVENT_CONFIG_TAG));
@@ -237,6 +238,7 @@ public final class FinancialServicesConfigParser {
 
                         if (StringUtils.isEmpty(obExecutorClass)) {
                             //Throwing exceptions since we cannot proceed without invalid executor names
+                            log.error("Event Executor class is not defined correctly in open-banking.xml");
                             throw new FinancialServicesRuntimeException("Event Executor class is not defined " +
                                     "correctly in open-banking.xml");
                         }
@@ -245,6 +247,7 @@ public final class FinancialServicesConfigParser {
                             priority = Integer.parseInt(obExecutorPriority);
                         }
                         fsEventExecutors.put(priority, obExecutorClass);
+                        log.debug("Added event executor: " + obExecutorClass + " with priority: " + priority);
                     }
                 }
                 //Ordering the executors based on the priority number
@@ -315,7 +318,7 @@ public final class FinancialServicesConfigParser {
      */
 
     protected void buildDataPublishingStreams() {
-
+        log.debug("Building Data Publishing Streams configuration");
         OMElement dataPublishingElement = rootElement.getFirstChildWithName(
                 new QName(FinancialServicesConstants.FS_CONFIG_QNAME,
                         FinancialServicesConstants.DATA_PUBLISHING_CONFIG_TAG));
@@ -351,6 +354,8 @@ public final class FinancialServicesConfigParser {
                                 String type = attributeElement.getAttributeValue(new QName("type"));
 
                                 if (StringUtils.isEmpty(attributeName)) {
+                                    log.error("Data publishing attribute name is not defined correctly in financial"
+                                            + "-services.xml");
                                     //Throwing exceptions since we cannot proceed without valid attribute names
                                     throw new FinancialServicesRuntimeException(
                                             "Data publishing attribute name is not defined " +
@@ -378,6 +383,10 @@ public final class FinancialServicesConfigParser {
                                 String attributeKey = dataStreamName + "_" + attributeName;
                                 dataPublishingValidationMap.put(attributeKey, metadata);
                             }
+                        }
+                        if (log.isDebugEnabled()) {
+                            log.debug("Added data publishing stream: " + dataStreamName + " with " + attributes.size() +
+                                    " attributes");
                         }
                         //Ordering the attributes based on the priority number
                         LinkedHashMap<Integer, String> priorityMap = attributes.entrySet()

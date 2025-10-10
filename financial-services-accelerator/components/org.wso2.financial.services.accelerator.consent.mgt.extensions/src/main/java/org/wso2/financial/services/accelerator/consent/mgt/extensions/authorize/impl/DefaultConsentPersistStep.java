@@ -106,6 +106,9 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
 
             consentPersist(consentPersistData, consentResource);
+            if (log.isDebugEnabled()) {
+                log.info("Consent persisted successfully for consent ID: " + consentResource.getConsentID());
+            }
             ConsentAuthorizeUtil.publishConsentApprovalStatus(consentPersistData);
 
         } catch (ConsentManagementException e) {

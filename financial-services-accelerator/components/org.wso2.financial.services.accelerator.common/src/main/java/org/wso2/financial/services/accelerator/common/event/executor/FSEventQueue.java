@@ -41,14 +41,17 @@ public class FSEventQueue {
     private final ExecutorService executorService;
 
     public FSEventQueue(int queueSize, int workerThreadCount) {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing FSEventQueue with queue size: " + queueSize + " and worker threads: "
+                    + workerThreadCount);
+        }
         // Note : Using a fixed worker thread pool and a bounded queue to control the load on the server
         executorService = Executors.newFixedThreadPool(workerThreadCount);
         eventQueue = new ArrayBlockingQueue<>(queueSize);
     }
 
     public void put(FSEvent obEvent) {
-
+        log.debug("Attempting to add event to queue");
         try {
             if (eventQueue.offer(obEvent)) {
                 executorService.submit(new FSQueueWorker(eventQueue, executorService));
@@ -62,6 +65,7 @@ public class FSEventQueue {
 
     @Override
     protected void finalize() throws Throwable {
+        log.debug("Shutting down FSEventQueue executor service");
         executorService.shutdown();
         super.finalize();
     }

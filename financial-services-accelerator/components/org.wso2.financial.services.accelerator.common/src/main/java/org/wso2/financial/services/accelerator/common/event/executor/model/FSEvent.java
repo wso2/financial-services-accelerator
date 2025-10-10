@@ -18,6 +18,9 @@
 
 package  org.wso2.financial.services.accelerator.common.event.executor.model;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Map;
 
 /**
@@ -27,9 +30,12 @@ public class FSEvent {
 
     private String eventType;
     private Map<String, Object> eventData;
+    private static final Log log = LogFactory.getLog(FSEvent.class);
 
     public FSEvent(String eventType, Map<String, Object> eventData) {
-
+        if (log.isDebugEnabled()) {
+            log.debug("Creating FSEvent with type: " + eventType);
+        }
         this.eventType = eventType;
         this.eventData = eventData;
     }
