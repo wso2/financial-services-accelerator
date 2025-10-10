@@ -274,7 +274,7 @@ username = "$ref{super_admin.username}@carbon.super"
 
 [apim.throttling.jms]
 password = "$ref{super_admin.password}"
-username = "am_admin!wso2.com!carbon.super"
+username = "AM_ADMIN_NAME!wso2.com!carbon.super"
 #start_delay = "5m"
 
 #[apim.throttling.event_sync]

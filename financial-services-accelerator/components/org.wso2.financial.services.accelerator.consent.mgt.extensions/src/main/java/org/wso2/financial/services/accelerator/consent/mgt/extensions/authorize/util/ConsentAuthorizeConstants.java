@@ -53,6 +53,7 @@ public class ConsentAuthorizeConstants {
     public static final String ACCOUNTS = "accounts";
     public static final String INITIATED_ACCOUNTS = "initiatedAccounts";
     public static final String ALLOW_MULTIPLE_ACCOUNTS = "allowMultipleAccounts";
+    public static final String HANDLE_ACCOUNT_SELECTION_SEPARATELY = "handleAccountSelectionSeparately";
     public static final String CONSUMER_ACCOUNTS = "consumerAccounts";
     public static final String UID = "uid";
 

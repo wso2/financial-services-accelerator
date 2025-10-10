@@ -44,6 +44,9 @@
                     <filesets>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
+                            <excludes>
+                                <exclude>**/jjwt-0.9.1.jar</exclude>
+                            </excludes>
                         </fileset>
                         <fileset>
                             <directory>${project.basedir}/carbon-home/repository/components/dropins</directory>
