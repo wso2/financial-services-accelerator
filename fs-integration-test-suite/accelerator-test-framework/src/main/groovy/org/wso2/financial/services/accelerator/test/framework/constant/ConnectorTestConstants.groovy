@@ -359,6 +359,11 @@ class ConnectorTestConstants extends Constants{
     static final String INTERNAL_APIM_SCIME2_ROLES_ENDPOINT = "/scim2/v2/Roles"
     static final String INTERNAL_APIM_DEVPORTAL_ENDPOINT = "/api/am/devportal/v3"
     public static final String REST_API_PUBLISHER_ENDPOINT = "/api/am/publisher/v4"
+    public static final String INTERNAL_API_RESOURCE_ENDPOINT = "/api/server/v1/api-resources"
+
+    public static final String OB_INTERNAL_API_RESOURCE = "OB-internal-api-resource"
+    public static final String OB_INTERNAL_API_SCOPE = "ob-internal-api-access"
+    public static final String OB_INTERNAL_API_ACCESS_ROLE = "OBInternalApiAccessRole"
 
     static final String ADMIN_PORTAL_CLIENT_NAME = "rest_api_admin"
     static final String PUBLISHER_CLIENT_NAME = "rest_api_publisher"

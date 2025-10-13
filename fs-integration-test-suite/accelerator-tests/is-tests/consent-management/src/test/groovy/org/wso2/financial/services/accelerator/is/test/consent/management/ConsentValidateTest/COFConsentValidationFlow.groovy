@@ -277,4 +277,28 @@ class COFConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.HTTP_CODE),
                 "403")
     }
+
+    @Test
+    void "Verify Validation of a created Consent invalid consent id in request"() {
+
+        //Consent Initiation
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        //Consent Authorisation
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, scopeList)
+
+        //Consent Validate Request
+        validationPayload = CofRequestPayloads.buildCofValidationPayload(accessToken, userId, UUID.randomUUID().toString())
+        doConsentValidate(ConnectorTestConstants.COF_VALIDATE_PATH, validationPayload)
+
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "consent_default")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Consent details not found for the given consent id")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "400")
+    }
 }

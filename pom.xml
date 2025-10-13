@@ -373,6 +373,11 @@
                 <version>${jackson.databinding.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.databinding.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring-web.version}</version>
@@ -446,6 +451,16 @@
                 <groupId>org.wso2.orbit.org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.synapse</groupId>
+                <artifactId>synapse-core</artifactId>
+                <version>${synapse.version}</version>
             </dependency>
             <!--Base Products related dependencies-->
             <dependency>
@@ -630,6 +645,8 @@
         <quartz.version>2.3.2.wso2v1</quartz.version>
         <swagger.parser.v3.version>2.1.22.wso2v1</swagger.parser.v3.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <commons-codec.version>1.16.0</commons-codec.version>
+        <synapse.version>2.1.7-wso2v217</synapse.version>
         <!--Base Products related dependencies-->
         <carbon.identity.framework.version>7.0.75</carbon.identity.framework.version>
         <carbon.identity.framework.version.range>[7.0.75, 8.0.0)</carbon.identity.framework.version.range>

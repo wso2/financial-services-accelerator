@@ -126,6 +126,6 @@ class PaymentSubmissionRequestHeaderValidationTests extends FSAPIMConnectorTest 
         Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
                 "Consent Enforcement Error")
         Assert.assertEquals(TestUtil.parseResponseBody(submissionResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
-                "Initiation payloads does not match")
+                "Initiation payloads do not match")
     }
 }

@@ -232,6 +232,18 @@
             <!--Sample Value: wso2carbon-->
             <Password>wso2carbon</Password>
         </Truststore>
+        <KeyStore>
+
+            <!--Absolute path + file name of keystore file. We can point the product wso2carbon.jks here. -->
+            <!--Sample Value: <Path to financial-open-banking>/integration-test-suite/test-artifacts/client-truststore/
+            wso2carbon.jks -->
+            <Location>{TestSuiteDirectoryPath}/test-artifacts/client-truststore/wso2carbon.jks</Location>
+
+            <Type>jks</Type>
+
+            <!--Sample Value: wso2carbon-->
+            <Password>wso2carbon</Password>
+        </KeyStore>
     </Transport>
 
     <!-- Non-Regulatory Application Info -->

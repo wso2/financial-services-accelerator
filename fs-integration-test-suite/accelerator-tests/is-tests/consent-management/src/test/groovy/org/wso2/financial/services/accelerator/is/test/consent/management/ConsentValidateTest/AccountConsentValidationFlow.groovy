@@ -338,4 +338,29 @@ class AccountConsentValidationFlow extends FSConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
                 "Requested Resource with the given ID is Unavailable.")
     }
+
+    @Test
+    void "Verify Validation of a created Consent invalid consent id in request"() {
+
+        //Consent Initiation
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        //Consent Authorisation
+        doConsentAuthorisation(configuration.getAppInfoClientID(), true, consentScopes)
+
+        //Consent Validate Request
+        validationPayload = AccountsRequestPayloads.buildValidationAccountPayloadWithValidAccountId(accessToken,
+                userId, UUID.randomUUID().toString())
+        doConsentValidate(ConnectorTestConstants.ACCOUNT_VALIDATE_PATH, validationPayload)
+
+        Assert.assertEquals(consentValidateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "consent_default")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+                "Consent details not found for the given consent id")
+        Assert.assertEquals(TestUtil.parseResponseBody(consentValidateResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
+                "400")
+    }
 }

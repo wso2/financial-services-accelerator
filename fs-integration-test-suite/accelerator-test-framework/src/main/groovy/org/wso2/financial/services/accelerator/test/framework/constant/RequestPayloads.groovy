@@ -906,4 +906,61 @@ class RequestPayloads {
         }""".stripIndent()
     }
 
+    /**
+     * Payload to create an API Resource in IS
+     *
+     * @param resourceName  Resource name
+     * @param scopeName     Scope name
+     * @return API Resource creation payload
+     */
+    static  String getAPIResourcePayload(String resourceName, String scopeName) {
+        return """{
+            "name": "$resourceName",
+            "identifier": "$resourceName",
+            "requiresAuthorization": true,
+            "scopes": [
+                {
+                    "name": "$scopeName",
+                    "displayName": "$scopeName"
+                }
+            ]
+        }"""
+    }
+
+    /**
+     * Payload to create a role in IS
+     *
+     * @param roleName  Role name
+     * @param orgId     Organization Id
+     * @return Role creation payload
+     */
+    static String getRoleCreationPayload(String roleName, String orgId) {
+        return """{
+            "schemas": [
+                "urn:ietf:params:scim:schemas:extension:2.0:Role"
+            ],
+            "displayName": "$roleName",
+            "audience": {
+                "type": "organization",
+                "value": "$orgId"
+            }
+        }"""
+
+    }
+
+    /**
+     * Payload to search an user
+     *
+     * @param userName - user name
+     * @return User search payload
+     */
+    static String getScimUserSearchPayload(String userName) {
+        return """{
+            "schemas": [
+              "urn:ietf:params:scim:api:messages:2.0:SearchRequest"
+            ],
+            "filter": "userName eq ${userName}"
+        }""".stripIndent()
+    }
+
 }
