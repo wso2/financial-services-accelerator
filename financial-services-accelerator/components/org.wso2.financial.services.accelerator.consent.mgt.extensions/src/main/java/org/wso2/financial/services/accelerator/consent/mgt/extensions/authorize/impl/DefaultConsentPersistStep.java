@@ -36,6 +36,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -105,6 +106,10 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
 
             consentPersist(consentPersistData, consentResource);
+            if (log.isDebugEnabled()) {
+                log.info("Consent persisted successfully for consent ID: " + consentResource.getConsentID());
+            }
+            ConsentAuthorizeUtil.publishConsentApprovalStatus(consentPersistData);
 
         } catch (ConsentManagementException e) {
             log.error(e.getMessage().replaceAll("\n\r", ""), e);

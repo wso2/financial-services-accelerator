@@ -31,6 +31,10 @@ public class ConsentAuthorizeConstants {
     public static final String ACCOUNT_ID_NOT_FOUND_ERROR = "Account IDs not available in persist request";
     public static final String ACCOUNT_ID_FORMAT_ERROR = "Account IDs format error in persist request";
 
+    public static final String REQUEST_URI = "request_uri";
+    public static final String REQUEST_URI_KEY = "requestUriKey";
+
+
     // For payload from populate consent authorize screen and payload forwarded to default consent page
     public static final String TYPE = "type";
     public static final String BASIC_CONSENT_DATA = "basicConsentData";
@@ -61,4 +65,5 @@ public class ConsentAuthorizeConstants {
     // For permissions accounts map in consent metadata
     public static final String HAS_MULTIPLE_PERMISSIONS = "hasMultiplePermissions";
     public static final String EXTERNAL_API_PRE_CONSENT_AUTHORIZE_RESPONSE = "externalAPIPreConsentAuthorizeResponse";
+
 }
