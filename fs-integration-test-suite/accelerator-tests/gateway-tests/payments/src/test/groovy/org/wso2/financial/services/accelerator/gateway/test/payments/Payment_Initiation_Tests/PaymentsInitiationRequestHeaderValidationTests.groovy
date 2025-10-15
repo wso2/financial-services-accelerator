@@ -323,6 +323,6 @@ class PaymentsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
                 .contains(ConnectorTestConstants.ERROR_CODE_BAD_REQUEST))
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
                 "Schema validation failed in the Request: Header parameter 'x-idempotency-key' is required on path " +
-                        "'/payment-consents' but not found in request., "))
+                        "'/payment-consents' but not found in request."))
     }
 }

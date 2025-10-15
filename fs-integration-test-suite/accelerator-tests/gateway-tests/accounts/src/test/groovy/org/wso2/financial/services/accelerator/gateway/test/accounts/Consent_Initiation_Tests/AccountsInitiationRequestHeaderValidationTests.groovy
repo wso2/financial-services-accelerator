@@ -169,7 +169,7 @@ class AccountsInitiationRequestHeaderValidationTests extends FSAPIMConnectorTest
         def errorMessage = TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
         Assert.assertTrue(errorMessage.contains("Schema validation failed in the Request: Request Content-Type " +
                 "header '[text/plain; charset=ISO-8859-1]' does not match any allowed types. Must be one of: " +
-                "[application/json; charset=utf-8]., "))
+                "[application/json; charset=utf-8]."))
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
                 ConnectorTestConstants.ERROR_CODE_400.toString())
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
