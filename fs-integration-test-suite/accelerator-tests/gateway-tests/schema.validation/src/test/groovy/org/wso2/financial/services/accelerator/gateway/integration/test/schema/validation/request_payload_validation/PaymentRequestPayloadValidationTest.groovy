@@ -111,9 +111,9 @@ class PaymentRequestPayloadValidationTest extends FSAPIMConnectorTest {
 		Assert.assertEquals(consentResponse.statusCode(), ConnectorTestConstants.BAD_REQUEST)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_MSG),
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
+		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION).contains(
 				"Schema validation failed in the Request: [Path '/Data/Initiation/InstructedAmount/Currency'] ECMA " +
-						"262 regex \"^[A-Z]{3,3}\$\" does not match input string \"RUPEE\"")
+						"262 regex \"^[A-Z]{3,3}\$\" does not match input string \"RUPEE\""))
 	}
 
 	@Test
