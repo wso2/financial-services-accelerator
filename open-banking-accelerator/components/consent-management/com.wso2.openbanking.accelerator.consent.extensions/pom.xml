@@ -22,7 +22,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.3.32-SNAPSHOT</version>
+        <version>3.3.32</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
