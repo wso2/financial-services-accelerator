@@ -114,7 +114,7 @@
                         </resource>
                     </webResources>
                     <warName>api#openbanking#push-authorization</warName>
-                    <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
+                    <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar, WEB-INF/lib/commons-lang3-*.jar</packagingExcludes>
                 </configuration>
             </plugin>
         </plugins>

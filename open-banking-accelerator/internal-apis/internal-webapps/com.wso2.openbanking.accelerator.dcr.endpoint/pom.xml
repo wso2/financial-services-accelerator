@@ -166,7 +166,7 @@
                     </webResources>
                     <warName>api#openbanking#dynamic-client-registration</warName>
                     <packagingExcludes>WEB-INF/lib/axis2-kernel-1.6.1-wso2v12.jar,
-                        WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
+                        WEB-INF/lib/slf4j-api-*.jar, WEB-INF/lib/commons-lang3-*.jar</packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
