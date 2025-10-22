@@ -81,6 +81,9 @@ public class RegistrationResponse {
     @SerializedName("software_statement")
     protected String softwareStatement = null;
 
+    @SerializedName("authorization_signed_response_alg")
+    private String authorizationSignedResponseAlg;
+
     public String getSoftwareStatement() {
 
         return softwareStatement;
@@ -216,5 +219,13 @@ public class RegistrationResponse {
 
     public void setJwksURI(String jwksURI) {
         this.jwksURI = jwksURI;
+    }
+
+    public String getAuthorizationSignedResponseAlg() {
+        return authorizationSignedResponseAlg;
+    }
+
+    public void setAuthorizationSignedResponseAlg(String authorizationSignedResponseAlg) {
+        this.authorizationSignedResponseAlg = authorizationSignedResponseAlg;
     }
 }

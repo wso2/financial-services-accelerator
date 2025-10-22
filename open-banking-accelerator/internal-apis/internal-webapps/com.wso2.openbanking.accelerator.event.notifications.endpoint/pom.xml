@@ -19,7 +19,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.3.26-SNAPSHOT</version>
+        <version>3.3.34-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -134,7 +134,7 @@
                         </resource>
                     </webResources>
                     <warName>api#openbanking#event-notifications</warName>
-                    <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
+                    <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar, WEB-INF/lib/commons-lang3-*.jar</packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>

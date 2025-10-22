@@ -783,7 +783,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
                 return retrievedConsentIdList;
             } catch (OBConsentDataRetrievalException e) {
-                log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
+                log.debug(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
                 throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
             }
         } finally {

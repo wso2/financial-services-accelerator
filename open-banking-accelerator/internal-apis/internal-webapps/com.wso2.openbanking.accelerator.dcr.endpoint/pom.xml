@@ -20,7 +20,7 @@
     <parent>
         <artifactId>open-banking-accelerator</artifactId>
         <groupId>com.wso2.openbanking.accelerator</groupId>
-        <version>3.3.26-SNAPSHOT</version>
+        <version>3.3.34-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -166,7 +166,7 @@
                     </webResources>
                     <warName>api#openbanking#dynamic-client-registration</warName>
                     <packagingExcludes>WEB-INF/lib/axis2-kernel-1.6.1-wso2v12.jar,
-                        WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
+                        WEB-INF/lib/slf4j-api-*.jar, WEB-INF/lib/commons-lang3-*.jar</packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>
