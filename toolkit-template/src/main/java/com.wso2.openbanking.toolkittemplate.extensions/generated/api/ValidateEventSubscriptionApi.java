@@ -1,17 +1,14 @@
-package org.openapitools.api;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.api;
 
-import org.openapitools.model.ErrorResponse;
-import org.openapitools.model.EventSubscriptionRequestBody;
-import org.openapitools.model.Response200ForEventSubscriptionValidation;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.ErrorResponse;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.EventSubscriptionRequestBody;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.Response200ForEventSubscriptionValidation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.*;
 
-import java.io.InputStream;
-import java.util.Map;
-import java.util.List;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 

@@ -1,17 +1,14 @@
-package org.openapitools.api;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.api;
 
-import org.openapitools.model.AppCreateProcessRequestBody;
-import org.openapitools.model.ErrorResponse;
-import org.openapitools.model.Response200ForApplicationCreation;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.AppCreateProcessRequestBody;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.ErrorResponse;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.Response200ForApplicationCreation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.*;
 
-import java.io.InputStream;
-import java.util.Map;
-import java.util.List;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 

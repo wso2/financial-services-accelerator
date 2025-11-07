@@ -128,6 +128,26 @@
         <artifactId>jackson-databind-nullable</artifactId>
         <version>${jackson-databind-nullable-version}</version>
     </dependency>
+      <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20210307</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+          <version>4.4.16</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.5.14</version>
+      </dependency>
+      <dependency>
+          <groupId>org.openapitools</groupId>
+          <artifactId>openapi-jaxrs-server</artifactId>
+          <version>v1.0.2</version>
+      </dependency>
   </dependencies>
   <properties>
     <java.version>1.8</java.version>

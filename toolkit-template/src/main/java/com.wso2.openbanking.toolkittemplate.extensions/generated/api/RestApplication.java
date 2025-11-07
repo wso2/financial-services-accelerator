@@ -1,4 +1,4 @@
-package org.openapitools.api;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.api;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

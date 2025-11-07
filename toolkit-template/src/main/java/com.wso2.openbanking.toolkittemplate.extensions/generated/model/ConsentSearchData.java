@@ -1,4 +1,4 @@
-package org.openapitools.model;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

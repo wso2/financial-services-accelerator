@@ -1,10 +1,7 @@
-package org.openapitools.model;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.model;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.openapitools.model.FailedResponseInConsentAuthorize;
-import org.openapitools.model.FailedResponseInConsentAuthorizeData;
-import org.openapitools.model.SuccessResponsePersistAuthorizedConsent;
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 

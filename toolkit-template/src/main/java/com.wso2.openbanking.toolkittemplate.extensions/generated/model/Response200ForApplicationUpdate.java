@@ -1,11 +1,7 @@
-package org.openapitools.model;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.model;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.openapitools.model.FailedResponseApplicationProcess;
-import org.openapitools.model.FailedResponseApplicationProcessData;
-import org.openapitools.model.SuccessResponseApplicationUpdate;
-import org.openapitools.model.SuccessResponseApplicationUpdateData;
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 

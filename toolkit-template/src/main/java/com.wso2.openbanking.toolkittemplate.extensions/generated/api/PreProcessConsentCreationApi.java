@@ -1,17 +1,14 @@
-package org.openapitools.api;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.api;
 
-import org.openapitools.model.ErrorResponse;
-import org.openapitools.model.PreProcessConsentCreationRequestBody;
-import org.openapitools.model.Response200ForPreProcessConsentCreation;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.ErrorResponse;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.PreProcessConsentCreationRequestBody;
+import com.wso2.openbanking.toolkittemplate.extensions.generated.model.Response200ForPreProcessConsentCreation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.*;
 
-import java.io.InputStream;
-import java.util.Map;
-import java.util.List;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 

@@ -1,25 +1,17 @@
-package org.openapitools.model;
+package com.wso2.openbanking.toolkittemplate.extensions.generated.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.openapitools.model.Account;
-import org.openapitools.model.SuccessResponsePopulateConsentAuthorizeScreenDataConsentDataPermissionsInner;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
 import io.swagger.annotations.*;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 
 
 @JsonTypeName("SuccessResponsePopulateConsentAuthorizeScreenData_consentData")
