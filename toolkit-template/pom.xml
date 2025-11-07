@@ -143,11 +143,6 @@
           <artifactId>httpclient</artifactId>
           <version>4.5.14</version>
       </dependency>
-      <dependency>
-          <groupId>org.openapitools</groupId>
-          <artifactId>openapi-jaxrs-server</artifactId>
-          <version>v1.0.2</version>
-      </dependency>
   </dependencies>
   <properties>
     <java.version>1.8</java.version>
