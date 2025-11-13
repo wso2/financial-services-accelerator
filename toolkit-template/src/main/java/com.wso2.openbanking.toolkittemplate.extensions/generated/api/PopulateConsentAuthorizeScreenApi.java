@@ -7,6 +7,7 @@ import com.wso2.openbanking.toolkittemplate.extensions.generated.model.Response2
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import com.wso2.openbanking.toolkittemplate.extensions.impls.PopulateConsentAuthorizeScreenApiImpl;
 import io.swagger.annotations.*;
 
 import javax.validation.Valid;
@@ -34,6 +35,6 @@ public class PopulateConsentAuthorizeScreenApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response populateConsentAuthorizeScreenPost(@Valid PopulateConsentAuthorizeScreenRequestBody populateConsentAuthorizeScreenRequestBody) {
-        return Response.ok().entity("magic!").build();
+        return PopulateConsentAuthorizeScreenApiImpl.handlePopulateConsentAuthorizeScreen(populateConsentAuthorizeScreenRequestBody);
     }
 }

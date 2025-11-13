@@ -7,6 +7,7 @@ import com.wso2.openbanking.toolkittemplate.extensions.generated.model.ValidateC
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import com.wso2.openbanking.toolkittemplate.extensions.impls.ValidateConsentAccessApiImpl;
 import io.swagger.annotations.*;
 
 import javax.validation.constraints.*;
@@ -35,6 +36,6 @@ public class ValidateConsentAccessApi {
         @ApiResponse(code = 500, message = "Server Error", response = ErrorResponse.class)
     })
     public Response validateConsentAccessPost(@Valid @NotNull ValidateConsentAccessRequestBody validateConsentAccessRequestBody) {
-        return Response.ok().entity("magic!").build();
+        return ValidateConsentAccessApiImpl.validateConsent(validateConsentAccessRequestBody);
     }
 }
