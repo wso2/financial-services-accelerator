@@ -213,7 +213,14 @@ public class IdentityCommonUtil {
 
         try {
             JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) publicKey);
-            return SignedJWT.parse(jwtString).verify(verifier);
+            boolean isValid = SignedJWT.parse(jwtString).verify(verifier);
+            if (!isValid) {
+                log.error("Invalid JWT signature");
+                throw new OpenBankingException("Invalid JWT signature");
+            } else {
+                log.debug("Returning true since the JWT signature is valid.");
+                return true;
+            }
         } catch (JOSEException | ParseException e) {
             throw new OpenBankingException("Error occurred while validating JWT signature");
         }
