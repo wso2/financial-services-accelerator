@@ -1422,6 +1422,19 @@ public class OpenBankingConfigParser {
     }
 
     /**
+     * Checks whether 'iat' claim validation for DCR requests is enabled.
+     * This validation ensures the 'iat' value represents a time in the past if it is sent in the request.
+     *
+     * @return true if 'iat' validation is enabled, false otherwise
+     */
+    public boolean isDCRIATValidationEnabled() {
+
+        return getConfigElementFromKey(OpenBankingConstants.DCR_IAT_VALIDATION) == null ? false :
+                (Boolean.parseBoolean(getConfigElementFromKey(
+                        OpenBankingConstants.DCR_IAT_VALIDATION).toString().trim()));
+    }
+
+    /**
      * Method to get software environment identification SSA property name.
      *
      * @return String software environment identification SSA property name.

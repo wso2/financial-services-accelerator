@@ -284,6 +284,11 @@
         {% else %}
         <RequestJWTValidation>true</RequestJWTValidation>
         {% endif %}
+        {% if open_banking.dcr.validate_iat is defined %}
+        <IATValidation>{{open_banking.dcr.validate_iat}}</IATValidation>
+        {% else %}
+        <IATValidation>false</IATValidation>
+        {% endif %}
         <RegistrationRequestParams>
             <SoftwareEnvironmentIdentification>
                 {% if open_banking.dcr.registration.software_environment_identification.ssa_property_name is defined %}
