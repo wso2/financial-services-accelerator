@@ -39,13 +39,10 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import net.minidev.json.JSONObject;
-<<<<<<< HEAD
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-=======
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
->>>>>>> d2bb467a77 (Add iat claim validation for DCR requests)
 
 import java.net.MalformedURLException;
 import java.net.URL;
