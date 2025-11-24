@@ -88,6 +88,7 @@ public class OpenBankingConstants {
     public static final String SOFTWARE_ENVIRONMENT = "software_environment";
     public static final String TOKEN_ENDPOINT = "DCR.TokenEndpoint";
     public static final String STORE_HOSTNAME = "PublisherURL";
+    public static final String DCR_IAT_VALIDATION = "DCR.IATValidation";
 
     public static final String JDBC_PERSISTENCE_CONFIG = "JDBCPersistenceManager.DataSource.Name";
     public static final String DB_CONNECTION_VERIFICATION_TIMEOUT =
