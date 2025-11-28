@@ -17,10 +17,13 @@
  */
 package org.wso2.financial.services.accelerator.authentication.endpoint;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.financial.services.accelerator.authentication.endpoint.impl.util.OTPAPIClient;
+import org.wso2.carbon.identity.smsotp.common.SMSOTPServiceImpl;
+import org.wso2.carbon.identity.smsotp.common.dto.FailureReasonDTO;
+import org.wso2.carbon.identity.smsotp.common.dto.GenerationResponseDTO;
+import org.wso2.carbon.identity.smsotp.common.dto.ValidationResponseDTO;
+import org.wso2.carbon.identity.smsotp.common.exception.SMSOTPException;
 import org.wso2.financial.services.accelerator.authentication.endpoint.util.Constants;
 
 import java.io.IOException;
@@ -57,6 +60,7 @@ public class FSVerifyServlet extends HttpServlet {
     private static final String CONSENT_SMSOTP_PAGE = "/consent_smsotp.jsp";
     private static final String SUBMIT_CONSENT_PAGE = "/submit_consent.jsp";
     private static Logger log = LoggerFactory.getLogger(FSVerifyServlet.class);
+    private static SMSOTPServiceImpl smsotpService = new SMSOTPServiceImpl();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -109,15 +113,11 @@ public class FSVerifyServlet extends HttpServlet {
 
         try {
 
-            JSONObject generateResponse = OTPAPIClient.generateOtp(userId);
-            String transactionId = generateResponse.getString("transactionId");
+            GenerationResponseDTO otpResponse = smsotpService.generateSMSOTP(userId);
+            String transactionId = otpResponse.getTransactionId();
             session.setAttribute(SESSION_OTP_TRANSACTION_ID, transactionId);
-
-            if (generateResponse.has("smsOTP") && log.isDebugEnabled()) {
-                log.debug("Generated OTP for user " + userId + ": " + generateResponse.getString("smsOTP"));
-            }
             req.getRequestDispatcher(CONSENT_SMSOTP_PAGE).forward(req, resp);
-        } catch (IOException e) {
+        } catch (IOException | SMSOTPException e) {
             req.setAttribute("otpError", "Error generating OTP. Please try again later.");
             req.getRequestDispatcher(CONSENT_SMSOTP_PAGE).forward(req, resp);
         }
@@ -142,23 +142,25 @@ public class FSVerifyServlet extends HttpServlet {
         }
 
         try {
-            JSONObject verifyResponse = OTPAPIClient.verifyOtp(userId, transactionId, providedOtp);
-            if (verifyResponse.getBoolean("isValid")) {
+            ValidationResponseDTO validationResponse = smsotpService.validateSMSOTP(transactionId, userId, providedOtp);
+            if (validationResponse.isValid()) {
                 session.removeAttribute(SESSION_OTP_TRANSACTION_ID);
                 session.removeAttribute(SESSION_USER_ID);
                 // Set flag indicating OTP was successfully verified
                 session.setAttribute(SESSION_OTP_VERIFIED, Boolean.TRUE);
                 req.getRequestDispatcher(SUBMIT_CONSENT_PAGE).forward(req, resp);
             } else {
-                JSONObject failureReason = verifyResponse.optJSONObject("failureReason");
+                FailureReasonDTO failureReason = validationResponse.getFailureReason();
                 String message = "Invalid OTP. Please try again.";
                 if (failureReason != null) {
-                    message = failureReason.optString("message", message);
+                    log.error("OTP verification failed: {} - {} - {}",
+                            failureReason.getCode(), failureReason.getMessage(), failureReason.getDescription());
+                    message = failureReason.getMessage();
                 }
                 req.setAttribute("otpError", message);
                 req.getRequestDispatcher(CONSENT_SMSOTP_PAGE).forward(req, resp);
             }
-        } catch (IOException e) {
+        } catch (IOException | SMSOTPException e) {
             // Log the error
             req.setAttribute("otpError", "Error verifying OTP. Please try again later.");
             req.getRequestDispatcher(CONSENT_SMSOTP_PAGE).forward(req, resp);
