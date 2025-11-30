@@ -116,11 +116,10 @@ public class ConsentValidationEndpoint {
                 requestData = JWTUtils.decodeRequestJWT(payload, "body");
             } catch (OpenBankingException e) {
                 log.error("Error while validating JWT signature", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while validating JWT " +
-                        "signature");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             } catch (ParseException e) {
                 log.error("Error while decoding validation JWT", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while decoding validation JWT");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
         } else {
             try {
