@@ -31,6 +31,8 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.api.model.KeyManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -58,6 +60,7 @@ public class IdentityServerUtilsTest {
     MockedStatic<KeyManagerDataHolder> keyManagerDataHolderMockedStatic;
     KeyManagerDataHolder keyManagerDataHolder;
     HttpEntity httpEntityMock;
+    KeyManagerConfiguration keyManagerConfiguration;
 
     @BeforeClass
     public void setUp() throws URISyntaxException {
@@ -82,6 +85,12 @@ public class IdentityServerUtilsTest {
         Mockito.when(mockBuilder.setHost("example.com")).thenReturn(mockBuilder);
         Mockito.when(mockBuilder.setPath("/api")).thenReturn(mockBuilder);
         Mockito.when(mockBuilder.build()).thenReturn(new URI("https://example.com/api"));
+
+        keyManagerConfiguration = new KeyManagerConfiguration();
+        keyManagerConfiguration
+                .addParameter(APIConstants.KeyManager.AUTHORIZE_ENDPOINT, "https://localhost:9446/oauth2/authorize");
+        keyManagerConfiguration.addParameter(APIConstants.KEY_MANAGER_USERNAME, "test-username");
+        keyManagerConfiguration.addParameter(APIConstants.KEY_MANAGER_PASSWORD, "test-password");
     }
 
     @AfterClass
@@ -111,7 +120,8 @@ public class IdentityServerUtilsTest {
 
             httpClientUtilsMockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(httpClient);
 
-            String appID = IdentityServerUtils.getAppIdFromClientId("rgyZpk8uMCBXqolzjWQyLnmPVd0a");
+            String appID = IdentityServerUtils
+                    .getAppIdFromClientId(keyManagerConfiguration, "rgyZpk8uMCBXqolzjWQyLnmPVd0a");
             Assert.assertNotNull(appID);
         }
     }
@@ -137,7 +147,8 @@ public class IdentityServerUtilsTest {
 
             httpClientUtilsMockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(httpClient);
 
-            JSONObject spApp = IdentityServerUtils.getSPApplicationFromClientId("rgyZpk8uMCBXqolzjWQyLnmPVd0a");
+            JSONObject spApp = IdentityServerUtils
+                    .getSPApplicationFromClientId(keyManagerConfiguration, "rgyZpk8uMCBXqolzjWQyLnmPVd0a");
             Assert.assertNotNull(spApp);
         }
     }
@@ -163,7 +174,7 @@ public class IdentityServerUtilsTest {
 
             httpClientUtilsMockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(httpClient);
 
-            IdentityServerUtils.updateSPApplication("rgyZpk8uMCBXqolzjWQyLnmPVd0a",
+            IdentityServerUtils.updateSPApplication(keyManagerConfiguration, "rgyZpk8uMCBXqolzjWQyLnmPVd0a",
                     KeyManagerTestConstants.SP_CERT);
         }
     }
@@ -189,7 +200,7 @@ public class IdentityServerUtilsTest {
 
             httpClientUtilsMockedStatic.when(HTTPClientUtils::getHttpsClient).thenReturn(httpClient);
 
-            IdentityServerUtils.updateDCRApplication("rgyZpk8uMCBXqolzjWQyLnmPVd0a",
+            IdentityServerUtils.updateDCRApplication(keyManagerConfiguration, "rgyZpk8uMCBXqolzjWQyLnmPVd0a",
                     "test", Map.of("testkey1", "testValue1, testKey2, testValue2"));
         }
     }
