@@ -65,7 +65,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     public AccessTokenInfo getNewApplicationAccessToken(AccessTokenRequest tokenRequest) throws APIManagementException {
 
         try {
-            JSONObject spAppData = IdentityServerUtils.getSPApplicationFromClientId(tokenRequest.getClientId());
+            JSONObject spAppData = IdentityServerUtils
+                    .getSPApplicationFromClientId(super.getKeyManagerConfiguration(), tokenRequest.getClientId());
             String regulatoryProperty = IdentityServerUtils.getRegulatoryPropertyFromSPMetadata(spAppData);
             if (Boolean.parseBoolean(regulatoryProperty)) {
                 return null;
@@ -199,7 +200,6 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
     @Override
     @Generated(message = "Excluding from code coverage since utils methods are covered in other tests")
     public OAuthApplicationInfo createApplication(OAuthAppRequest oauthAppRequest) throws APIManagementException {
-
         HashMap<String, String> additionalProperties = FSKeyManagerUtil
                 .getValuesForAdditionalProperties(oauthAppRequest);
         if (Boolean.parseBoolean(additionalProperties.get(FinancialServicesConstants.REGULATORY))) {
@@ -213,7 +213,7 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
         try {
             JSONObject serviceProviderAppData = IdentityServerUtils.getSPApplicationFromClientId(
-                    oAuthApplicationInfo.getClientId());
+                    super.getKeyManagerConfiguration(), oAuthApplicationInfo.getClientId());
 
             if (Boolean.parseBoolean(additionalProperties.get(FinancialServicesConstants.REGULATORY))) {
                 String appNameProperty = IdentityServerUtils
@@ -245,7 +245,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
         additionalProperties.put(FSKeyManagerConstants.APP_CREATE_REQUEST, FSKeyManagerConstants.FALSE);
         OAuthApplicationInfo oAuthApplicationInfo = oAuthAppRequest.getOAuthApplicationInfo();
         try {
-            JSONObject appData = IdentityServerUtils.getSPApplicationFromClientId(oAuthApplicationInfo.getClientId());
+            JSONObject appData = IdentityServerUtils.getSPApplicationFromClientId(super.getKeyManagerConfiguration(),
+                    oAuthApplicationInfo.getClientId());
 
             doPreUpdateApplication(oAuthAppRequest, additionalProperties, appData);
             String appName = appData.getString(FSKeyManagerConstants.NAME);
@@ -264,7 +265,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
 
         OAuthApplicationInfo oAuthApplicationInfo = super.retrieveApplication(consumerKey);
         try {
-            JSONObject appData = IdentityServerUtils.getSPApplicationFromClientId(oAuthApplicationInfo.getClientId());
+            JSONObject appData = IdentityServerUtils.getSPApplicationFromClientId(super.getKeyManagerConfiguration(),
+                    oAuthApplicationInfo.getClientId());
             return updateAdditionalProperties(oAuthApplicationInfo,
                     IdentityServerUtils.getSPMetadataFromSPApp(appData));
         } catch (FinancialServicesException e) {
@@ -295,8 +297,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                     IdentityServerUtils.getSPMetadataFromSPApp(serviceProviderAppData), additionalProperties);
 
             // Update the DCR application
-            IdentityServerUtils.updateDCRApplication(serviceProviderAppData.getString(FSKeyManagerConstants.CLIENT_ID),
-                    spAppName, spProperties);
+            IdentityServerUtils.updateDCRApplication(super.getKeyManagerConfiguration(),
+                    serviceProviderAppData.getString(FSKeyManagerConstants.CLIENT_ID), spAppName, spProperties);
 
             boolean isAppCreateRequest = Boolean.parseBoolean(additionalProperties
                     .get(FSKeyManagerConstants.APP_CREATE_REQUEST));
@@ -304,8 +306,8 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
                     .get(FinancialServicesConstants.REGULATORY));
             if (isAppCreateRequest && isRegulatory) {
                 String certificate = additionalProperties.get(FSKeyManagerConstants.SP_CERTIFICATE);
-                IdentityServerUtils.updateSPApplication(serviceProviderAppData
-                        .getString(FSKeyManagerConstants.CLIENT_ID), certificate);
+                IdentityServerUtils.updateSPApplication(super.getKeyManagerConfiguration(),
+                        serviceProviderAppData.getString(FSKeyManagerConstants.CLIENT_ID), certificate);
             }
         } catch (FinancialServicesException e) {
             log.error("Error while updating service provider application properties", e);

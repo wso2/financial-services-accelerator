@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.keymanager.utils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
@@ -28,6 +29,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.wso2.carbon.apimgt.api.model.KeyManagerConfiguration;
+import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -36,7 +39,6 @@ import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDat
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -49,27 +51,25 @@ public class IdentityServerUtils {
 
     /**
      * Method to get the application ID from the client ID. Uses Application Management API in IS
-     * (https://localhost:9446/api/server/v1/applications/) with filter 'clientId eq clientId_value'
+     * (https://{km_host}:{km_port}/api/server/v1/applications/) with filter 'clientId eq clientId_value'
      * to fetch the application ID.
      *
+     * @param keyManagerConfiguration   key manager configs configured in APIM
      * @param clientId  Client ID of the application
      * @return          Application ID if found, otherwise null
      * @throws FinancialServicesException If an error occurs while fetching the application ID
      */
     @SuppressFBWarnings("HTTP_PARAMETER_POLLUTION")
-    public static String getAppIdFromClientId(String clientId) throws FinancialServicesException {
+    public static String getAppIdFromClientId(final KeyManagerConfiguration keyManagerConfiguration,
+                                              final String clientId) throws FinancialServicesException {
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL;
-            URIBuilder builder = new URIBuilder(url);
+            URIBuilder builder = new URIBuilder(getKeyManagerApplicationMgtEndpoint(keyManagerConfiguration));
             builder.addParameter(FSKeyManagerConstants.FILTER, FSKeyManagerConstants.FILTER_KEY + clientId);
-            URI uri = builder.build();
-            HttpGet httpGet = new HttpGet(uri);
+            HttpGet httpGet = new HttpGet(builder.build());
 
-            String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpGet.setHeader(FinancialServicesConstants.AUTH_HEADER,
-                    FinancialServicesUtils.getBasicAuthHeader(userName, password));
+                    getBasicAuthHeaderFromKeyManagerConfig(keyManagerConfiguration));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet);
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new FinancialServicesException("Error while getting app id from client id");
@@ -88,26 +88,25 @@ public class IdentityServerUtils {
 
     /**
      * Method to get the SP application details from the client ID. Uses Application Management API in IS
-     * (https://localhost:9446/api/server/v1/applications/app_id) to retrieve the SP Application.
+     * (https://{km_host}:{km_port}/api/server/v1/applications/{app_id}) to retrieve the SP Application.
      *
+     * @param keyManagerConfiguration   key manager configs configured in APIM
      * @param clientId   Client ID of the application
      * @return           JSONObject containing the SP application details
      * @throws FinancialServicesException  If an error occurs while fetching the SP application details
      */
-    public static JSONObject getSPApplicationFromClientId(String clientId) throws FinancialServicesException {
+    public static JSONObject getSPApplicationFromClientId(final KeyManagerConfiguration keyManagerConfiguration,
+                                                          final String clientId) throws FinancialServicesException {
 
-        String appId = getAppIdFromClientId(clientId);
+        final String appId = getAppIdFromClientId(keyManagerConfiguration, clientId);
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL + appId;
+            final String url = getKeyManagerApplicationMgtEndpoint(keyManagerConfiguration) + appId;
             URIBuilder builder = new URIBuilder(url);
-            URI uri = builder.build();
-            HttpGet httpGet = new HttpGet(uri);
+            HttpGet httpGet = new HttpGet(builder.build());
 
-            String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpGet.setHeader(FinancialServicesConstants.AUTH_HEADER,
-                    FinancialServicesUtils.getBasicAuthHeader(userName, password));
+                    getBasicAuthHeaderFromKeyManagerConfig(keyManagerConfiguration));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpGet);
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new FinancialServicesException("Error while getting sp application from client id");
@@ -121,19 +120,21 @@ public class IdentityServerUtils {
 
     /**
      * Method to update the SP application in the Identity server with the provided certificate. Uses Application
-     * Management API in IS (https://localhost:9446/api/server/v1/applications/).
+     * Management API in IS (https://{km_host}:{km_port}/api/server/v1/applications/).
      *
+     * @param keyManagerConfiguration   key manager configs configured in APIM
      * @param clientId      Client ID of the application
      * @param certificate   Certificate content in PEM format to be updated in the SP application
      * @throws FinancialServicesException  If an error occurs while updating the SP application
      */
-    public static void updateSPApplication(String clientId, String certificate)
+    public static void updateSPApplication(final KeyManagerConfiguration keyManagerConfiguration,
+                                           final String clientId, final String certificate)
             throws FinancialServicesException {
 
-        String appId = getAppIdFromClientId(clientId);
+        final String appId = getAppIdFromClientId(keyManagerConfiguration, clientId);
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.APP_MGMT_API_URL + appId;
+            String url = getKeyManagerApplicationMgtEndpoint(keyManagerConfiguration) + appId;
             URIBuilder builder = new URIBuilder(url);
             HttpPatch httpPatch = new HttpPatch(builder.build());
 
@@ -144,11 +145,8 @@ public class IdentityServerUtils {
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
             httpPatch.setHeader(FinancialServicesConstants.ACCEPT,
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
-
-            String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpPatch.setHeader(FinancialServicesConstants.AUTH_HEADER,
-                    FinancialServicesUtils.getBasicAuthHeader(userName, password));
+                    getBasicAuthHeaderFromKeyManagerConfig(keyManagerConfiguration));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPatch);
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new FinancialServicesException("Error while getting sp application from client id");
@@ -178,20 +176,21 @@ public class IdentityServerUtils {
 
     /**
      * Method to update the DCR application in the Identity server. Used DCR API in IS
-     * ("https://localhost:9446/api/identity/oauth2/dcr/v1.1/register/").
+     * ("https://{km_host}:{km_port}/api/identity/oauth2/dcr/v1.1/register/").
      *
      * @param clientId                Client ID of the application
      * @param appName                 Application name
      * @param attributes              Map of attributes to be updated
      * @throws FinancialServicesException   If an error occurs while updating the application
      */
-    public static void updateDCRApplication(String clientId, String appName, Map<String, Object> attributes)
+    public static void updateDCRApplication(final KeyManagerConfiguration keyManagerConfiguration,
+                                            String clientId, String appName, Map<String, Object> attributes)
             throws FinancialServicesException {
 
         JSONObject spApplication = constructDCRUpdatePayload(appName, attributes);
 
         try {
-            String url = getIdentitySeverUrl() + FSKeyManagerConstants.DCR_EP + clientId;
+            String url = getKeyManagerBaseUrl(keyManagerConfiguration) + FSKeyManagerConstants.DCR_EP + clientId;
             URIBuilder builder = new URIBuilder(url);
             HttpPut httpPut = new HttpPut(builder.build());
             StringEntity params = new StringEntity(spApplication.toString());
@@ -199,10 +198,8 @@ public class IdentityServerUtils {
             httpPut.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
 
-            String userName = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_USERNAME);
-            char[] password = getAPIMgtConfig(FSKeyManagerConstants.API_KEY_VALIDATOR_PASSWORD).toCharArray();
             httpPut.setHeader(FinancialServicesConstants.AUTH_HEADER,
-                    FinancialServicesUtils.getBasicAuthHeader(userName, password));
+                    getBasicAuthHeaderFromKeyManagerConfig(keyManagerConfiguration));
             CloseableHttpResponse response = HTTPClientUtils.getHttpsClient().execute(httpPut);
             if (response.getStatusLine().getStatusCode() != 200) {
                 throw new FinancialServicesException("Error while updating sp application");
@@ -333,6 +330,44 @@ public class IdentityServerUtils {
             }
         }
         return propertyValue;
+    }
+
+    /**
+     * Method to get the key manager /applications endpoint.
+     *
+     * @return the URL of the /applications REST endpoint.
+     */
+    public static String getKeyManagerApplicationMgtEndpoint(final KeyManagerConfiguration keyManagerConfiguration) {
+
+        return getKeyManagerBaseUrl(keyManagerConfiguration) + FSKeyManagerConstants.APP_MGMT_API_URL;
+    }
+
+    /**
+     * Method to get the basic auth header value from key manager configs.
+     *
+     * @return basic auth header value.
+     */
+    public static String getBasicAuthHeaderFromKeyManagerConfig(KeyManagerConfiguration keyManagerConfiguration) {
+
+        String userName = (String) keyManagerConfiguration.getParameter(APIConstants.KEY_MANAGER_USERNAME);
+        char[] password = ((String) keyManagerConfiguration.getParameter(APIConstants.KEY_MANAGER_PASSWORD))
+                .toCharArray();
+        return FinancialServicesUtils.getBasicAuthHeader(userName, password);
+    }
+
+    /**
+     * Method to get the key manager base URL.
+     *
+     * @return key manager base URL.
+     */
+    private static String getKeyManagerBaseUrl(final KeyManagerConfiguration keyManagerConfiguration) {
+
+        final String keyManagerAuthEndpoint =
+                (String) keyManagerConfiguration.getParameter(APIConstants.KeyManager.AUTHORIZE_ENDPOINT);
+        if (StringUtils.isNotEmpty(keyManagerAuthEndpoint)) {
+            return keyManagerAuthEndpoint.split(FSKeyManagerConstants.OAUTH2)[0];
+        }
+        return getIdentitySeverUrl();
     }
 
 }
