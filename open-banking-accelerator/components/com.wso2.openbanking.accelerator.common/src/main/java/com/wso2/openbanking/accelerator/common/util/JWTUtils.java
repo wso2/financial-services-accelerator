@@ -30,6 +30,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jose.proc.SimpleSecurityContext;
 import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
@@ -41,6 +42,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -133,7 +135,19 @@ public class JWTUtils {
         jwtProcessor.setJWSKeySelector(keySelector);
         // Process the token, set optional context parameters.
         SimpleSecurityContext securityContext = new SimpleSecurityContext();
-        jwtProcessor.process((SignedJWT) jwt, securityContext);
+        JWTClaimsSet claims = jwtProcessor.process((SignedJWT) jwt, securityContext);
+
+        // Validate iat with configured timestamp skew if validation is enabled and iat is sent in the request.
+        boolean validateIat = OpenBankingConfigParser.getInstance().isDCRIATValidationEnabled();
+        Date iat = claims.getIssueTime();
+        if (validateIat && iat != null) {
+            long timestampSkew = java.util.concurrent.TimeUnit.SECONDS.toMillis(
+                    OAuthServerConfiguration.getInstance().getTimeStampSkewInSeconds());
+            long now = System.currentTimeMillis();
+            if (iat.getTime() > now + Math.max(0, timestampSkew)) {
+                throw new BadJOSEException("Invalid 'iat' claim: issued-at is in the future");
+            }
+        }
         return true;
     }
 
@@ -251,4 +265,3 @@ public class JWTUtils {
         }
     }
 }
-
