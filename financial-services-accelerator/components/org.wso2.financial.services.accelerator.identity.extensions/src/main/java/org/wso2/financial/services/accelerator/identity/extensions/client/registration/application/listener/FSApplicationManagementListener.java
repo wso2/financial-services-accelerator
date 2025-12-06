@@ -201,15 +201,6 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
                                             String tenantDomain) throws IdentityApplicationManagementException {
 
         try {
-            List<ServiceProviderProperty> spProperties = new ArrayList<>(Arrays.asList
-                    (serviceProvider.getSpProperties()));
-
-            boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(spProperties);
-            if (!isRegulatory) {
-                log.debug("Skipping post application retrieval as it is not a regulatory application.");
-                return true;
-            }
-
             identityDataHolder.getAbstractApplicationUpdater()
                     .doPostGetApplication(serviceProvider, applicationName, tenantDomain);
         } catch (FinancialServicesException e) {
@@ -240,15 +231,6 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             throws IdentityApplicationManagementException {
 
         try {
-            List<ServiceProviderProperty> spProperties = new ArrayList<>(Arrays.asList
-                    (serviceProvider.getSpProperties()));
-
-            boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(spProperties);
-            if (!isRegulatory) {
-                log.debug("Skipping post application deletion as it is not a regulatory application.");
-                return true;
-            }
-
             identityDataHolder.getAbstractApplicationUpdater()
                     .doPostDeleteApplication(serviceProvider, tenantDomain, userName);
         } catch (FinancialServicesException e) {
