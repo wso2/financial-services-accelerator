@@ -378,9 +378,6 @@ public class IdentityCommonUtils {
                 identityCache.addToCache(identityCacheKey, regulatoryProperty);
                 return Boolean.parseBoolean(regulatoryProperty.toString());
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Regulatory property missing. Treating as non-regulatory application.");
-                }
                 return false;
             }
         } else {
