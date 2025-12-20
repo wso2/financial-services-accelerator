@@ -59,6 +59,7 @@ import javax.servlet.http.Cookie;
 /**
  * Common utility class for Identity Extensions.
  */
+@SuppressFBWarnings(value = "CRLF_INJECTION_LOGS", justification = "External inputs are sanitized before logging")
 public class IdentityCommonUtils {
 
     private static final Log log = LogFactory.getLog(IdentityCommonUtils.class);

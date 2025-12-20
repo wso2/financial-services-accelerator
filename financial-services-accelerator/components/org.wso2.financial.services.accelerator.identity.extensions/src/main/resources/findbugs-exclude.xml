@@ -18,7 +18,4 @@
  -->
 
 <FindBugsFilter>
-    <Match>
-        <Bug pattern="CRLF_INJECTION_LOGS"/>
-    </Match>
 </FindBugsFilter>
