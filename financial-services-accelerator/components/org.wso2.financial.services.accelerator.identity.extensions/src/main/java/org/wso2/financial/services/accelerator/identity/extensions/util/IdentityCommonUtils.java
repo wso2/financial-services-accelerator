@@ -378,7 +378,11 @@ public class IdentityCommonUtils {
                 identityCache.addToCache(identityCacheKey, regulatoryProperty);
                 return Boolean.parseBoolean(regulatoryProperty.toString());
             } else {
-                throw new FinancialServicesException("Unable to retrieve regulatory property from sp metadata");
+                if (log.isDebugEnabled()) {
+                    log.debug("Regulatory property not found in service provider metadata for clientId: "
+                            + clientId + ". Hence treating it as a non-regulatory application.");
+                }
+                return false;
             }
         } else {
             throw new FinancialServicesException("Client id not found");
