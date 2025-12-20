@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +45,8 @@ import java.util.Map;
  * The extension of RequestObjectValidatorImpl to enforce Financial services specific validations of the
  * request object.
  */
+@SuppressFBWarnings(value = {"CRLF_INJECTION_LOGS", "REPLACE_STR_LINE_TERMINATORS"},
+        justification = "Log messages are sanitized for CRLF injection.")
 public class FSRequestObjectValidationExtension extends RequestObjectValidatorImpl {
 
     private static final Log log = LogFactory.getLog(FSRequestObjectValidationExtension.class);

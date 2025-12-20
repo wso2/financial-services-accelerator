@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.identity.extensions.grant.type.handlers;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +41,8 @@ import java.util.HashSet;
 /**
  * FS specific refresh grant handler.
  */
+@SuppressFBWarnings(value = {"CRLF_INJECTION_LOGS", "REPLACE_STR_LINE_TERMINATORS"},
+        justification = "Log messages are sanitized for CRLF injection.")
 public class FSRefreshGrantHandler extends RefreshGrantHandler {
 
     private static final Log log = LogFactory.getLog(FSRefreshGrantHandler.class);

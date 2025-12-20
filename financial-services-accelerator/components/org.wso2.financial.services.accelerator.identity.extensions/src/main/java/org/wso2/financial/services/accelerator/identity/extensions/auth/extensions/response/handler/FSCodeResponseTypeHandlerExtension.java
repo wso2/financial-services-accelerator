@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.response.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -34,6 +35,8 @@ import org.wso2.financial.services.accelerator.identity.extensions.util.Identity
 /**
  * Extension to append scope with FS_ prefix at the end of auth flow, before offering auth code.
  */
+@SuppressFBWarnings(value = {"CRLF_INJECTION_LOGS", "REPLACE_STR_LINE_TERMINATORS"},
+        justification = "Log messages are sanitized for CRLF injection.")
 public class FSCodeResponseTypeHandlerExtension extends CodeResponseTypeHandler {
 
     private static final Log log = LogFactory.getLog(FSCodeResponseTypeHandlerExtension.class);

@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.identity.extensions.claims;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +38,8 @@ import java.util.Map;
 /**
  * This call back handler adds FS specific additional claims to the self-contained JWT access token.
  */
+@SuppressFBWarnings(value = {"CRLF_INJECTION_LOGS", "REPLACE_STR_LINE_TERMINATORS"},
+        justification = "Log messages are sanitized for CRLF injection.")
 public class FSDefaultOIDCClaimsCallbackHandler extends DefaultOIDCClaimsCallbackHandler {
 
     private static Log log = LogFactory.getLog(FSDefaultOIDCClaimsCallbackHandler.class);
