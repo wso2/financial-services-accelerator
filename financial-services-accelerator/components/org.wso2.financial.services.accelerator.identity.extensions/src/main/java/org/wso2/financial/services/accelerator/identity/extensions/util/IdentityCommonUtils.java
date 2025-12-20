@@ -379,8 +379,8 @@ public class IdentityCommonUtils {
                 return Boolean.parseBoolean(regulatoryProperty.toString());
             } else {
                 if (log.isDebugEnabled()) {
-                    log.debug(("Regulatory property not found in service provider metadata for clientId: " + clientId
-                            + ". Hence treating it as a non-regulatory application.").replaceAll("[\r\n]", ""));
+                    log.debug(("Regulatory property not found in service provider metadata. " +
+                            "Hence treating it as a non-regulatory application."));
                 }
                 return false;
             }
