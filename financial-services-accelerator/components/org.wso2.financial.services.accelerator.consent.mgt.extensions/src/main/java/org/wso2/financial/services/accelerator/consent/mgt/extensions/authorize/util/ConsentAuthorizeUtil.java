@@ -46,6 +46,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.data.publisher.constants.DataPublishingConstants;
 import org.wso2.financial.services.accelerator.data.publisher.util.FSDataPublisherUtil;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -669,7 +670,8 @@ public class ConsentAuthorizeUtil {
      */
     public static void publishConsentApprovalStatus(ConsentPersistData consentPersistData) {
         if (log.isDebugEnabled()) {
-            log.debug("Publishing consent approval status for consent: " + consentPersistData.getConsentData().getConsentId());
+            log.debug("Publishing consent approval status for consent: " + consentPersistData.getConsentData().
+                    getConsentId());
         }
         if (Boolean.parseBoolean((String) FinancialServicesConfigParser.getInstance().getConfiguration()
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
@@ -715,7 +717,7 @@ public class ConsentAuthorizeUtil {
      */
     public static String getRequestUriKeyFromQueryParams(String spQueryParams) {
 
-        List<NameValuePair> params = URLEncodedUtils.parse(spQueryParams, StandardCharsets.UTF_8);
+        List<NameValuePair> params = URLEncodedUtils.parse(URI.create("?" + spQueryParams), "UTF-8");
 
         for (NameValuePair param : params) {
             if (ConsentAuthorizeConstants.REQUEST_URI.equals(param.getName())) {

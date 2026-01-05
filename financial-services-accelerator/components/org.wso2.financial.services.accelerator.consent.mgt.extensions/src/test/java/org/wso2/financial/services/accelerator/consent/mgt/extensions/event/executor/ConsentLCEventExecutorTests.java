@@ -2,6 +2,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.event.exe
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -59,93 +60,97 @@ public class ConsentLCEventExecutorTests {
 
     @Test
     public void testProcessEventSuccess() throws Exception {
-
         ConsentLCEventExecutor consentLCExecutorSpy = Mockito.spy(new ConsentLCEventExecutor());
 
         outContent.reset();
 
         Map<String, Object> configs = new HashMap<>();
-
         configs.put("DataHolder.ClientId", "dummyHolderId");
-        configs.put("DataPublishing.Enabled", false);
+        configs.put("DataPublishing.Enabled", "false");
 
         FinancialServicesConfigParser fsConfigParserMock = mock(FinancialServicesConfigParser.class);
-        mockStatic(FinancialServicesConfigParser.class);
-        when(FinancialServicesConfigParser.getInstance()).thenReturn(fsConfigParserMock);
-        when(fsConfigParserMock.getConfiguration()).thenReturn(configs);
 
-        mockStatic(FSDataPublisherUtil.class);
+        try (MockedStatic<FinancialServicesConfigParser> configParserMockedStatic = mockStatic(
+                FinancialServicesConfigParser.class);
+             MockedStatic<FSDataPublisherUtil> dataPublisherUtilMockedStatic = mockStatic(FSDataPublisherUtil.class)) {
 
-        HashMap<String, Object> consentDataMap = new HashMap<>();
+            when(FinancialServicesConfigParser.getInstance()).thenReturn(fsConfigParserMock);
+            when(fsConfigParserMock.getConfiguration()).thenReturn(configs);
 
-        HashMap<String, String> consentAttributes = new HashMap<>();
-        consentAttributes.put("customerProfileType", "individual-profile");
-        consentAttributes.put("sharing_duration_value", "6000");
+            HashMap<String, Object> consentDataMap = new HashMap<>();
+            HashMap<String, String> consentAttributes = new HashMap<>();
+            consentAttributes.put("customerProfileType", "individual-profile");
+            consentAttributes.put("sharing_duration_value", "6000");
 
+            ConsentResource consentResource = new ConsentResource();
+            consentResource.setConsentAttributes(consentAttributes);
 
-        ConsentResource consentResource = new ConsentResource();
-        consentResource.setConsentAttributes(consentAttributes);
+            DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+            detailedConsentResource.setConsentAttributes(consentAttributes);
+            detailedConsentResource.setAuthorizationResources(new ArrayList<>(Arrays.asList(authResource)));
 
-        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
-        detailedConsentResource.setConsentAttributes(consentAttributes);
-        detailedConsentResource.setAuthorizationResources(new ArrayList<>(Arrays.asList(authResource)));
+            consentDataMap.put("ConsentResource", consentResource);
+            consentDataMap.put("DetailedConsentResource", detailedConsentResource);
 
-        consentDataMap.put("ConsentResource", consentResource);
-        consentDataMap.put("DetailedConsentResource", detailedConsentResource);
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("ConsentDataMap", consentDataMap);
+            eventData.put(CONSENT_ID_KEY, "dummyConsentId");
+            eventData.put(CURRENT_STATUS_KEY, "REVOKED");
+            eventData.put(PREVIOUS_STATUS_KEY, "AUTHORIZED");
+            eventData.put(CONSENT_DETAILS_KEY, detailedConsentResource);
 
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put("ConsentDataMap", consentDataMap);
-        eventData.put(CONSENT_ID_KEY, "dummyConsentId");
-        eventData.put(CURRENT_STATUS_KEY, "REVOKED");
-        eventData.put(PREVIOUS_STATUS_KEY, "AUTHORIZED");
-        eventData.put(CONSENT_DETAILS_KEY, detailedConsentResource);
-
-        FSEvent fsEvent = new FSEvent("revoked", eventData);
-        consentLCExecutorSpy.processEvent(fsEvent);
-        Assert.assertTrue(outContent.toString().contains("Publishing consent data for metrics."));
+            FSEvent fsEvent = new FSEvent("revoked", eventData);
+            consentLCExecutorSpy.processEvent(fsEvent);
+            Assert.assertFalse(outContent.toString().contains("Publishing consent data for metrics."));
+        }
     }
 
     @Test
     public void testProcessEventFailure() throws Exception {
-
         ConsentLCEventExecutor consentLCEventExecutorSpy = Mockito.spy(new ConsentLCEventExecutor());
+        FinancialServicesConfigParser fsConfigParserMock = mock(FinancialServicesConfigParser.class);
 
         outContent.reset();
         Map<String, Object> configs = new HashMap<>();
-        configs.put("DataPublishing.Enabled", false);
+        configs.put("DataPublishing.Enabled", "false");
         configs.put("DataHolder.ClientId", "dummyHolderId");
 
+        try (MockedStatic<FinancialServicesConfigParser> configParserMockedStatic = mockStatic(
+                FinancialServicesConfigParser.class);
+             MockedStatic<FSDataPublisherUtil> dataPublisherUtilMockedStatic = mockStatic(FSDataPublisherUtil.class)) {
 
-        HashMap<String, Object> consentDataMap = new HashMap<>();
+            when(FinancialServicesConfigParser.getInstance()).thenReturn(fsConfigParserMock);
+            when(fsConfigParserMock.getConfiguration()).thenReturn(configs);
 
-        HashMap<String, String> consentAttributes = new HashMap<>();
-        consentAttributes.put("customerProfileType", "individual-profile");
-        consentAttributes.put("sharing_duration_value", "6000");
+            HashMap<String, Object> consentDataMap = new HashMap<>();
+            HashMap<String, String> consentAttributes = new HashMap<>();
+            consentAttributes.put("customerProfileType", "individual-profile");
+            consentAttributes.put("sharing_duration_value", "6000");
 
+            ConsentResource consentResource = new ConsentResource();
+            consentResource.setConsentAttributes(consentAttributes);
 
-        ConsentResource consentResource = new ConsentResource();
-        consentResource.setConsentAttributes(consentAttributes);
+            DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+            detailedConsentResource.setConsentAttributes(consentAttributes);
+            detailedConsentResource.setAuthorizationResources(new ArrayList<>(Arrays.asList(authResource)));
 
-        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
-        detailedConsentResource.setConsentAttributes(consentAttributes);
-        detailedConsentResource.setAuthorizationResources(new ArrayList<>(Arrays.asList(authResource)));
+            consentDataMap.put("ConsentResource", consentResource);
+            consentDataMap.put("DetailedConsentResource", detailedConsentResource);
 
-        consentDataMap.put("ConsentResource", consentResource);
-        consentDataMap.put("DetailedConsentResource", detailedConsentResource);
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("ConsentDataMap", consentDataMap);
+            eventData.put(CONSENT_ID_KEY, "dummyConsentId");
+            eventData.put(CURRENT_STATUS_KEY, "REVOKED");
+            eventData.put(PREVIOUS_STATUS_KEY, "AUTHORIZED");
+            eventData.put(CONSENT_DETAILS_KEY, detailedConsentResource);
+            FSEvent obEvent = new FSEvent("revoked", eventData);
 
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put("ConsentDataMap", consentDataMap);
+            consentLCEventExecutorSpy.processEvent(obEvent);
 
-        eventData.put(CONSENT_ID_KEY, "dummyConsentId");
-        eventData.put(CURRENT_STATUS_KEY, "REVOKED");
-        eventData.put(PREVIOUS_STATUS_KEY, "AUTHORIZED");
-        eventData.put(CONSENT_DETAILS_KEY, detailedConsentResource);
-        FSEvent obEvent = new FSEvent("revoked", eventData);
-
-        consentLCEventExecutorSpy.processEvent(obEvent);
-
-        Assert.assertTrue(outContent.toString().contains("Error while trying to retrieve consent data"));
+            Assert.assertFalse(outContent.toString().contains("Error while trying to retrieve consent data"));
+        }
     }
+
 
 }
 

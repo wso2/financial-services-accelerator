@@ -1,10 +1,13 @@
 package org.wso2.financial.services.accelerator.data.publisher.thrift.publisher;
 
-import java.util.Map;
-
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import java.util.Map;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
 
 public class InputValidatorTest {
 
