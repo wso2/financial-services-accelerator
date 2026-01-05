@@ -632,3 +632,157 @@ retry_function="EX"
 circuit_breaker_open_timeout=500
 pool_size=20
 event_notification_request_generator="org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator"
+
+
+#===================for event==============================
+[financial_services.event]
+queue_size = 32768
+worker_thread_count = 10
+event_executor = "org.wso2.financial.services.accelerator.common.event.executor.DefaultFSEventExecutor"
+
+[financial_services.data_publishing]
+enable = false
+username="$ref{super_admin.username}@carbon.super"
+password="$ref{super_admin.password}"
+server_url = "{tcp://BI_HOSTNAME:7612}"
+#auth_url = "{ssl://BI_HOSTNAME:7612}"
+protocol = "Thrift"
+pool_size = 10
+queue_size = 32768
+worker_thread_count = 10
+pool_wait_time_Ms = 60000
+financial_services_data_publisher = "org.wso2.financial.services.accelerator.data.publisher.FinancialServicesThriftDataPublisher"
+
+[financial_services.data_publishing.thrift]
+publishing_timeout = 2000
+#data streams and their attributes with the priority order
+[[financial_services.data_publishing.thrift.stream]]
+name="UserAuthenticationEventStream"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="userId"
+priority=1
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="authenticationStep"
+priority=2
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="authenticationStatus"
+priority=3
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="authenticationApproach"
+priority=4
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="timestamp"
+priority=5
+required=true
+type="long"
+
+[[financial_services.data_publishing.thrift.stream]]
+name="UserAuthorizationEventStream"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="consentId"
+priority=1
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="clientId"
+priority=2
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="userId"
+priority=3
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="requestUriKey"
+priority=4
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="authorizationStatus"
+priority=5
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="consentResource"
+priority=6
+type="object"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="additionalDAuthFlowData"
+priority=7
+type="object"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="userInteractionTime"
+priority=8
+type="long"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="timestamp"
+priority=9
+required=true
+type="long"
+
+[[financial_services.data_publishing.thrift.stream]]
+name="ConsentLCEventStream"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="consentId"
+priority=1
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="consentDetails"
+priority=2
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="currentStatus"
+priority=3
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="previousStatus"
+priority=4
+required=true
+
+[[financial_services.data_publishing.thrift.stream]]
+name="APIInvocationsEventStream"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="messageId"
+priority=1
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="consentId"
+priority=2
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="consumerId"
+priority=3
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="clientId"
+priority=4
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="userAgent"
+priority=5
+required=false
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="statusCode"
+priority=6
+required=true
+type="int"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="statusMessage"
+priority=7
+required=false
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="httpMethod"
+priority=8
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="responsePayloadSize"
+priority=9
+required=true
+type="long"
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="electedResource"
+priority=10
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="apiName"
+priority=11
+required=true
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="apiSpecVersion"
+priority=12
+required=false
+[[financial_services.data_publishing.thrift.stream.attributes]]
+name="requestTimestamp"
+priority=13
+required=true
+type="long"

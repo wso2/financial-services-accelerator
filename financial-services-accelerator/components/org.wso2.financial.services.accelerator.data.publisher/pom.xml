@@ -31,6 +31,32 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.gateway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.apimgt</groupId>
+            <artifactId>org.wso2.carbon.apimgt.common.analytics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.synapse</groupId>
+            <artifactId>synapse-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.axis2</groupId>
+                    <artifactId>axis2-codegen</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.wso2.orbit.com.github.fge</groupId>
+                    <artifactId>json-schema-validator-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.analytics-common</groupId>
             <artifactId>org.wso2.carbon.databridge.agent</artifactId>
         </dependency>
@@ -84,6 +110,11 @@
                             org.wso2.carbon.databridge.commons.*; version="${carbon.analytics.common.version.range}",
                             org.wso2.financial.services.accelerator.common.*; version="${project.version}",
                             org.apache.commons.pool2.*; version="${commons-pool2.version}"
+                            org.apache.synapse.*,
+                            org.apache.commons.logging.*,
+                            org.wso2.carbon.apimgt.common.analytics.*;version="${carbon.apimgt.import.version.range}",
+                            org.wso2.carbon.apimgt.gateway.*;version="${carbon.apimgt.import.version.range}",
+                            *;resolution:=optional
                         </Import-Package>
                         <Export-Package>
                             !org.wso2.financial.services.accelerator.data.publisher.internal,

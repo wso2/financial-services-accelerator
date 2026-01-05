@@ -247,7 +247,8 @@ public final class FinancialServicesConfigParser {
                             priority = Integer.parseInt(obExecutorPriority);
                         }
                         fsEventExecutors.put(priority, obExecutorClass);
-                        log.debug("Added event executor: " + obExecutorClass + " with priority: " + priority);
+                        log.debug("Added event executor: " + obExecutorClass.replaceAll("[\r\n]",
+                                "") + " with priority: " + priority);
                     }
                 }
                 //Ordering the executors based on the priority number
@@ -385,8 +386,8 @@ public final class FinancialServicesConfigParser {
                             }
                         }
                         if (log.isDebugEnabled()) {
-                            log.debug("Added data publishing stream: " + dataStreamName + " with " + attributes.size() +
-                                    " attributes");
+                            log.debug("Added data publishing stream: " + dataStreamName.replaceAll("[\r\n]",
+                                    "") + " with " + attributes.size() + " attributes");
                         }
                         //Ordering the attributes based on the priority number
                         LinkedHashMap<Integer, String> priorityMap = attributes.entrySet()

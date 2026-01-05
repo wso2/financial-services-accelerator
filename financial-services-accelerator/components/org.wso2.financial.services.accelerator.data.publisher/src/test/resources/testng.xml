@@ -23,7 +23,16 @@
         <classes>
             <class name="org.wso2.financial.services.accelerator.data.publisher.FinancialServicesThriftDataPublisherTest"/>
             <class name="org.wso2.financial.services.accelerator.data.publisher.DataPublisherPoolTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.publisher.InputValidator"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.DataPublisherFactoryTest"/>
             <class name="org.wso2.financial.services.accelerator.data.publisher.FSAnalyticsEventQueueTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.publisher.EventQueueTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.publisher.ParallelQueueQorkerTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.publisher.ThriftMetricReporterTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.publisher.ThriftCounterMetricTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.ThriftAPIMAnalyticsDataProviderTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.util.FSDataPublisherUtilTest"/>
+            <class name="org.wso2.financial.services.accelerator.data.publisher.thrift.publisher.EventQueueTest"/>
         </classes>
     </test>
 </suite>

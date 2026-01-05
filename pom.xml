@@ -612,6 +612,21 @@
                 <classifier>runtime</classifier>
                 <version>${jacoco.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.gateway</artifactId>
+                <version>${org.wso2.carbon.apimgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.common.analytics</artifactId>
+                <version>${org.wso2.carbon.apimgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.synapse</groupId>
+                <artifactId>synapse-extensions</artifactId>
+                <version>${synapse.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

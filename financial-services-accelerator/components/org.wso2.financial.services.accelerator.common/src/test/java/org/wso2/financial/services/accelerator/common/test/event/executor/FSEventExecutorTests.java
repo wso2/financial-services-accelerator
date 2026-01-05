@@ -105,7 +105,7 @@ public class FSEventExecutorTests {
 
         fsEventQueue.put(obEvent);
         // there should be an error log or a warning if the queue is full.
-        Assert.assertTrue(outContent.toString().isEmpty());
+        Assert.assertFalse(outContent.toString().isEmpty());
     }
 
 }

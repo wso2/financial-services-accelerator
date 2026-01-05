@@ -792,3 +792,9 @@ name="requestTimestamp"
 priority=13
 required=true
 type="long"
+
+#===================for event==============================
+[financial_services.event]
+queue_size = 32768
+worker_thread_count = 10
+event_executor = "org.wso2.financial.services.accelerator.common.event.executor.DefaultFSEventExecutor"

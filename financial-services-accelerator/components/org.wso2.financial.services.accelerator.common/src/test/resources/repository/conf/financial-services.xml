@@ -289,4 +289,63 @@
             <Password>abc</Password>
         </Security>
     </ExtensionsEndpoint>
+    <DataPublishing>
+        <Enabled>false</Enabled>
+        <Username>admin@wso2.com@carbon.super</Username>
+        <Password>wso2123</Password>
+        <!-- Server URL of the remote SI server used to collect statistics. Must
+        be specified in {protocol://hostname:port/} format. -->
+        <ServerURL>{tcp://ANALYTICS_HOSTNAME:7612}</ServerURL>
+        <Protocol>Thrift</Protocol>
+        <PoolSize>10</PoolSize>
+        <QueueSize>32768</QueueSize>
+        <WorkerThreadCount>10</WorkerThreadCount>
+        <PoolWaitTimeMs>60000</PoolWaitTimeMs>
+        <FinancialServicesDataPublisher>org.wso2.financial.services.accelerator.data.publisher.common.FinancialServicesThriftDataPublisher
+        </FinancialServicesDataPublisher>
+        <Thrift>
+            <PublishingTimeout>2000</PublishingTimeout>
+            <Streams>
+                <APIInvocationsEventStream>
+                    <Attribute name="messageId" priority="1"/>
+                    <Attribute name="consentId" priority="1"/>
+                    <Attribute name="consumerId" priority="2"/>
+                    <Attribute name="clientId" priority="3"/>
+                    <Attribute name="userAgent" priority="4"/>
+                    <Attribute name="statusCode" priority="5"/>
+                    <Attribute name="statusMessage" priority="6"/>
+                    <Attribute name="httpMethod" priority="7"/>
+                    <Attribute name="responsePayloadSize" priority="8"/>
+                    <Attribute name="electedResource" priority="9"/>
+                    <Attribute name="apiName" priority="10"/>
+                    <Attribute name="apiSpecVersion" priority="11"/>
+                    <Attribute name="requestedTimestamp" priority="12"/>
+                </APIInvocationsEventStream>
+                <UserAuthenticationEventStream>
+                    <Attribute name="userId" priority="1"/>
+                    <Attribute name="authenticationStep" priority="2"/>
+                    <Attribute name="authenticationStatus" priority="3"/>
+                    <Attribute name="authenticationApproach" priority="4"/>
+                    <Attribute name="timestamp" priority="5"/>
+                </UserAuthenticationEventStream>
+                <UserAuthorizationEventStream>
+                    <Attribute name="userId" priority="1"/>
+                    <Attribute name="consentId" priority="2"/>
+                    <Attribute name="clientId" priority="3"/>
+                    <Attribute name="requestUriKey" priority="4"/>
+                    <Attribute name="authenticationStatus" priority="5"/>
+                    <Attribute name="consentResource" priority="6"/>
+                    <Attribute name="additionalDAuthFlowData" priority="7"/>
+                    <Attribute name="userInteractionTime" priority="8"/>
+                    <Attribute name="timestamp" priority="9"/>
+                </UserAuthorizationEventStream>
+                <ConsentLCEventStream>
+                    <Attribute name="consentId" priority="1"/>
+                    <Attribute name="consentDetails" priority="2"/>
+                    <Attribute name="currentStatus" priority="3"/>
+                    <Attribute name="previousStatus" priority="4"/>
+                </ConsentLCEventStream>
+            </Streams>
+        </Thrift>
+    </DataPublishing>
 </Server>

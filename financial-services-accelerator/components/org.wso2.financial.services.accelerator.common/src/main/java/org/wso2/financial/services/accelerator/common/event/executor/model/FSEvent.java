@@ -34,7 +34,7 @@ public class FSEvent {
 
     public FSEvent(String eventType, Map<String, Object> eventData) {
         if (log.isDebugEnabled()) {
-            log.debug("Creating FSEvent with type: " + eventType);
+            log.debug("Creating FSEvent with type: " + eventType.replaceAll("[\r\n]", ""));
         }
         this.eventType = eventType;
         this.eventData = eventData;

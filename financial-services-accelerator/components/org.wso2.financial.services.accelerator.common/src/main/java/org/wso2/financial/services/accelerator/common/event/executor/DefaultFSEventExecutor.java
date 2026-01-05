@@ -30,7 +30,7 @@ public class DefaultFSEventExecutor implements FSEventExecutor {
     @Override
     public void processEvent(FSEvent fsEvent) {
         if (log.isDebugEnabled()) {
-            log.debug("Processing FSEvent: " + fsEvent);
+            log.debug("Processing FSEvent: " + fsEvent.getEventType().replaceAll("[\r\n]", ""));
         }
     }
 
