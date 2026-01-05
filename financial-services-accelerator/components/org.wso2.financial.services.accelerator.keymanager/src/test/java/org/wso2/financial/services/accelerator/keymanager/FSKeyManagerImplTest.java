@@ -100,7 +100,7 @@ public class FSKeyManagerImplTest {
 
     @Test
     public void testGetNewApplicationAccessToken() throws APIManagementException {
-        identityServerUtilsMockedStatic.when(() -> IdentityServerUtils.getSPApplicationFromClientId(anyString()))
+        identityServerUtilsMockedStatic.when(() -> IdentityServerUtils.getSPApplicationFromClientId(any(), anyString()))
                 .thenReturn(new JSONObject());
         identityServerUtilsMockedStatic.when(() -> IdentityServerUtils.getRegulatoryPropertyFromSPMetadata(any()))
                 .thenReturn("true");
@@ -113,7 +113,7 @@ public class FSKeyManagerImplTest {
 
     @Test
     public void testGetNewApplicationAccessTokenWithException() {
-        identityServerUtilsMockedStatic.when(() -> IdentityServerUtils.getSPApplicationFromClientId(anyString()))
+        identityServerUtilsMockedStatic.when(() -> IdentityServerUtils.getSPApplicationFromClientId(any(), anyString()))
                 .thenThrow(new FinancialServicesException("Error retrieving SP application"));
 
         AccessTokenRequest accessTokenRequest = Mockito.mock(AccessTokenRequest.class);

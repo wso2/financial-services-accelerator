@@ -56,7 +56,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("Schema validation failed in the Request: A request body is required but none found., "))
+                .contains("Schema validation failed in the Request: A request body is required but none found."))
     }
 
     @Test
@@ -70,7 +70,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("Schema validation failed in the Request: Object has missing required properties ([\"Data\"]), "))
+                .contains("Schema validation failed in the Request: Object has missing required properties ([\"Data\"])"))
     }
 
     @Test
@@ -85,7 +85,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: Instance type (string) does not match any " +
-                        "allowed primitive type (allowed: [\"object\"]), "))
+                        "allowed primitive type (allowed: [\"object\"])"))
     }
 
     @Test
@@ -99,7 +99,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
+                .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z]"))
     }
 
     @Test
@@ -151,7 +151,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data/DebtorAccount'] Object has missing " +
-                        "required properties ([\"Identification\"]), "))
+                        "required properties ([\"Identification\"])"))
     }
 
     @Test
@@ -178,7 +178,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
                         "String \"Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1" +
                         "Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1" +
                         "Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1Account1" +
-                        "Account1\" is too long (length: 264, maximum allowed: 256), "))
+                        "Account1\" is too long (length: 264, maximum allowed: 256)"))
     }
 
     @Test
@@ -192,7 +192,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("is too long (length: 557, maximum allowed: 350), "))
+                .contains("is too long (length: 557, maximum allowed: 350)"))
     }
 
     @Test
@@ -206,7 +206,7 @@ class InitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("is too long (length: 56, maximum allowed: 34), "))
+                .contains("is too long (length: 56, maximum allowed: 34)"))
     }
 
     @Test

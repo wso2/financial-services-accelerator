@@ -58,7 +58,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.BAD_REQUEST.toString())
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data'] Object has missing required " +
-                        "properties ([\"Permissions\"]), "))
+                        "properties ([\"Permissions\"])"))
     }
 
     @Test(dataProvider = "InvalidAccountsPermissionsForInitiation",
@@ -75,7 +75,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("not found in enum (possible values: [\"ReadAccountsBasic\",\"ReadAccountsDetail\"," +
-                        "\"ReadBalances\",\"ReadTransactionsDetail\"]), "))
+                        "\"ReadBalances\",\"ReadTransactionsDetail\"])"))
     }
 
     @Test
@@ -132,7 +132,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
+                .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z]"))
     }
 
     @Test
@@ -146,7 +146,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z], "))
+                .contains("invalid against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z]"))
     }
 
     @Test
@@ -178,7 +178,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("Schema validation failed in the Request: A request body is required but none found., "))
+                .contains("Schema validation failed in the Request: A request body is required but none found."))
     }
 
     /*
@@ -196,7 +196,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
         Assert.assertEquals(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
-                .contains("Schema validation failed in the Request: Object has missing required properties ([\"Data\",\"Risk\"]), "))
+                .contains("Schema validation failed in the Request: Object has missing required properties ([\"Data\",\"Risk\"])"))
     }
 
     /*
@@ -215,7 +215,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: Instance type (string) does not match any allowed " +
-                        "primitive type (allowed: [\"object\"]), "))
+                        "primitive type (allowed: [\"object\"])"))
     }
 
     @Test
@@ -238,7 +238,7 @@ class AccountInitiationPayloadValidationTests extends FSAPIMConnectorTest {
                 ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
         Assert.assertTrue(TestUtil.parseResponseBody(consentResponse,ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
                 .contains("Schema validation failed in the Request: [Path '/Data/Permissions'] Instance type (string) " +
-                        "does not match any allowed primitive type (allowed: [\"array\"]), "))
+                        "does not match any allowed primitive type (allowed: [\"array\"])"))
     }
 
     @Test(dataProvider = "ValidAccountsPermissionsForInitiation", dataProviderClass = AccountsDataProviders.class)

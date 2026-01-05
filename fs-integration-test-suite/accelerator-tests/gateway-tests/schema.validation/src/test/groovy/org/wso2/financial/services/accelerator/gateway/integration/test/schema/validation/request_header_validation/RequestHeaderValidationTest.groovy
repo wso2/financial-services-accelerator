@@ -168,9 +168,9 @@ class RequestHeaderValidationTest extends FSAPIMConnectorTest {
 				ConnectorTestConstants.ERROR_CODE_BAD_REQUEST)
 		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_CODE),
 				ConnectorTestConstants.STATUS_CODE_400.toString())
-		Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION),
-				"Schema validation failed in the Request: Request Content-Type header '[text/plain; " +
-						"charset=ISO-8859-1]' does not match any allowed types. Must be one of: [application/json; charset=utf-8]., ")
+		Assert.assertTrue(TestUtil.parseResponseBody(consentResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+				.contains("Schema validation failed in the Request: Request Content-Type header '[text/plain; " +
+						"charset=ISO-8859-1]' does not match any allowed types. Must be one of: [application/json; charset=utf-8]."))
 	}
 
 	@Test

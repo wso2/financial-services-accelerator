@@ -64,6 +64,15 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
             throws IdentityApplicationManagementException {
 
         try {
+            List<ServiceProviderProperty> spProperties = new ArrayList<>(Arrays.asList
+                    (serviceProvider.getSpProperties()));
+
+            boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(spProperties);
+            if (!isRegulatory) {
+                log.debug("Skipping pre application creation as it is not a regulatory application.");
+                return true;
+            }
+
             // Set the allowed audience to ORGANIZATION to map the roles created while
             // publishing the APIs to the application.
             AssociatedRolesConfig rolesConfig = new AssociatedRolesConfig();
@@ -128,9 +137,10 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
                     .findFirst();
 
             boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(Arrays.asList(spProperties));
-
-            identityDataHolder.getAbstractApplicationUpdater().doPostCreateApplication(isRegulatory, serviceProvider,
-                    serviceProvider.getLocalAndOutBoundAuthenticationConfig(), tenantDomain, userName);
+            if (isRegulatory) {
+                identityDataHolder.getAbstractApplicationUpdater().doPostCreateApplication(true, serviceProvider,
+                        serviceProvider.getLocalAndOutBoundAuthenticationConfig(), tenantDomain, userName);
+            }
 
         } catch (APIResourceMgtException e) {
             log.error("Error occurred while retrieving API resource.", e);
@@ -154,6 +164,10 @@ public class FSApplicationManagementListener extends AbstractApplicationMgtListe
                     (serviceProvider.getSpProperties()));
 
             boolean isRegulatory = ApplicationMgtListenerUtil.getRegulatoryProperty(spProperties);
+            if (!isRegulatory) {
+                log.debug("Skipping pre application update as it is not a regulatory application.");
+                return true;
+            }
 
             serviceProvider.setSpProperties(ApplicationMgtListenerUtil.getUpdatedSpProperties(spProperties)
                     .toArray(new ServiceProviderProperty[0]));
