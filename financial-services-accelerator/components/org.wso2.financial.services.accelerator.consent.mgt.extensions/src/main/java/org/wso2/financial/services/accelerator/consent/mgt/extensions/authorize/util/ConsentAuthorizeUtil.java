@@ -24,6 +24,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,14 +36,19 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentRes
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentDataDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsumerAccountDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.data.publisher.constants.DataPublishingConstants;
+import org.wso2.financial.services.accelerator.data.publisher.util.FSDataPublisherUtil;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 
 /**
  * Util class for consent authorize operations.
@@ -90,6 +98,7 @@ public class ConsentAuthorizeUtil {
 
     /**
      * Method to extract the consent id from the request.
+     *
      * @param requestObject Request object
      * @return consentId
      * @throws ConsentException Consent Exception
@@ -655,7 +664,92 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Builds authorized data object from account and permission parameters.
+     * Publishes consent approval or denial data for abandoned consent flow metrics.
+     *
+     * @param consentPersistData consent persist data
+     */
+    public static void publishConsentApprovalStatus(ConsentPersistData consentPersistData) {
+        if (log.isDebugEnabled()) {
+            log.debug("Publishing consent approval status for consent: " + consentPersistData.getConsentData().
+                    getConsentId());
+        }
+        if (Boolean.parseBoolean((String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
+            ConsentData consentData = consentPersistData.getConsentData();
+            String requestUriKey = ConsentAuthorizeUtil.getRequestUriKeyFromQueryParams(consentData.getSpQueryParams());
+            long unixTimestamp = Instant.now().getEpochSecond();
+            boolean isUserGranted = consentPersistData.getApproval();
+            String authStatus;
+            if (isUserGranted) {
+                authStatus = "APPROVED";
+            } else {
+                authStatus = "REJECTED";
+            }
+
+            Map<String, Object> consentAuthorizationData = new HashMap<>();
+            consentAuthorizationData.put("consentId", consentData.getConsentId());
+            consentAuthorizationData.put("userId", consentData.getUserId());
+            consentAuthorizationData.put("clientId", consentData.getClientId());
+            consentAuthorizationData.put("requestUriKey", requestUriKey);
+            consentAuthorizationData.put("authorizationStatus", authStatus);
+            consentAuthorizationData.put("consentResource", consentData.getConsentResource());
+            consentAuthorizationData.put("additionalDAuthFlowData", consentPersistData.getPayload());
+            //consentAuthorizationData.put("userInteractionTime",);
+            consentAuthorizationData.put("timestamp", unixTimestamp);
+
+
+            FSDataPublisherUtil.publishData("", "", consentAuthorizationData);
+            if (log.isDebugEnabled()) {
+                log.debug("Successfully published consent authorization data for consent: " +
+                        consentData.getConsentId());
+            }
+        } else {
+            log.debug("Data publishing is disabled");
+        }
+
+    }
+
+    /**
+     * Returns the request URI key after retrieving from the spQueryParams.
+     *
+     * @param spQueryParams query params
+     * @return request URI key
+     */
+    public static String getRequestUriKeyFromQueryParams(String spQueryParams) {
+
+        List<NameValuePair> params = URLEncodedUtils.parse(URI.create("?" + spQueryParams), "UTF-8");
+
+        for (NameValuePair param : params) {
+            if (ConsentAuthorizeConstants.REQUEST_URI.equals(param.getName())) {
+                return getRequestUriKey(param.getValue());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Method to retrieve the request URI key from the request URI.
+     *
+     * @param requestUri request URI
+     * @return request URI key
+     */
+    public static String getRequestUriKey(String requestUri) {
+
+        if (StringUtils.isBlank(requestUri)) {
+            log.error("Request URI not found.");
+            return null;
+        }
+
+        log.debug("Extracting request URI key from request URI");
+
+        String[] uriParts = requestUri.split(":");
+        String requestUriKey = uriParts[uriParts.length - 1];
+
+        return StringUtils.isBlank(requestUriKey) ? null : requestUriKey;
+    }
+
+     /* Builds authorized data object from account and permission parameters.
      *
      * @param consentPersistPayload payload sent to consent persistence
      * @param metaDataMap   consent meta data map

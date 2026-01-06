@@ -62,6 +62,18 @@ public class FinancialServicesConfigurationServiceImpl implements FinancialServi
     }
 
     @Override
+    public Map<String, Map<Integer, String>> getDataPublishingStreams() {
+
+        return configParser.getDataPublishingStreams();
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getDataPublishingValidationMap() {
+
+        return configParser.getDataPublishingValidationMap();
+    }
+
+    @Override
     public Map<String, Map<String, Object>> getDCRParamsConfig() {
 
         return configParser.getDCRParamsConfig();
