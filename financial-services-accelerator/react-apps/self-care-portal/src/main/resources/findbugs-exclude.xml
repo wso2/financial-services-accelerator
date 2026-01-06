@@ -62,4 +62,8 @@
         <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.OAuthAuthorizationServlet"/>
         <Bug pattern="CRLF_INJECTION_LOGS"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.ResourceInterceptorServlet"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
 </FindBugsFilter>
