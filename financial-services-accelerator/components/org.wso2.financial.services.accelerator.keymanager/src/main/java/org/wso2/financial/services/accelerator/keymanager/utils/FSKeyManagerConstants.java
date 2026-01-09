@@ -28,6 +28,7 @@ public class FSKeyManagerConstants {
     public static final String API_KEY_VALIDATOR_PASSWORD = "APIKeyValidator.Password";
     public static final String API_KEY_VALIDATOR_URL = "APIKeyValidator.ServerURL";
     public static final String SERVICE = "/services";
+    public static final String OAUTH2 = "/oauth2";
 
     public static final String APP_MGMT_API_URL = "/api/server/v1/applications/";
     public static final String DCR_EP = "/api/identity/oauth2/dcr/v1.1/register/";

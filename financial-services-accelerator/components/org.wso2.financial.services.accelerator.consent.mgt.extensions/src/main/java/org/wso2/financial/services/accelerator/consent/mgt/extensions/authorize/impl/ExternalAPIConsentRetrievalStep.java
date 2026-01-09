@@ -148,9 +148,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                 JSONObject consentDataJSON =
                         new JSONObject(objectMapper.writeValueAsString(responseDTO.getConsentData()));
 
-                // Remove consent metadata
-                consentDataJSON.remove(ConsentAuthorizeConstants.CONSENT_METADATA);
-
                 jsonObject.put(ConsentAuthorizeConstants.CONSENT_DATA, consentDataJSON);
             }
 
