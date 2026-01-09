@@ -73,10 +73,12 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -124,7 +126,31 @@ public class IdentityCommonUtil {
     }
 
     /**
-     * Cache regulatory property if exists.
+     * Filter the requested scopes by removing scopes which are not allowed for the application.
+     *
+     * @param scopes Requested scopes
+     * @return filtered scopes by removing the scopes not allowed for the application
+     */
+    public static String[] retainAllowedScopesForApplication(String[] scopes, String clientId)
+            throws OpenBankingException {
+
+        if (scopes == null || scopes.length == 0) {
+            return scopes;
+        }
+        String allowedScopes = getScopeFromSPMetaData(clientId);
+
+        if (StringUtils.isBlank(allowedScopes)) {
+            return new String[0];
+        }
+        Set<String> allowedScopeSet = new HashSet<>(Arrays.asList(allowedScopes.split(" ")));
+
+        return Arrays.stream(scopes)
+                .filter(allowedScopeSet::contains)
+                .toArray(String[]::new);
+    }
+
+    /**
+     * Cache regulatory property if exists
      *
      * @param clientId ClientId of the application
      * @return the regulatory property from cache if exists or from sp metadata
@@ -157,6 +183,41 @@ public class IdentityCommonUtil {
                 return Boolean.parseBoolean(regulatoryProperty.toString());
             } else {
                 throw new OpenBankingException("Unable to retrieve regulatory property from sp metadata");
+            }
+        } else {
+            throw new OpenBankingException(IdentityCommonConstants.CLIENT_ID_ERROR);
+        }
+    }
+
+    /**
+     * Get scopes for the application and add to cache.
+     *
+     * @param clientId clientId of the application
+     * @return the scopes from cache if exists or from sp metadata
+     * @throws OpenBankingException
+     */
+    @Generated(message = "Excluding from code coverage since it requires a cache initialization/service call")
+    public static synchronized String getScopeFromSPMetaData(String clientId) throws OpenBankingException {
+
+        if (StringUtils.isNotEmpty(clientId)) {
+
+            if (identityCache == null) {
+                log.debug("Creating new Identity cache");
+                identityCache = new IdentityCache();
+            }
+
+            IdentityCacheKey identityCacheKey = IdentityCacheKey.of(clientId
+                    .concat("_").concat(IdentityCommonConstants.SCOPE));
+            Object scope = null;
+
+            scope = identityCache.getFromCacheOrRetrieve(identityCacheKey,
+                    () -> new IdentityCommonHelper().getAppPropertyFromSPMetaData(clientId,
+                            IdentityCommonConstants.SCOPE));
+
+            if (scope != null) {
+                return scope.toString();
+            } else {
+                throw new OpenBankingException("Unable to retrieve scope from sp metadata");
             }
         } else {
             throw new OpenBankingException(IdentityCommonConstants.CLIENT_ID_ERROR);
@@ -466,6 +527,28 @@ public class IdentityCommonUtil {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
         return dateFormat.parse(dateString);
+    }
+
+    /**
+     * Check whether application scope restriction is enabled for the given grant type.
+     *
+     * @param grantType OAuth2 grant type
+     * @return true if scope restriction is enabled for the given grant type, false otherwise
+     */
+    public static boolean isAppScopeRestrictionEnabledForGrant(String grantType) {
+
+        boolean isRestrictionEnabled = Boolean.parseBoolean(String.valueOf(
+                IdentityExtensionsDataHolder.getInstance().getConfigurationMap().getOrDefault(
+                        IdentityCommonConstants.APPLICATION_SCOPE_RESTRICTION_ENABLED, false)
+        ));
+
+        if (!isRestrictionEnabled || StringUtils.isBlank(grantType)) {
+            return false;
+        }
+
+        // Grant-type applicability
+        return IdentityExtensionsDataHolder.getInstance().getScopeRestrictedGrantTypes().stream()
+                .anyMatch(configuredGrantType -> configuredGrantType.equalsIgnoreCase(grantType));
     }
 
 }

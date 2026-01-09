@@ -19,6 +19,7 @@
 package com.wso2.openbanking.accelerator.identity.grant.type.handlers;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
@@ -34,8 +35,13 @@ public class OBPasswordGrantHandler extends PasswordGrantHandler {
     public OAuth2AccessTokenRespDTO issue(OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(tokReqMsgCtx.getOauth2AccessTokenReqDTO()
-                    .getClientId())) {
+            String clientId = tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId();
+            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId)) {
+                // Apply application scope restrictions if enabled
+                if (IdentityCommonUtil.isAppScopeRestrictionEnabledForGrant(IdentityCommonConstants.PASSWORD)) {
+                    tokReqMsgCtx.setScope(IdentityCommonUtil.retainAllowedScopesForApplication(
+                            tokReqMsgCtx.getScope(), clientId));
+                }
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
                 executeInitialStep(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 tokReqMsgCtx.setScope(IdentityCommonUtil.removeInternalScopes(tokReqMsgCtx.getScope()));

@@ -49,6 +49,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ public class IdentityExtensionsDataHolder {
     private Map<String, Object> configurationMap;
     private Map<String, Map<String, Object>> dcrRegistrationConfigMap;
     private List<OBIdentityFilterValidator> tokenValidators = new ArrayList<>();
+    private List<String> scopeRestrictedGrantTypes = new ArrayList<>();
     private DefaultTokenFilter defaultTokenFilter;
     private RegistrationValidator registrationValidator;
     private ClaimProvider claimProvider;
@@ -217,6 +219,7 @@ public class IdentityExtensionsDataHolder {
                 .getConfigurations().get("IdentityCache.CacheAccessExpiry"));
         setIdentityCacheModifiedExpiry((String) openBankingConfigurationService
                 .getConfigurations().get("IdentityCache.CacheModifiedExpiry"));
+        setScopeRestrictedGrantTypes(extractScopeRestrictedGrantTypes());
 
         Map<String, String> authenticationWorkers = openBankingConfigurationService.getAuthenticationWorkers();
         authenticationWorkers.forEach((key, value) ->
@@ -237,6 +240,17 @@ public class IdentityExtensionsDataHolder {
         }
     }
 
+    public List<String> getScopeRestrictedGrantTypes() {
+
+        return scopeRestrictedGrantTypes;
+
+    }
+
+    public void setScopeRestrictedGrantTypes(List<String> scopeRestrictedGrantTypes) {
+
+        this.scopeRestrictedGrantTypes = scopeRestrictedGrantTypes;
+    }
+
     private List extractTokenFilterValidators() {
 
         Object validators = configurationMap.get(IdentityCommonConstants.TOKEN_VALIDATORS);
@@ -250,6 +264,26 @@ public class IdentityExtensionsDataHolder {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Get grant types which the token scopes should be restricted based on scopes allowed for the application.
+     *
+     * @return List of grant types
+     */
+    public List<String> extractScopeRestrictedGrantTypes() {
+
+        Object grantTypes = configurationMap.get(IdentityCommonConstants.APPLICATION_SCOPE_RESTRICTED_GRANT_TYPES);
+
+        if (grantTypes instanceof List) {
+            return (List<String>) grantTypes;
+        }
+
+        if (grantTypes instanceof String) {
+            return Collections.singletonList((String) grantTypes);
+        }
+
+        return Collections.emptyList();
     }
 
     public DefaultTokenFilter getDefaultTokenFilterImpl() {
