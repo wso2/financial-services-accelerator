@@ -243,7 +243,6 @@ public class IdentityExtensionsDataHolder {
     public List<String> getScopeRestrictedGrantTypes() {
 
         return scopeRestrictedGrantTypes;
-
     }
 
     public void setScopeRestrictedGrantTypes(List<String> scopeRestrictedGrantTypes) {
