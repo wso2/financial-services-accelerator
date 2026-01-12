@@ -76,6 +76,10 @@ public class IdentityCommonConstants {
             "Identity.TokenSubject.RemoveUserStoreDomainFromSubject";
     public static final String REMOVE_TENANT_DOMAIN_FROM_SUBJECT =
             "Identity.TokenSubject.RemoveTenantDomainFromSubject";
+    public static final String APPLICATION_SCOPE_RESTRICTION_ENABLED = "Identity.ApplicationScopeRestriction.Enabled";
+    public static final String APPLICATION_SCOPE_RESTRICTED_GRANT_TYPES =
+            "Identity.ApplicationScopeRestriction.RestrictedGrantTypes.GrantType";
+
 
     public static final String AUTH_SERVLET_EXTENSION = "Identity.Extensions.AuthenticationWebApp.ServletExtension";
     public static final String CONSENT_ID_CLAIM_NAME = "Identity.ConsentIDClaimName";
@@ -90,6 +94,9 @@ public class IdentityCommonConstants {
     public static final String DCR_INTERNAL_SCOPE = "OB_DCR";
     public static final String OPENID_SCOPE = "openid";
     public static final String CLIENT_CREDENTIALS = "client_credentials";
+    public static final String AUTHORIZATION_CODE = "authorization_code";
+    public static final String REFRESH_TOKEN = "refresh_token";
+    public static final String PASSWORD = "password";
     public static final String CARBON_SUPER = "carbon.super";
     public static final String REGISTRATION_ACCESS_TOKEN = "registration_access_token";
     public static final String REGISTRATION_CLIENT_URI = "registration_client_uri";

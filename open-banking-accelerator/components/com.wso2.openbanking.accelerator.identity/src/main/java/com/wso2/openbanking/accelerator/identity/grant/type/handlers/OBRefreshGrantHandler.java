@@ -45,8 +45,13 @@ public class OBRefreshGrantHandler extends RefreshGrantHandler {
     public OAuth2AccessTokenRespDTO issue(OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(tokReqMsgCtx.getOauth2AccessTokenReqDTO()
-                    .getClientId())) {
+            String clientId = tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId();
+            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId)) {
+                // Apply application scope restrictions if enabled
+                if (IdentityCommonUtil.isAppScopeRestrictionEnabledForGrant(IdentityCommonConstants.REFRESH_TOKEN)) {
+                    tokReqMsgCtx.setScope(IdentityCommonUtil.retainAllowedScopesForApplication(
+                            tokReqMsgCtx.getScope(), clientId));
+                }
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
                 executeInitialStep(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
                 tokReqMsgCtx.setScope(IdentityCommonUtil.removeInternalScopes(tokReqMsgCtx.getScope()));
