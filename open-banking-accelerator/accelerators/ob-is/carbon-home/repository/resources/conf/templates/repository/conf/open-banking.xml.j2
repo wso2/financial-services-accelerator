@@ -110,12 +110,12 @@
         {% else %}
             <ClientTransportCertAsHeaderEnabled>true</ClientTransportCertAsHeaderEnabled>
         {% endif %}
-        {% if open_banking.identity.application_scopes is defined %}
+        {% if open_banking.identity.application_scope_restriction is defined %}
             <ApplicationScopeRestriction>
-                <Enabled>{{ open_banking.identity.application_scopes.scope_restriction_enabled | default(false) }}</Enabled>
-                {% if open_banking.identity.application_scopes.restricted_grant_types is defined %}
+                <Enabled>{{ open_banking.identity.application_scope_restriction.enabled | default(false) }}</Enabled>
+                {% if open_banking.identity.application_scope_restriction.grant_types is defined %}
                 <RestrictedGrantTypes>
-                    {% for grant_type in open_banking.identity.application_scopes.restricted_grant_types %}
+                    {% for grant_type in open_banking.identity.application_scope_restriction.grant_types %}
                     <GrantType>{{ grant_type }}</GrantType>
                     {% endfor %}
                 </RestrictedGrantTypes>
