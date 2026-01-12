@@ -128,7 +128,8 @@ public class IdentityCommonUtil {
     /**
      * Filter the requested scopes by removing scopes which are not allowed for the application.
      *
-     * @param scopes Requested scopes
+     * @param scopes   Requested scopes
+     * @param clientId OAuth client ID
      * @return filtered scopes by removing the scopes not allowed for the application
      */
     public static String[] retainAllowedScopesForApplication(String[] scopes, String clientId)
@@ -140,13 +141,23 @@ public class IdentityCommonUtil {
         String allowedScopes = getScopeFromSPMetaData(clientId);
 
         if (StringUtils.isBlank(allowedScopes)) {
+            if (log.isDebugEnabled()) {
+                log.debug("No allowed scopes configured for application client_id: "
+                        + clientId.replaceAll("[\r\n]", "") + ". All requested scopes will be removed.");
+            }
             return new String[0];
         }
-        Set<String> allowedScopeSet = new HashSet<>(Arrays.asList(allowedScopes.split(" ")));
 
-        return Arrays.stream(scopes)
-                .filter(allowedScopeSet::contains)
-                .toArray(String[]::new);
+        Set<String> allowedScopeSet = new HashSet<>(Arrays.asList(allowedScopes.split(" ")));
+        String[] filteredScopes = Arrays.stream(scopes).filter(allowedScopeSet::contains).toArray(String[]::new);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Filtered scopes for application client_id: " + clientId.replaceAll("[\r\n]", "")
+                    + ". Requested scopes: " + Arrays.toString(scopes).replaceAll("[\r\n]", "")
+                    + " | Filtered scopes: " + Arrays.toString(filteredScopes).replaceAll("[\r\n]", ""));
+        }
+
+        return filteredScopes;
     }
 
     /**
@@ -546,9 +557,14 @@ public class IdentityCommonUtil {
             return false;
         }
 
-        // Grant-type applicability
-        return IdentityExtensionsDataHolder.getInstance().getScopeRestrictedGrantTypes().stream()
-                .anyMatch(configuredGrantType -> configuredGrantType.equalsIgnoreCase(grantType));
+        boolean isEnabledForGrant = IdentityExtensionsDataHolder.getInstance().getScopeRestrictedGrantTypes().stream()
+                        .anyMatch(configuredGrantType -> configuredGrantType.equalsIgnoreCase(grantType));
+
+        if (log.isDebugEnabled()) {
+            log.debug("Application scope restriction evaluation for grant type: "
+                    + grantType.replaceAll("[\r\n]", "") + ". Enabled for grant: " + isEnabledForGrant);
+        }
+        return isEnabledForGrant;
     }
 
 }
