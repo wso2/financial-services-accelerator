@@ -210,11 +210,6 @@ public class FSConsentServlet extends HttpServlet {
                     return;
                 }
             }
-        } else {
-            log.error("Consent data is not available or not in the expected format");
-            request.getSession().invalidate();
-            response.sendRedirect("retry.do?status=Error&statusMsg=Error while processing request");
-            return;
         }
 
         // dispatch
