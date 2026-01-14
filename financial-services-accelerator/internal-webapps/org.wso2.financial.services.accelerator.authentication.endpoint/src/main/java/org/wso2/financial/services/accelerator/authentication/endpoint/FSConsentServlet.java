@@ -212,6 +212,8 @@ public class FSConsentServlet extends HttpServlet {
             }
         }
 
+        // Request has to be forwarded if there is no consentData object (consent manager flow)
+
         // dispatch
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(fsAuthServlet.getJSPPath());
         dispatcher.forward(originalRequest, response);
