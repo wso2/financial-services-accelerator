@@ -266,8 +266,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             log.error(ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
             throw new ConsentException(ResponseStatus.BAD_REQUEST,
                     ConsentAuthorizeConstants.ACCOUNT_ID_NOT_FOUND_ERROR);
-        } else {
-            // in case a consent is denied with no account mappings
+        } else if (!hasAuthorizedAccounts || !isApproved) {
+            // in case a consent is denied or has no account mappings
             accountIDsMapWithPermissions.put("n/a", permissionsDefault);
         }
 
