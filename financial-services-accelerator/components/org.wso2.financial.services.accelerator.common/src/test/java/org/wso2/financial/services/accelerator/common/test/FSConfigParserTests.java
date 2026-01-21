@@ -447,4 +447,22 @@ public class FSConfigParserTests {
                 .getScopeBasedConsentScopes());
     }
 
+    @Test(priority = 60)
+    public void testGetDataPublishingStreams() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance().getDataPublishingStreams());
+    }
+
+    @Test(priority = 61)
+    public void testGetEventExecutors() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance().getFinancialServicesEventExecutors());
+    }
+
+    @Test(priority = 62)
+    public void testGetDataPublishingValidationMaps() {
+
+        Assert.assertNotNull(FinancialServicesConfigParser.getInstance().getDataPublishingValidationMap());
+    }
+
 }

@@ -559,4 +559,117 @@
             {% endif %}
         </Security>
     </ExtensionsEndpoint>
+    <Event>
+        {% if financial_services.event.queue_size is defined %}
+            <QueueSize>{{financial_services.event.queue_size}}</QueueSize>
+        {% else %}
+            <QueueSize>32768</QueueSize>
+        {% endif %}
+        {% if financial_services.event.worker_thread_count is defined %}
+            <WorkerThreadCount>{{financial_services.event.worker_thread_count}}</WorkerThreadCount>
+        {% else %}
+            <WorkerThreadCount>10</WorkerThreadCount>
+        {% endif %}
+            <EventExecutors>
+    	{% if financial_services.event.event_executors is defined %}
+                {% for executor in financial_services.event.event_executors %}
+                       <Executor class="{{executor.name}}" priority="{{executor.priority}}"/>
+                {% endfor %}
+     	{% else %}
+                {% if financial_services.event.event_executor is defined %}
+                    <Executor class="{{financial_services.event.event_executor}}"/>
+                {% else %}
+                    <Executor class="org.wso2.financial.services.accelerator.common.event.executor.DefaultOBEventExecutor"/>
+                {% endif %}
+     	{% endif %}
+            </EventExecutors>
+    </Event>
+     <DataPublishing>
+        {% if financial_services.data_publishing.enable is defined %}
+            <Enabled>{{financial_services.data_publishing.enable}}</Enabled>
+        {% else %}
+            <Enabled>false</Enabled>
+        {% endif %}
+            <!-- Administrator username to login to the SI server for data publishing. -->
+        {% if financial_services.data_publishing.username is defined %}
+            <Username>{{financial_services.data_publishing.username}}</Username>
+        {% else %}
+            <Username>admin@wso2.com@carbon.super</Username>
+        {% endif %}
+            <!-- Administrator password to login to the SI server for data publishing. -->
+        {% if financial_services.data_publishing.password is defined %}
+            <Password>{{financial_services.data_publishing.password}}</Password>
+        {% else %}
+            <Password>wso2123</Password>
+        {% endif %}
+            <!-- Server URL of the remote SI server used to collect statistics. Must
+            be specified in {protocol://hostname:port/} format. -->
+        {% if financial_services.data_publishing.server_url is defined %}
+            <ServerURL>{{financial_services.data_publishing.server_url}}</ServerURL>
+        {% else %}
+            <ServerURL>{tcp://ANALYTICS_HOSTNAME:7612}</ServerURL>
+        {% endif %}
+        {% if financial_services.data_publishing.auth_url is defined %}
+            <AuthURL>{{financial_services.data_publishing.auth_url}}</AuthURL>
+        {% endif %}
+            <!-- Allowed values: Thrift -->
+        {% if financial_services.data_publishing.protocol is defined %}
+            <Protocol>{{financial_services.data_publishing.protocol}}</Protocol>
+        {% else %}
+            <Protocol>Thrift</Protocol>
+        {% endif %}
+        {% if financial_services.data_publishing.pool_size is defined %}
+            <PoolSize>{{financial_services.data_publishing.pool_size}}</PoolSize>
+        {% else %}
+            <PoolSize>10</PoolSize>
+        {% endif %}
+        {% if financial_services.data_publishing.queue_size is defined %}
+            <QueueSize>{{financial_services.data_publishing.queue_size}}</QueueSize>
+        {% else %}
+            <QueueSize>32768</QueueSize>
+        {% endif %}
+        {% if financial_services.data_publishing.worker_thread_count is defined %}
+            <WorkerThreadCount>{{financial_services.data_publishing.worker_thread_count}}</WorkerThreadCount>
+        {% else %}
+            <WorkerThreadCount>10</WorkerThreadCount>
+        {% endif %}
+        {% if financial_services.data_publishing.pool_wait_time_Ms is defined %}
+            <PoolWaitTimeMs>{{financial_services.data_publishing.pool_wait_time_Ms}}</PoolWaitTimeMs>
+        {% else %}
+            <PoolWaitTimeMs>60000</PoolWaitTimeMs>
+        {% endif %}
+        {% if financial_services.data_publishing.financial_services_data_publisher is defined %}
+            <FinancialServicesDataPublisher>{{financial_services.data_publishing.financial_services_data_publisher}}</FinancialServicesDataPublisher>
+        {% else %}
+            <FinancialServicesDataPublisher>org.wso2.financial.services.accelerator.data.publisher.common.FinancialServicesThriftDataPublisher</FinancialServicesDataPublisher>
+        {% endif %}
+        {% if financial_services.data_publishing.protocol == "Thrift" or financial_services.data_publishing.protocol is not defined%}
+            <Thrift>
+            {% if financial_services.data_publishing.thrift.publishing_timeout is defined %}
+                <PublishingTimeout>{{financial_services.data_publishing.thrift.publishing_timeout}}</PublishingTimeout>
+            {% else %}
+                <PublishingTimeout>2000</PublishingTimeout>
+            {% endif %}
+                <Streams>
+                {% for stream in financial_services.data_publishing.thrift.stream %}
+                    <{{stream.name}}>
+                        {% for attribute in stream.attributes %}
+                            {% if attribute.required is defined %}
+                                {% set required = "{{attribute.required}}" %}
+                            {% else %}
+                                {% set required = "false" %}
+                            {% endif %}
+                            {% if attribute.type is defined %}
+                                {% set type = "{{attribute.type}}" %}
+                            {% else %}
+                                {% set type = "string" %}
+                            {% endif %}
+                        <Attribute name="{{attribute.name}}" priority="{{attribute.priority}}" required="{{required}}" type="{{type}}"/>
+                        {% endfor %}
+                    </{{stream.name}}>
+                {% endfor %}
+                </Streams>
+            </Thrift>
+        {% endif %}
+
 </Server>

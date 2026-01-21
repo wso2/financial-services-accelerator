@@ -18,11 +18,15 @@
 
 package org.wso2.financial.services.accelerator.common.internal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.event.executor.FSEventQueue;
 
 import java.security.KeyStore;
+import java.util.Map;
 
 /**
  * Data holder for Common module.
@@ -34,13 +38,30 @@ public class FinancialServicesCommonDataHolder {
     private int commonCacheModifiedExpiry;
     private KeyStore trustStore = null;
     private PoolingHttpClientConnectionManager connectionManager;
+    private FSEventQueue fsEventQueue;
+    private Map<Integer, String> fsEventExecutors;
+    private static final Log log = LogFactory.getLog(FinancialServicesCommonDataHolder.class);
 
     private FinancialServicesCommonDataHolder() {
-
+        log.debug("Initializing FinancialServicesCommonDataHolder");
         setCommonCacheAccessExpiry((String) FinancialServicesConfigParser.getInstance().getConfiguration()
                 .get(FinancialServicesConstants.COMMON_IDENTITY_CACHE_ACCESS_EXPIRY));
         setCommonCacheModifiedExpiry((String) FinancialServicesConfigParser.getInstance().getConfiguration()
                 .get(FinancialServicesConstants.COMMON_IDENTITY_CACHE_MODIFY_EXPIRY));
+        int queueSize = Integer.parseInt((String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                .get(FinancialServicesConstants.EVENT_QUEUE_SIZE));
+        int workerThreadCount =
+                Integer.parseInt((String) FinancialServicesConfigParser.getInstance().getConfiguration()
+                        .get(FinancialServicesConstants.EVENT_WORKER_THREAD_COUNT));
+        fsEventQueue = new FSEventQueue(queueSize, workerThreadCount);
+        if (log.isDebugEnabled()) {
+            log.info("Initialized FSEventQueue with queue size: " + queueSize + " and worker thread count: "
+                    + workerThreadCount);
+        }
+        fsEventExecutors = FinancialServicesConfigParser.getInstance().getFinancialServicesEventExecutors();
+        if (log.isDebugEnabled()) {
+            log.debug("Loaded " + fsEventExecutors.size() + " event executors");
+        }
     }
 
     public static FinancialServicesCommonDataHolder getInstance() {
@@ -53,6 +74,16 @@ public class FinancialServicesCommonDataHolder {
             }
         }
         return instance;
+    }
+
+    public Map<Integer, String> getFSEventExecutors() {
+
+        return fsEventExecutors;
+    }
+
+    public void setFSEventExecutor(Map<Integer, String> fsEventExecutors) {
+
+        this.fsEventExecutors = fsEventExecutors;
     }
 
     public int getCommonCacheAccessExpiry() {
@@ -89,5 +120,15 @@ public class FinancialServicesCommonDataHolder {
 
     public void setConnectionManager(PoolingHttpClientConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
+    }
+
+    public FSEventQueue getFSEventQueue() {
+
+        return fsEventQueue;
+    }
+
+    public void setFSEventQueue(FSEventQueue obEventQueue) {
+
+        this.fsEventQueue = obEventQueue;
     }
 }
