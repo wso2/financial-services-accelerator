@@ -41,10 +41,11 @@ import java.util.Map;
 public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvider {
 
     private static final Log log = LogFactory.getLog(FSJWTAccessTokenClaimProvider.class);
-    private static final String consentIdClaimName = IdentityCommonUtils.getConfiguredConsentIdClaimName();
+    private static final String CONSENT_ID_CLAIM_NAME = IdentityCommonUtils.getConfiguredConsentIdClaimName();
 
     @Override
     public Map<String, Object> getAdditionalClaims(OAuthAuthzReqMessageContext context) throws IdentityOAuth2Exception {
+        // No need to add claims in the authorization flow.
         return new HashMap<>();
     }
 
@@ -54,11 +55,11 @@ public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvide
         Map<String, Object> additionalClaims = new HashMap<>();
 
         try {
-            if (IdentityCommonUtils.isRegulatoryApp(context.getOauth2AccessTokenReqDTO().getClientId()) &&
-                    context != null && context.getScope() != null) {
+            if (context != null && context.getScope() != null &&
+                    IdentityCommonUtils.isRegulatoryApp(context.getOauth2AccessTokenReqDTO().getClientId())) {
                 if (log.isDebugEnabled()) {
                     log.debug("Processing JWT access token claims. Scopes: " +
-                             Arrays.toString(context.getScope()).replaceAll("[\r\n]", ""));
+                            Arrays.toString(context.getScope()).replaceAll("[\r\n]", ""));
                 }
                 addConsentIDClaim(context.getScope(), additionalClaims);
                 removeConsentIdScope(context.getScope(), additionalClaims);
@@ -74,29 +75,19 @@ public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvide
 
     /**
      * This method adds the consent ID claim to the JWT token.
+     *
      * @param scopes The scopes array
      * @param claims Claims map to add the consent ID to
      */
     void addConsentIDClaim(String[] scopes, Map<String, Object> claims) {
 
-        String consentID = Arrays.stream(scopes)
-                .filter(scope -> scope.contains(IdentityCommonConstants.FS_PREFIX)).findFirst().orElse(null);
-
-        if (StringUtils.isEmpty(consentID)) {
-            consentID = Arrays.stream(scopes)
-                    .filter(scope -> scope.contains(consentIdClaimName))
-                    .findFirst().orElse(StringUtils.EMPTY)
-                    .replaceAll(consentIdClaimName, StringUtils.EMPTY);
-        } else {
-            consentID = consentID.replace(IdentityCommonConstants.FS_PREFIX, StringUtils.EMPTY);
-        }
-
+        String consentID = extractConsentIdFromScopes(scopes);
         if (StringUtils.isNotEmpty(consentID)) {
-            claims.put(consentIdClaimName, consentID);
+            claims.put(CONSENT_ID_CLAIM_NAME, consentID);
 
             if (log.isDebugEnabled()) {
-                log.debug("Added consent ID claim: " + consentIdClaimName.replaceAll("[\r\n]", "") +
-                         " : " + consentID.replaceAll("[\r\n]", ""));
+                log.debug("Added consent ID claim: " + CONSENT_ID_CLAIM_NAME.replaceAll("[\r\n]", "") +
+                        " : " + consentID.replaceAll("[\r\n]", ""));
             }
         }
     }
@@ -104,6 +95,7 @@ public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvide
     /**
      * Removes the consent ID scope from the JWT token's scopes claim.
      * The consent ID scope was added during the authorization process for internal use.
+     *
      * @param scopes The scopes array
      * @param claims Claims map to update the scope claim in
      */
@@ -112,5 +104,30 @@ public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvide
         String[] nonInternalScopes = IdentityCommonUtils.removeInternalScopes(scopes);
         String scopeString = StringUtils.join(nonInternalScopes, FinancialServicesConstants.SPACE_SEPARATOR);
         claims.put(FinancialServicesConstants.SCOPE, scopeString);
+    }
+
+    /**
+     * Extracts the consent ID from the given scopes.
+     * Consent ID scope can be in one of the following formats:
+     *     FS_{consentId}
+     *     {CONSENT_ID_CLAIM_NAME}{consentId}
+     *
+     * @param scopes OAuth2 scopes
+     * @return extracted consent ID, or empty string if not found
+     */
+    private String extractConsentIdFromScopes(String[] scopes) {
+
+        if (scopes == null || scopes.length == 0) {
+            return StringUtils.EMPTY;
+        }
+        for (String scope : scopes) {
+            if (scope.startsWith(IdentityCommonConstants.FS_PREFIX)) {
+                return scope.substring(IdentityCommonConstants.FS_PREFIX.length());
+            }
+            if (scope.startsWith(CONSENT_ID_CLAIM_NAME)) {
+                return scope.substring(CONSENT_ID_CLAIM_NAME.length());
+            }
+        }
+        return StringUtils.EMPTY;
     }
 }
