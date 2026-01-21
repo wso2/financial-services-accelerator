@@ -55,7 +55,7 @@ public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvide
         Map<String, Object> additionalClaims = new HashMap<>();
 
         try {
-            if (context != null && context.getScope() != null &&
+            if (context != null && context.getScope() != null && context.getOauth2AccessTokenReqDTO() != null &&
                     IdentityCommonUtils.isRegulatoryApp(context.getOauth2AccessTokenReqDTO().getClientId())) {
                 if (log.isDebugEnabled()) {
                     log.debug("Processing JWT access token claims. Scopes: " +
