@@ -115,7 +115,7 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             ExternalAPIConsentResourceRequestDTO externalAPIConsentResource = null;
             String consentFileContent = "";
-            if (consentId != null) {
+            if (StringUtils.isNotBlank(consentId)) {
                 DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
                 if (detailedConsentResource != null) {
                     externalAPIConsentResource = new ExternalAPIConsentResourceRequestDTO(detailedConsentResource);
