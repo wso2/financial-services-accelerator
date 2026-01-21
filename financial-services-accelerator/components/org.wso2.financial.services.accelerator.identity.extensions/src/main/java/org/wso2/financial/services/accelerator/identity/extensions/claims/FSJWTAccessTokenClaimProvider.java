@@ -104,7 +104,6 @@ public class FSJWTAccessTokenClaimProvider implements JWTAccessTokenClaimProvide
     /**
      * Removes the consent ID scope from the JWT token's scopes claim.
      * The consent ID scope was added during the authorization process for internal use.
-     *
      * @param scopes The scopes array
      * @param claims Claims map to update the scope claim in
      */
