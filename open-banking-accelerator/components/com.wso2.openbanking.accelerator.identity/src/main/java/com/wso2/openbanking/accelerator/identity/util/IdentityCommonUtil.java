@@ -235,6 +235,33 @@ public class IdentityCommonUtil {
         }
     }
 
+    /**
+     * Clear the scope cache entry for the given client ID.
+     *
+     * @param clientId clientId of the application
+     */
+    @Generated(message = "Excluding from code coverage since it requires a cache initialization")
+    public static synchronized void clearScopeCacheEntry(String clientId) {
+
+        if (StringUtils.isNotEmpty(clientId)) {
+            if (identityCache != null) {
+                IdentityCacheKey identityCacheKey = IdentityCacheKey.of(clientId
+                        .concat("_").concat(IdentityCommonConstants.SCOPE));
+                identityCache.removeFromCache(identityCacheKey);
+                if (log.isDebugEnabled()) {
+                    log.debug("Cleared scope cache entry for client ID: " + clientId.replaceAll("[\r\n]", ""));
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Identity cache is not initialized. No cache entry to clear for client ID: "
+                            + clientId.replaceAll("[\r\n]", ""));
+                }
+            }
+        } else {
+            log.warn("Client ID is empty. Cannot clear scope cache entry.");
+        }
+    }
+
     public static ServiceProviderProperty getServiceProviderProperty(String spPropertyName, String spPropertyValue) {
 
         ServiceProviderProperty serviceProviderProperty = new ServiceProviderProperty();

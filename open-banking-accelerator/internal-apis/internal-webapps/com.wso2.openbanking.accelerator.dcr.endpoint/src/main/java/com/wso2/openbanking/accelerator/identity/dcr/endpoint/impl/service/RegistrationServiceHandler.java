@@ -25,6 +25,7 @@ import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationExce
 import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.RegistrationValidator;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -182,6 +183,9 @@ public class RegistrationServiceHandler {
         }
         String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         String userName = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+
+        // Clearing the cached scopes of the application to make sure any scope changes are reflected immediately.
+        IdentityCommonUtil.clearScopeCacheEntry(clientId);
 
         //retrieve stored client meta data
         ApplicationManagementService applicationManagementService = ApplicationManagementService.getInstance();
