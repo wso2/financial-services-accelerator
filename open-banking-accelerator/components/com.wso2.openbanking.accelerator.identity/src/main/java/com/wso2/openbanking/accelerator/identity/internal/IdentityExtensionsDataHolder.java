@@ -216,9 +216,9 @@ public class IdentityExtensionsDataHolder {
                         .get(IdentityCommonConstants.INTROSPECTION_DATA_PROVIDER).toString()));
         OBIntrospectionDataProvider.setIntrospectionDataProvider(getIntrospectionDataProvider());
         setIdentityCacheAccessExpiry((String) openBankingConfigurationService
-                .getConfigurations().get("IdentityCache.CacheAccessExpiry"));
+                .getConfigurations().get("Identity.Cache.IdentityCache.CacheAccessExpiry"));
         setIdentityCacheModifiedExpiry((String) openBankingConfigurationService
-                .getConfigurations().get("IdentityCache.CacheModifiedExpiry"));
+                .getConfigurations().get("Identity.Cache.IdentityCache.CacheModifiedExpiry"));
         setScopeRestrictedGrantTypes(extractScopeRestrictedGrantTypes());
 
         Map<String, String> authenticationWorkers = openBankingConfigurationService.getAuthenticationWorkers();
