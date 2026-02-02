@@ -5,13 +5,13 @@ SSA Redirect Uri - https://www.google.com/redirects/redirect1
 
 
 Sample Keystore information:
-- Signing Kid = BkHxeIHKyMKF6SgGwqYzLUvTQfk
+- Signing Kid = 9OzLGA1T9hCXqCQt3Y_f9a5JKTI
 
 - Signing keystore alias = signing
 
 - Signing keystore password = wso2carbon
 
-- Transport Kid - _wYMMJDl96s6D8p93iO2ApHw1BE
+- Transport Kid - FpGbdOsv5VDDlOzVvH_r39a9_CU
 
 - Transport keystore alias = transport
 

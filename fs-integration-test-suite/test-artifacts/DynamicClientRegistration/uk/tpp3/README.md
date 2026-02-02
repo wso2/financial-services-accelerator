@@ -15,14 +15,17 @@ directory as the Transport Keystore.
 
 Sample Keystore information:
 
-- Signing Kid = 7eJ8S_ZgvlYxFAFSghV9xMJROvk
+SSA SoftwareId - jFQuQ4eQbNCMSqdCog21nF
+SSA Redirect Uri - https://www.google.com/redirects/redirect1
 
-- Signing keystore alias = tpp7-signing
+- Signing Kid = 9OzLGA1T9hCXqCQt3Y_f9a5JKTI
+
+- Signing keystore alias = signing
 
 - Signing keystore password = wso2carbon
 
-- Transport Kid - 7x6UrhU-Yj1Aa9Ird03JJCcDurs
+- Transport Kid - FpGbdOsv5VDDlOzVvH_r39a9_CU
 
-- Transport keystore alias = tpp7-transport
+- Transport keystore alias = transport
 
 - Transport keystore password = wso2carbon
