@@ -205,6 +205,9 @@ public class Utils {
                     ConsentAuthorizeConstants.ACCOUNTS);
         }
 
+        List<Map<String, Object>> displayData = (List<Map<String, Object>>)
+                dataSetMap.get(ConsentAuthorizeConstants.DISPLAY_DATA);
+
         attributeMap.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
         attributeMap.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
         attributeMap.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, initiatedAccountsForConsent);
@@ -214,6 +217,7 @@ public class Utils {
                 handleAccountSelectionSeparately);
         attributeMap.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, isReauthorization);
         attributeMap.put(ConsentAuthorizeConstants.TYPE, type);
+        attributeMap.put(ConsentAuthorizeConstants.DISPLAY_DATA, displayData);
         attributeMap.put(ConsentAuthorizeConstants.HAS_MULTIPLE_PERMISSIONS,
                 (permissions != null && permissions.size() > 1));
     }

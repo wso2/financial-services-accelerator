@@ -49,6 +49,7 @@
     session.setAttribute("handleAccountSelectionSeparately", request.getAttribute("handleAccountSelectionSeparately"));
     session.setAttribute("onFollowingAccounts", request.getAttribute("onFollowingAccounts"));
     session.setAttribute("buttonConfirm", request.getAttribute("buttonConfirm"));
+    session.setAttribute("displayData", request.getAttribute("displayData"));
 %>
 
 <html>
@@ -91,6 +92,47 @@
                                                     value="${buttonNext}"/>
                                         </div>
                                     </div>
+                                    <c:if test="${not empty displayData}">
+                                        <div class="form-group ui form select">
+                                            <hr class="separator">
+
+                                            <h4 class="ui body col-md-12">
+                                                Accounts Unavailable To Share:
+                                            </h4>
+
+                                            <div class="col-md-12 padding-bottom-double">
+                                                <p id="UnavailableAccountPopover" class="hide" style="text-align:left">
+                                                    There are a range of reasons why certain accounts may not be available to share.
+                                                    Please call the bank for more details.
+                                                    <br><br>
+                                                    &#8211; For joint accounts, all account holders must elect to make the account available for sharing.
+                                                    <br>
+                                                    &#8211; For secondary user accounts, the account holder(s) must give you secondary user
+                                                    data sharing rights before you can share data from this account.
+                                                    <br><br>
+                                                    These can be done via the Data Sharing dashboard in Internet Banking or the app.
+                                                </p>
+                                                <p>
+                                                    Why can't I share these?
+                                                    <a id="unavailablePopoverContentElement"
+                                                    title="Why can't I share these?"
+                                                    style="cursor: help; text-decoration: none;">&#9432;</a>
+                                                </p>
+                                            </div>
+
+                                            <br><br>
+
+                                            <div class="col-md-12">
+                                                <%-- Display unavailable accounts from displayData --%>
+                                                <c:forEach var="record" items="${displayData}">
+                                                    <label>
+                                                        ${record.displayName}
+                                                    </label>
+                                                    <br/>
+                                                </c:forEach>
+                                            </div>
+                                        </div>
+                                    </c:if>
 
                                     <jsp:include page="includes/privacy-footer.jsp"/>
                                 </div>
@@ -101,6 +143,7 @@
             </div>
 
             <jsp:include page="includes/footer.jsp"/>
+            <script src="js/tooltip-functions.js"></script>
         </div>
     </body>
 </html>

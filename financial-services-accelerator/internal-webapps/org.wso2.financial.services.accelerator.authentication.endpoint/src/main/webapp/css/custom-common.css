@@ -605,3 +605,20 @@ li.sub::before {
     padding: 5;
     border-radius: 5px;
 }
+
+/* Hide the source text from the main page layout */
+.hide {
+    display: none;
+}
+
+/* Ensure the popover box is visible above the login form */
+.popover {
+    z-index: 1060 !important;
+}
+
+/* Optional: Style the info icon */
+#unavailablePopoverContentElement {
+    color: #007bff;
+    font-weight: bold;
+    padding: 0 5px;
+}
