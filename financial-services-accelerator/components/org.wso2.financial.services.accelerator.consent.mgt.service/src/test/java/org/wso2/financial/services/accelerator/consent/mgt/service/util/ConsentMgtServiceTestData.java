@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Data class for Consent Management Service Tests
+ * Data class for Consent Management Service Tests.
  */
 public class ConsentMgtServiceTestData {
 

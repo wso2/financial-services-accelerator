@@ -1,10 +1,11 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.validation.Valid;
 
 /**
  * Display data object for authorization UI consent retrieval.
@@ -47,8 +48,12 @@ public class DisplayDataDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DisplayDataDTO that = (DisplayDataDTO) o;
         return Objects.equals(displayData, that.displayData);
     }
