@@ -153,9 +153,7 @@ public class ApplicationManagementListenerTest {
         financialServicesConfigParserMockedStatic = Mockito.mockStatic(FinancialServicesConfigParser.class);
         financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
                 .thenReturn(financialServicesConfigParserMock);
-        financialServicesConfigParserMockedStatic.when(() ->
-                FinancialServicesConfigParser.getInstance().isSetAuthenticatorsOnAppUpdateEnabled())
-                .thenReturn(true);
+        Mockito.when(financialServicesConfigParserMock.isSetAuthenticatorsOnAppUpdateEnabled()).thenReturn(true);
     }
 
     @AfterClass
