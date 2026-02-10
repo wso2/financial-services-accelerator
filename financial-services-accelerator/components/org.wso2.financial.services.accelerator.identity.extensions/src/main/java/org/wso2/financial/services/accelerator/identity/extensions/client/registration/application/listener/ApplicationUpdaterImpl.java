@@ -234,7 +234,8 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
                 spProperties.remove(appCreateRequest);
                 serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
             } else if (FinancialServicesConfigParser.getInstance().isSetAuthenticatorsOnAppUpdateEnabled()) {
-                // Executes only if the enable_setting_authenticators_on_app_update set to true.
+                logger.debug("The configuration enable_setting_authenticators_on_app_update is set to true." +
+                        "Updating application authenticators as defined by financial services accelerator.");
                 ApplicationManagementService applicationManagementService = IdentityExtensionsDataHolder.getInstance()
                         .getApplicationManagementService();
                 ServiceProvider existingSP = applicationManagementService
