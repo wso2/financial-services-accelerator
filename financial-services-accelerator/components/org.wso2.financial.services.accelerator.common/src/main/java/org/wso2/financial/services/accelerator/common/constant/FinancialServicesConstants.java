@@ -99,6 +99,8 @@ public class FinancialServicesConstants {
     public static final String PRIMARY_AUTHENTICATOR_DISPLAY_NAME = "AppRegistration.SCA.PrimaryAuthenticator" +
             ".DisplayName";
     public static final String PRIMARY_AUTHENTICATOR_NAME = "AppRegistration.SCA.PrimaryAuthenticator.Name";
+    public static final String ENABLE_SETTING_AUTHENTICATORS_ON_APP_UPDATE =
+            "AppRegistration.SCA.AuthenticatorConfig.EnableSettingAuthenticatorsOnAppUpdate";
     public static final String IDENTITY_PROVIDER_NAME = "AppRegistration.SCA.IdpName";
     public static final String IDENTITY_PROVIDER_STEP = "AppRegistration.SCA.IdpStep";
     public static final String CONDITIONAL_AUTH_SCRIPT_NAME = "AppRegistration.ConditionalAuthScriptFileName";

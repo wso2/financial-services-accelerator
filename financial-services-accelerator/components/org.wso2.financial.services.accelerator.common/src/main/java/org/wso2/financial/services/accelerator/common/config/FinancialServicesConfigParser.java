@@ -1210,4 +1210,17 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse("");
     }
 
+
+    /**
+     * Method to check whether authenticators on app update is enabled.
+     *
+     * @return boolean value indicating whether authenticators on app update is enabled
+     */
+    public boolean isSetAuthenticatorsOnAppUpdateEnabled() {
+
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.ENABLE_SETTING_AUTHENTICATORS_ON_APP_UPDATE);
+        return config.map(Boolean::parseBoolean).orElse(false);
+    }
+
 }

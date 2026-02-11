@@ -42,6 +42,7 @@ import org.wso2.carbon.identity.application.mgt.AuthorizedAPIManagementService;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.TextFileReader;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -71,6 +72,7 @@ public class ApplicationManagementListenerTest {
     OAuthAdminServiceImpl oAuthAdminService;
     ApplicationManagementService applicationManagementService;
     ApplicationUpdaterImpl applicationUpdater;
+    FinancialServicesConfigParser financialServicesConfigParserMock;
 
     @InjectMocks
     FSApplicationManagementListener applicationManagementListener = new FSApplicationManagementListener();
@@ -80,6 +82,7 @@ public class ApplicationManagementListenerTest {
     private static MockedStatic<IdentityExtensionsDataHolder> identityExtensionsDataHolderMockedStatic;
     private static MockedStatic<DCRUtils> dcrUtilsMockedStatic;
     private static MockedStatic<CarbonContext> carbonContextMockedStatic;
+    private static MockedStatic<FinancialServicesConfigParser> financialServicesConfigParserMockedStatic;
 
 
     @BeforeClass
@@ -145,6 +148,12 @@ public class ApplicationManagementListenerTest {
         Mockito.doReturn("admin").when(carbonContext).getUsername();
         carbonContextMockedStatic = Mockito.mockStatic(CarbonContext.class);
         carbonContextMockedStatic.when(CarbonContext::getThreadLocalCarbonContext).thenReturn(carbonContext);
+
+        financialServicesConfigParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        financialServicesConfigParserMockedStatic = Mockito.mockStatic(FinancialServicesConfigParser.class);
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(financialServicesConfigParserMock);
+        Mockito.when(financialServicesConfigParserMock.isSetAuthenticatorsOnAppUpdateEnabled()).thenReturn(true);
     }
 
     @AfterClass
@@ -152,6 +161,7 @@ public class ApplicationManagementListenerTest {
         identityExtensionsDataHolderMockedStatic.close();
         dcrUtilsMockedStatic.close();
         carbonContextMockedStatic.close();
+        financialServicesConfigParserMockedStatic.close();
     }
 
     @Test

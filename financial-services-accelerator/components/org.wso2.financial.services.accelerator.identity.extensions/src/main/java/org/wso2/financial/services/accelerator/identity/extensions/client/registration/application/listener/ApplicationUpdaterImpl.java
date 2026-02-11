@@ -34,6 +34,7 @@ import org.wso2.carbon.identity.application.common.model.script.AuthenticationSc
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.oauth.IdentityOAuthAdminException;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.config.TextFileReader;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
@@ -232,7 +233,9 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
                 // Removing the added additional SP property to identify create and update requests
                 spProperties.remove(appCreateRequest);
                 serviceProvider.setSpProperties(spProperties.toArray(new ServiceProviderProperty[0]));
-            } else {
+            } else if (FinancialServicesConfigParser.getInstance().isSetAuthenticatorsOnAppUpdateEnabled()) {
+                logger.debug("The configuration enable_setting_authenticators_on_app_update is set to true." +
+                        "Updating application authenticators as defined by financial services accelerator.");
                 ApplicationManagementService applicationManagementService = IdentityExtensionsDataHolder.getInstance()
                         .getApplicationManagementService();
                 ServiceProvider existingSP = applicationManagementService

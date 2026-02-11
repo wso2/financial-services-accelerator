@@ -319,6 +319,13 @@
         <ApplicationUpdaterImpl>org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl</ApplicationUpdaterImpl>
         {% endif %}
         <SCA>
+            <AuthenticatorConfig>
+                {% if financial_services.app_registration.sca.authenticator_config.enable_setting_authenticators_on_app_update is defined %}
+                    <EnableSettingAuthenticatorsOnAppUpdate>{{financial_services.app_registration.sca.authenticator_config.enable_setting_authenticators_on_app_update}}</EnableSettingAuthenticatorsOnAppUpdate>
+                {% else %}
+                    <EnableSettingAuthenticatorsOnAppUpdate>true</EnableSettingAuthenticatorsOnAppUpdate>
+                {% endif %}
+            </AuthenticatorConfig>
             <PrimaryAuthenticator>
             {% if financial_services.app_registration.sca.primaryauth.name is defined %}
                 <Name>{{financial_services.app_registration.sca.primaryauth.name}}</Name>
