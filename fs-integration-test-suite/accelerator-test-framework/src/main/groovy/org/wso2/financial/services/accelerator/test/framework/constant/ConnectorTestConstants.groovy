@@ -257,7 +257,8 @@ class ConnectorTestConstants extends Constants{
         INVALID_SCOPE("OB_1234"),
         DEFAULT(""),
         CDR_REGISTRATION("cdr:registration"),
-        OPEN_ID("openid")
+        OPEN_ID("openid"),
+        ENCRYPT("encrypt")
 
         private String value
 
