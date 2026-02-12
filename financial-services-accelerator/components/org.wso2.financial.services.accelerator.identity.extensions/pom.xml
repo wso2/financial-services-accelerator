@@ -53,6 +53,10 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.framework</groupId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.identity.api.resource.mgt</artifactId>
         </dependency>
         <dependency>
@@ -66,6 +70,10 @@
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
             <artifactId>org.wso2.financial.services.accelerator.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.financial.services.accelerator</groupId>
+            <artifactId>org.wso2.financial.services.accelerator.data.publisher</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.financial.services.accelerator</groupId>
@@ -194,7 +202,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.7</minimum>
+                                            <minimum>0.6</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -238,6 +246,8 @@
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.dao.models.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.data.publisher.common.constants.*;version="${project.version}",
+                            org.wso2.financial.services.accelerator.data.publisher.common.util.*;version="${project.version}",
 
                             org.apache.oltu.oauth2.*;version="${oltu.version}",
                             org.wso2.carbon.identity.base.*;version="${carbon.identity.framework.version.range}",

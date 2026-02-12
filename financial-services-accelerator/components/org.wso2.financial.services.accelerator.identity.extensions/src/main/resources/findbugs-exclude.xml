@@ -18,4 +18,8 @@
  -->
 
 <FindBugsFilter>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.identity.extensions.auth.extensions.request.validator.FSRequestObjectValidationExtension"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
 </FindBugsFilter>

@@ -28,7 +28,11 @@ public class FinancialServicesConstants {
     public static final String FS_CONFIG_QNAME = "http://wso2.org/projects/carbon/financial-services.xml";
     public static final String DEFAULT_STATUS_FOR_EXPIRED_CONSENTS = "Expired";
     public static final String DEFAULT_MIDNIGHT_CRON = "0 0 0 * * ?";
+    public static final String EVENT_CONFIG_TAG = "Event";
+    public static final String EVENT_EXECUTOR_CONFIG_TAG = "EventExecutors";
+
     public static final String SANITIZING_CHARACTERS = "\n\r";
+
 
     public static final String GATEWAY_CONFIG_TAG = "Gateway";
     public static final String GATEWAY_EXECUTOR_CONFIG_TAG = "FinancialServicesGatewayExecutors";
@@ -72,6 +76,13 @@ public class FinancialServicesConstants {
     public static final String IS_CONSENT_PERIODICAL_EXPIRATION_ENABLED = "Consent.PeriodicalExpiration.Enabled";
 
     public static final String AUTH_SERVLET_EXTENSION = "Identity.AuthenticationWebApp.ServletExtension";
+    public static final String DATA_PUBLISHING_CONFIG_TAG = "DataPublishing";
+    public static final String THRIFT_CONFIG_TAG = "Thrift";
+    public static final String STREAMS_CONFIG_TAG = "Streams";
+    public static final String ATTRIBUTE_CONFIG_TAG = "Attribute";
+    public static final String REQUIRED = "required";
+    public static final String ATTRIBUTE_TYPE = "type";
+
     public static final String REQUEST_VALIDATOR = "Identity.Extensions.RequestObjectValidator";
     public static final String RESPONSE_HANDLER = "Identity.Extensions.ResponseTypeHandler";
     public static final String GRANT_HANDLER = "Identity.Extensions.GrantHandler";
@@ -212,4 +223,7 @@ public class FinancialServicesConstants {
     public static final String REQUEST_OBJECT = "requestObject";
     public static final String REQUEST_PARAM = "requestParam";
     public static final String REGULATORY = "regulatory";
+
+    public static final String EVENT_QUEUE_SIZE = "Event.QueueSize";
+    public static final String EVENT_WORKER_THREAD_COUNT = "Event.WorkerThreadCount";
 }

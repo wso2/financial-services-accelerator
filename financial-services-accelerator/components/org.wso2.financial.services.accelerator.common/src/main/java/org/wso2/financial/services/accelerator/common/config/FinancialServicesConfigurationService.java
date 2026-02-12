@@ -42,4 +42,7 @@ public interface FinancialServicesConfigurationService {
 
     public Map<String, Map<String, String>> getKeyManagerConfigs();
 
+    public Map<String, Map<Integer, String>> getDataPublishingStreams();
+
+    public Map<String, Map<String, Object>> getDataPublishingValidationMap();
 }
