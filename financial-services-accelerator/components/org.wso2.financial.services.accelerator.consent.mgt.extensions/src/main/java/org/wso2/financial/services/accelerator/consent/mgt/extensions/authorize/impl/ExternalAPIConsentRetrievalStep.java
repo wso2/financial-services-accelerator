@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
@@ -160,10 +159,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
 
             // Append display data, if exists, to json object
             if (responseDTO.getDisplayData() != null) {
-                jsonObject.put(
-                        ConsentAuthorizeConstants.DISPLAY_DATA,
-                        new JSONArray(responseDTO.getDisplayData().getDisplayData())
-                );
+                jsonObject.put(ConsentAuthorizeConstants.DISPLAY_DATA,
+                        new JSONObject(objectMapper.writeValueAsString(responseDTO.getDisplayData())));
             }
 
 

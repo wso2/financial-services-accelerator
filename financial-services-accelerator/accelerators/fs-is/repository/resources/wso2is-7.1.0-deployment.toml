@@ -549,6 +549,7 @@ priority = 1
 validator="org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidator"
 signature.alias="wso2carbon"
 jwt.payload.enabled=true
+is_cds_deployment=false
 
 [financial_services.consent.admin]
 handler="org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler"

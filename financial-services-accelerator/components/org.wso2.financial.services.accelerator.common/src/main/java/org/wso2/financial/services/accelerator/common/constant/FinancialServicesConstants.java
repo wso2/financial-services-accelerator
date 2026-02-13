@@ -59,6 +59,7 @@ public class FinancialServicesConstants {
     public static final String CONSENT_JWT_PAYLOAD_VALIDATION = "Consent.Validation.JWTPayloadValidation";
     public static final String SIGNATURE_ALIAS = "Consent.Validation.RequestSignatureAlias";
     public static final String CONSENT_VALIDATOR = "Consent.Validation.Validator";
+    public static final String CONSENT_CDS_DEPLOYMENT = "Consent.Validation.IsCDSDeployment";
     public static final String ADMIN_HANDLER = "Consent.AdminHandler";
     public static final String PRESERVE_CONSENT = "Consent.PreserveConsentLink";
     public static final String ADMIN_USERNAME = "Admin.Username";

@@ -2,47 +2,32 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.validation.Valid;
 
 /**
  * Display data object for authorization UI consent retrieval.
- * Stores dynamic UI display items such as unavailable / blocked accounts.
+ * Contains a list of display data sections.
  */
 public class DisplayDataDTO {
 
-    /**
-     * List of display data items.
-     *
-     * Example JSON:
-     * [
-     *   { "accountId": "123", "displayName": "Blocked Account" }
-     * ]
-     */
     @Valid
-    private List<Map<String, Object>> displayData = new ArrayList<>();
+    private List<DisplayDataInnerItemDTO> items = new ArrayList<>();
 
     public DisplayDataDTO() {
     }
 
-    public List<Map<String, Object>> getDisplayData() {
-        return displayData;
+    public List<DisplayDataInnerItemDTO> getItems() {
+        return items;
     }
 
-    public void setDisplayData(List<Map<String, Object>> displayData) {
-        this.displayData = displayData;
+    public void setItems(List<DisplayDataInnerItemDTO> items) {
+        this.items = items;
     }
 
-    /**
-     * Convenience method to add a display item.
-     *
-     * @param item display data item
-     * @return this instance for chaining
-     */
-    public DisplayDataDTO addItem(Map<String, Object> item) {
-        this.displayData.add(item);
+    public DisplayDataDTO addItem(DisplayDataInnerItemDTO item) {
+        this.items.add(item);
         return this;
     }
 
@@ -51,15 +36,15 @@ public class DisplayDataDTO {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof DisplayDataDTO)) {
             return false;
         }
         DisplayDataDTO that = (DisplayDataDTO) o;
-        return Objects.equals(displayData, that.displayData);
+        return Objects.equals(items, that.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(displayData);
+        return Objects.hash(items);
     }
 }

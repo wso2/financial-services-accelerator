@@ -472,6 +472,15 @@ public class ConsentUtils {
     }
 
     /**
+     * This method returns the configuration value on whether the deployment is CDS.
+     *
+     * @return config value
+     */
+    public static boolean isCdsDeploymentEnabled() {
+        return Boolean.parseBoolean(FinancialServicesConfigParser.getInstance().getCdsDeploymentConfig());
+    }
+
+    /**
      * Extract and add query parameters from a URL to existing resource map.
      * Resource parameter map will contain the resource path(ex:
      * /aisp/accounts/{AccountId}?queryParam=queryParamValue),

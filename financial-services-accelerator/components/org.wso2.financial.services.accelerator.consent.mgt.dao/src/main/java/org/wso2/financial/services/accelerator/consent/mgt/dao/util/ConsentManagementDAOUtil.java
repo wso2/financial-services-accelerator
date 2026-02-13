@@ -345,8 +345,9 @@ public class ConsentManagementDAOUtil {
      * @param columnsMap                map of columns
      * @return ordered parameters map
      */
-    public static TreeMap<Integer, ArrayList<String>> determineOrderOfParamsToSet(String preparedStatement,
-                                                                                  Map<String, ArrayList<String>> applicableConditionsMap, Map<String, String> columnsMap) {
+    public static TreeMap<Integer, ArrayList<String>> determineOrderOfParamsToSet(
+            String preparedStatement,
+            Map<String, ArrayList<String>> applicableConditionsMap, Map<String, String> columnsMap) {
 
         int indexOfConsentIDsList;
         int indexOfClientIdsList;

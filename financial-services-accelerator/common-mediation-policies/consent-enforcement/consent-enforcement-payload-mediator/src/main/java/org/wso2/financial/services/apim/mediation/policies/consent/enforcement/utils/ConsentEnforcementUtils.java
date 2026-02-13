@@ -182,4 +182,5 @@ public class ConsentEnforcementUtils {
         return new JSONObject(new String(java.util.Base64.getDecoder().decode(payload),
                 String.valueOf(StandardCharsets.UTF_8)));
     }
+
 }
