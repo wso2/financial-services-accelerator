@@ -5,8 +5,6 @@
 
         if ($ && typeof $.fn.popover === 'function' && $infoIcon.length && $hiddenContent.length) {
 
-            // We pull the HTML content first to avoid the e.hasOwnProperty bug
-            // triggered by certain internal Bootstrap option merging.
             var popoverHtml = $hiddenContent.html();
 
             $infoIcon.popover({
@@ -14,11 +12,12 @@
                 container: 'body',
                 placement: 'right',
                 trigger: 'click',
-                content: popoverHtml // Pass the pre-retrieved HTML string
+                content: popoverHtml
             });
 
             $(document).on('click', function (e) {
-                if (!$infoIcon.is(e.target) && $infoIcon.has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                if (!$infoIcon.is(e.target) &&
+                $infoIcon.has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
                     $infoIcon.popover('hide');
                 }
             });
