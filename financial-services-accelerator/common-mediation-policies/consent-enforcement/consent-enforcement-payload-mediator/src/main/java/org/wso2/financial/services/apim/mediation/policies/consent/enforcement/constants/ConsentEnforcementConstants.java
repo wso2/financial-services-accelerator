@@ -42,7 +42,6 @@ public class ConsentEnforcementConstants {
     public static final String KEYSTORE_PASSWORD_TAG = "Security.InternalKeyStore.Password";
     public static final String SIGNING_ALIAS_TAG = "Security.InternalKeyStore.KeyAlias";
     public static final String SIGNING_KEY_PASSWORD = "Security.InternalKeyStore.KeyPassword";
-    public static final String DOMS_ENABLED = "";
 
     // Additional param keys
     public static final String ELECTED_RESOURCE_TAG = "electedResource";
