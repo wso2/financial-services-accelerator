@@ -10,8 +10,8 @@
 package org.wso2.financial.services.accelerator.common.validator.validationgroups;
 
 /**
- * Interface for grouping the validation annotations
- * Groups the validations for attributes
+ * Interface for grouping the validation annotations.
+ * Groups the validations for attributes.
  */
 public interface AttributeChecks {
 

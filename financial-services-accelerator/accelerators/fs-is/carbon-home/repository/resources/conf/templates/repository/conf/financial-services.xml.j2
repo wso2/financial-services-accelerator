@@ -133,6 +133,11 @@
             {% else %}
             <JWTPayloadValidation>true</JWTPayloadValidation>
             {% endif %}
+            {% if financial_services.consent.validation.is_cds_deployment is defined %}
+            <IsCDSDeployment>{{financial_services.consent.validation.is_cds_deployment}}</IsCDSDeployment>
+            {% else %}
+            <IsCDSDeployment>false</IsCDSDeployment>
+            {% endif %}
         </Validation>
         {% if financial_services.consent.admin.handler is defined %}
         <AdminHandler>{{financial_services.consent.admin.handler}}</AdminHandler>

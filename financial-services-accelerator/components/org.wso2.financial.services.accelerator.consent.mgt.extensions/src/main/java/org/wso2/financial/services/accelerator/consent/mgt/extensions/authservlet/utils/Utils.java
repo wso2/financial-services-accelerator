@@ -205,6 +205,14 @@ public class Utils {
                     ConsentAuthorizeConstants.ACCOUNTS);
         }
 
+        Map<String, Object> displayDataObj =
+                (Map<String, Object>) dataSetMap.get(ConsentAuthorizeConstants.DISPLAY_DATA);
+
+        List<Map<String, Object>> displayDataItems = null;
+        if (displayDataObj != null) {
+            displayDataItems = (List<Map<String, Object>>) displayDataObj.get("items");
+        }
+
         attributeMap.put(ConsentAuthorizeConstants.BASIC_CONSENT_DATA, basicConsentData);
         attributeMap.put(ConsentAuthorizeConstants.PERMISSIONS, permissions);
         attributeMap.put(ConsentAuthorizeConstants.INITIATED_ACCOUNTS_FOR_CONSENT, initiatedAccountsForConsent);
@@ -216,6 +224,9 @@ public class Utils {
         attributeMap.put(ConsentAuthorizeConstants.TYPE, type);
         attributeMap.put(ConsentAuthorizeConstants.HAS_MULTIPLE_PERMISSIONS,
                 (permissions != null && permissions.size() > 1));
+
+        // multi section list for the UI
+        attributeMap.put("displayDataItems", displayDataItems);
     }
 
     private static void appendI18nAttributes(Map<String, Object> dataSetMap, Map<String, Object> attributeMap) {

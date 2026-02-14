@@ -49,6 +49,7 @@
     session.setAttribute("handleAccountSelectionSeparately", request.getAttribute("handleAccountSelectionSeparately"));
     session.setAttribute("onFollowingAccounts", request.getAttribute("onFollowingAccounts"));
     session.setAttribute("buttonConfirm", request.getAttribute("buttonConfirm"));
+    session.setAttribute("displayDataItems", request.getAttribute("displayDataItems"));
 %>
 
 <html>
@@ -84,6 +85,41 @@
                                         </div>
                                     </div>
 
+                                    <c:if test="${not empty displayDataItems}">
+                                        <c:forEach var="section" items="${displayDataItems}">
+                                            <div class="form-group ui form select">
+                                                <hr class="separator">
+
+                                                <h4 class="ui body col-md-12">
+                                                    ${section.heading}
+                                                </h4>
+
+                                                <c:if test="${not empty section.subHeading}">
+                                                    <div class="col-md-12 pb-1">
+                                                        <p id="UnavailableAccountPopover" class="hide" style="text-align:left">
+                                                            ${section.description}
+                                                        </p>
+
+                                                        <p>
+                                                            ${section.subHeading}
+                                                            <a id="unavailablePopoverContentElement"
+                                                               title="${section.subHeading}"
+                                                               style="cursor: help; text-decoration: none;">&#9432;</a>
+                                                        </p>
+                                                    </div>
+                                                </c:if>
+                                                <div class="col-md-12">
+                                                    <c:forEach var="record" items="${section.displayList}">
+                                                        <label>${record.displayName}</label>
+                                                        <br/>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </c:if>
+
+                                    <br><br>
+
                                     <div class="form-group ui form row">
                                         <div class="ui body col-md-12">
                                             <input type="button" class="btn btn-primary" id="next" name="next"
@@ -101,6 +137,7 @@
             </div>
 
             <jsp:include page="includes/footer.jsp"/>
+            <script src="js/tooltip-functions.js"></script>
         </div>
     </body>
 </html>

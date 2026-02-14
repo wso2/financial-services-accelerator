@@ -744,6 +744,13 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse("");
     }
 
+    public String getCdsDeploymentConfig() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_CDS_DEPLOYMENT);
+        return source.map(String::trim).orElse("false");
+    }
+
     //Event notifications configurations.
     public String getEventNotificationTokenIssuer() {
 
