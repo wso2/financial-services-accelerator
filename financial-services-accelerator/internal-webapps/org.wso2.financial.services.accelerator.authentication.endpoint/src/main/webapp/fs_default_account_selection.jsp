@@ -96,13 +96,13 @@
 
                                                 <c:if test="${not empty section.subHeading}">
                                                     <div class="col-md-12 pb-1">
-                                                        <p id="UnavailableAccountPopover" class="hide" style="text-align:left">
+                                                        <p class="unavailable-account-popover hide" style="text-align:left">
                                                             ${section.description}
                                                         </p>
 
                                                         <p>
                                                             ${section.subHeading}
-                                                            <a id="unavailablePopoverContentElement"
+                                                            <a class="unavailable-popover-content-element"
                                                                title="${section.subHeading}"
                                                                style="cursor: help; text-decoration: none;">&#9432;</a>
                                                         </p>

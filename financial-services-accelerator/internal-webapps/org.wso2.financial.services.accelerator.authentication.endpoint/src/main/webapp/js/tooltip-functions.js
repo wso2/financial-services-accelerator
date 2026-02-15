@@ -1,25 +1,23 @@
 (function ($) {
     $(document).ready(function () {
-        var $infoIcon = $('#unavailablePopoverContentElement');
-        var $hiddenContent = $('#UnavailableAccountPopover');
+        var $infoIcons = $('.unavailable-popover-content-element');
 
-        if ($ && typeof $.fn.popover === 'function' && $infoIcon.length && $hiddenContent.length) {
+        if ($ && typeof $.fn.popover === 'function' && $infoIcons.length) {
+            $infoIcons.each(function () {
+                var $infoIcon = $(this);
+                var $hiddenContent = $infoIcon.closest('.pb-1').find('.unavailable-account-popover');
 
-            var popoverHtml = $hiddenContent.html();
-
-            $infoIcon.popover({
-                html: true,
-                container: 'body',
-                placement: 'right',
-                trigger: 'click',
-                content: popoverHtml
-            });
-
-            $(document).on('click', function (e) {
-                if (!$infoIcon.is(e.target) &&
-                $infoIcon.has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-                    $infoIcon.popover('hide');
+                if (!$hiddenContent.length) {
+                    return;
                 }
+
+                $infoIcon.popover({
+                    html: true,
+                    container: 'body',
+                    placement: 'right',
+                    trigger: 'hover focus',
+                    content: $hiddenContent.html()
+                });
             });
         }
     });
