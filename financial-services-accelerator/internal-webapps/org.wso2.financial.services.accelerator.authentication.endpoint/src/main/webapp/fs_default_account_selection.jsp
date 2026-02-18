@@ -1,5 +1,5 @@
 <%--
-~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+~ Copyright (c) 2025-2026, WSO2 LLC. (https://www.wso2.com).
 ~
 ~ WSO2 LLC. licenses this file to you under the Apache License,
 ~ Version 2.0 (the "License"); you may not use this file except
@@ -110,15 +110,13 @@
                                                 </c:if>
                                                 <div class="col-md-12">
                                                     <c:forEach var="record" items="${section.displayList}">
-                                                        <label>${record.displayName}</label>
+                                                        <label>${record.displayText}</label>
                                                         <br/>
                                                     </c:forEach>
                                                 </div>
                                             </div>
                                         </c:forEach>
                                     </c:if>
-
-                                    <br><br>
 
                                     <div class="form-group ui form row">
                                         <div class="ui body col-md-12">
