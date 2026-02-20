@@ -605,3 +605,17 @@ li.sub::before {
     padding: 5;
     border-radius: 5px;
 }
+
+.hide {
+    display: none;
+}
+
+.popover {
+    z-index: 1060 !important;
+}
+
+#unavailablePopoverContentElement {
+    color: #007bff;
+    font-weight: bold;
+    padding: 0 5px;
+}

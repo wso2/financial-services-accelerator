@@ -21,7 +21,7 @@ package org.wso2.financial.services.accelerator.common.extension.model;
 import org.json.JSONObject;
 
 /**
- * Model class to represent the external service request
+ * Model class to represent the external service request.
  */
 public class ExternalServiceRequest {
 

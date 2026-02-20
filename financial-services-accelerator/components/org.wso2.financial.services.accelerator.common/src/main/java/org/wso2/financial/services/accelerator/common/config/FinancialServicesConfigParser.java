@@ -744,6 +744,13 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse("");
     }
 
+    public String getResponsePayloadSigningConfig() {
+
+        Optional<String> source = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.CONSENT_RESPONSE_PAYLOAD_SIGNING);
+        return source.map(String::trim).orElse("false");
+    }
+
     //Event notifications configurations.
     public String getEventNotificationTokenIssuer() {
 
