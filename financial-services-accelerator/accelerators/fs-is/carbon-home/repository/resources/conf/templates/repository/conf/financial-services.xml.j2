@@ -133,11 +133,13 @@
             {% else %}
             <JWTPayloadValidation>true</JWTPayloadValidation>
             {% endif %}
-            {% if financial_services.consent.validation.is_cds_deployment is defined %}
-            <IsCDSDeployment>{{financial_services.consent.validation.is_cds_deployment}}</IsCDSDeployment>
-            {% else %}
-            <IsCDSDeployment>false</IsCDSDeployment>
-            {% endif %}
+            <ResponsePayloadSigning>
+                {% if financial_services.consent.validation.response_payload_signing.enabled is defined %}
+                <Enabled>{{financial_services.consent.validation.response_payload_signing.enabled}}</Enabled>
+                {% else %}
+                <Enabled>false</Enabled>
+                {% endif %}
+            </ResponsePayloadSigning>
         </Validation>
         {% if financial_services.consent.admin.handler is defined %}
         <AdminHandler>{{financial_services.consent.admin.handler}}</AdminHandler>

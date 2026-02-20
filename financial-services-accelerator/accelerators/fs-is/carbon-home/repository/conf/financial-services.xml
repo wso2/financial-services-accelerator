@@ -38,7 +38,9 @@
             <Validator>org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.impl.DefaultConsentValidator</Validator>
             <RequestSignatureAlias>wso2carbon</RequestSignatureAlias>
             <JWTPayloadValidation>true</JWTPayloadValidation>
-            <IsCDSDeployment>false</IsCDSDeployment>
+            <ResponsePayloadSigning>
+                <Enabled>false</Enabled>
+            </ResponsePayloadSigning>
         </Validation>
         <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
         <ConsentAPICredentials>

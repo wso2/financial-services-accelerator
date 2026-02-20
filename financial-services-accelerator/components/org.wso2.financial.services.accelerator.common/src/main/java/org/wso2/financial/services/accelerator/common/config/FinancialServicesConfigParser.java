@@ -744,10 +744,10 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse("");
     }
 
-    public String getCdsDeploymentConfig() {
+    public String getResponsePayloadSigningConfig() {
 
         Optional<String> source = getConfigurationFromKeyAsString(
-                FinancialServicesConstants.CONSENT_CDS_DEPLOYMENT);
+                FinancialServicesConstants.CONSENT_RESPONSE_PAYLOAD_SIGNING);
         return source.map(String::trim).orElse("false");
     }
 

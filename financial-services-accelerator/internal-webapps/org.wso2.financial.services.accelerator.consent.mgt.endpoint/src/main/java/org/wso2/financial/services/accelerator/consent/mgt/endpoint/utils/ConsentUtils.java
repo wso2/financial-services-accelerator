@@ -472,12 +472,12 @@ public class ConsentUtils {
     }
 
     /**
-     * This method returns the configuration value on whether the deployment is CDS.
+     * This method returns whether consent validation response payload signing is enabled.
      *
      * @return config value
      */
-    public static boolean isCdsDeploymentEnabled() {
-        return Boolean.parseBoolean(FinancialServicesConfigParser.getInstance().getCdsDeploymentConfig());
+    public static boolean isResponsePayloadSigningEnabled() {
+        return Boolean.parseBoolean(FinancialServicesConfigParser.getInstance().getResponsePayloadSigningConfig());
     }
 
     /**

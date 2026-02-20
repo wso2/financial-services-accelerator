@@ -200,11 +200,11 @@ public class ConsentValidationEndpoint {
         try {
             responsePayload = validationResult.generatePayload();
             String consentInfoPayload = validationResult.getConsentInformation().toString();
-            if (ConsentUtils.isCdsDeploymentEnabled()) {
-                responsePayload.put(ConsentExtensionConstants.CONSENT_INFO, consentInfoPayload);
-            } else {
+            if (ConsentUtils.isResponsePayloadSigningEnabled()) {
                 responsePayload.put(ConsentExtensionConstants.CONSENT_INFO,
                         ConsentUtils.signJWTWithDefaultKey(consentInfoPayload));
+            } else {
+                responsePayload.put(ConsentExtensionConstants.CONSENT_INFO, consentInfoPayload);
             }
         } catch (Exception e) {
             log.error("Error occurred while getting private key", e);
