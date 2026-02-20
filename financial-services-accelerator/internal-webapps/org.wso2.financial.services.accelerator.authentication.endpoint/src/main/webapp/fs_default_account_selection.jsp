@@ -49,7 +49,7 @@
     session.setAttribute("handleAccountSelectionSeparately", request.getAttribute("handleAccountSelectionSeparately"));
     session.setAttribute("onFollowingAccounts", request.getAttribute("onFollowingAccounts"));
     session.setAttribute("buttonConfirm", request.getAttribute("buttonConfirm"));
-    session.setAttribute("displayDataItems", request.getAttribute("displayDataItems"));
+    session.setAttribute("additionalSections", request.getAttribute("additionalSections"));
 %>
 
 <html>
@@ -85,8 +85,8 @@
                                         </div>
                                     </div>
 
-                                    <c:if test="${not empty displayDataItems}">
-                                        <c:forEach var="section" items="${displayDataItems}">
+                                    <c:if test="${not empty additionalSections}">
+                                        <c:forEach var="section" items="${additionalSections}">
                                             <div class="form-group ui form select">
                                                 <hr class="separator">
 

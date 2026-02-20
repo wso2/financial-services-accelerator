@@ -1,5 +1,7 @@
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 /**
@@ -15,7 +17,7 @@ public class PopulateConsentAuthorizeScreenDTO {
     private ConsumerDataDTO consumerData;
 
     @Valid
-    private DisplayDataDTO displayData;
+    private List<AdditionalDisplayDataDTO> additionalDisplayData;
 
     public ConsentDataDTO getConsentData() {
         return consentData;
@@ -33,11 +35,11 @@ public class PopulateConsentAuthorizeScreenDTO {
         this.consumerData = consumerData;
     }
 
-    public DisplayDataDTO getDisplayData() {
-        return displayData;
+    public List<AdditionalDisplayDataDTO> getAdditionalDisplayData() {
+        return additionalDisplayData;
     }
 
-    public void setDisplayData(DisplayDataDTO displayData) {
-        this.displayData = displayData;
+    public void setAdditionalDisplayData(List<AdditionalDisplayDataDTO> additionalDisplayData) {
+        this.additionalDisplayData = additionalDisplayData;
     }
 }

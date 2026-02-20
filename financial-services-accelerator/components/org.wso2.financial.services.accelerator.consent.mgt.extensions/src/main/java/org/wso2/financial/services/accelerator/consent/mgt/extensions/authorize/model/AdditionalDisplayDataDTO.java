@@ -29,7 +29,7 @@ import javax.validation.Valid;
  * Display data object for authorization UI consent retrieval.
  * Stores UI metadata and dynamic display items such as unavailable accounts.
  */
-public class DisplayDataInnerItemDTO {
+public class AdditionalDisplayDataDTO {
 
     /**
      * UI Heading.
@@ -52,7 +52,7 @@ public class DisplayDataInnerItemDTO {
     @Valid
     private List<Map<String, Object>> displayList = new ArrayList<>();
 
-    public DisplayDataInnerItemDTO() {
+    public AdditionalDisplayDataDTO() {
     }
 
     // Heading
@@ -94,7 +94,7 @@ public class DisplayDataInnerItemDTO {
     /**
      * Convenience method to add a display item.
      */
-    public DisplayDataInnerItemDTO addItem(Map<String, Object> item) {
+    public AdditionalDisplayDataDTO addItem(Map<String, Object> item) {
         this.displayList.add(item);
         return this;
     }
@@ -104,10 +104,10 @@ public class DisplayDataInnerItemDTO {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DisplayDataInnerItemDTO)) {
+        if (!(o instanceof AdditionalDisplayDataDTO)) {
             return false;
         }
-        DisplayDataInnerItemDTO that = (DisplayDataInnerItemDTO) o;
+        AdditionalDisplayDataDTO that = (AdditionalDisplayDataDTO) o;
         return Objects.equals(heading, that.heading) &&
                 Objects.equals(subHeading, that.subHeading) &&
                 Objects.equals(description, that.description) &&
