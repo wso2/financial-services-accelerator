@@ -744,6 +744,12 @@ public final class FinancialServicesConfigParser {
         return source.map(String::trim).orElse("");
     }
 
+    /**
+     * Method to retrieve the configuration value indicating whether
+     * consent response payload signing is enabled.
+     *
+     * @return String value ("true" or "false") indicating the configuration state
+     */
     public String getResponsePayloadSigningConfig() {
 
         Optional<String> source = getConfigurationFromKeyAsString(

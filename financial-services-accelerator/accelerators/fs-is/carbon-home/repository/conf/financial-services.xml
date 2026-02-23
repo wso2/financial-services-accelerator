@@ -39,7 +39,7 @@
             <RequestSignatureAlias>wso2carbon</RequestSignatureAlias>
             <JWTPayloadValidation>true</JWTPayloadValidation>
             <ResponsePayloadSigning>
-                <Enabled>false</Enabled>
+                <Enabled>true</Enabled>
             </ResponsePayloadSigning>
         </Validation>
         <AdminHandler>org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.impl.DefaultConsentAdminHandler</AdminHandler>
