@@ -655,7 +655,7 @@
         <carbon.identity.local.auth.api.version>2.5.10</carbon.identity.local.auth.api.version>
         <wso2.is7.key.manager.version>2.0.5</wso2.is7.key.manager.version>
         <org.wso2.carbon.apimgt.version>9.30.10</org.wso2.carbon.apimgt.version>
-        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.32.147)</org.wso2.carbon.apimgt.version.range>
+        <org.wso2.carbon.apimgt.version.range>[9.29.120, 9.33.0)</org.wso2.carbon.apimgt.version.range>
         <!--Unit Test related dependencies-->
         <jacoco.version>0.8.6</jacoco.version>
         <mockito.version>5.3.1</mockito.version>
