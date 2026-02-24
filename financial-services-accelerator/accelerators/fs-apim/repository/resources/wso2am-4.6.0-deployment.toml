@@ -100,13 +100,13 @@ driver = "DB_DRIVER"
 
 [database.user.pool_options]
 jmx_enable=false
-pool_options.maxActive = "150"
-pool_options.maxWait = "60000"
-pool_options.minIdle = "5"
-pool_options.testOnBorrow = true
-pool_options.validationQuery="SELECT 1"
-pool_options.validationInterval="30000"
-pool_options.defaultAutoCommit=true
+maxActive = "150"
+maxWait = "60000"
+minIdle = "5"
+testOnBorrow = true
+validationQuery="SELECT 1"
+validationInterval="30000"
+defaultAutoCommit=true
 
 [keystore.tls]
 file_name =  "wso2carbon.jks"
