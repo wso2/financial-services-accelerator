@@ -26,7 +26,7 @@ import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 public interface FSGrantHandler {
 
     /**
-     * Return should issue refresh token and optionally update the token request context
+     * Return should issue refresh token and optionally update the token request context.
      *
      * @return should issue refresh token
      */

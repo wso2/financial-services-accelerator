@@ -48,7 +48,7 @@ public class IdentityServiceExtensionUtils {
             IdentityExtensionsDataHolder.getInstance();
 
     /**
-     * Validates the action status of the external service response
+     * Validates the action status of the external service response.
      *
      * @param response External service response
      * @throws IdentityOAuth2Exception

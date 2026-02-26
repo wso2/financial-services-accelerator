@@ -472,6 +472,15 @@ public class ConsentUtils {
     }
 
     /**
+     * This method returns whether consent validation response payload signing is enabled.
+     *
+     * @return config value
+     */
+    public static boolean isResponsePayloadSigningEnabled() {
+        return Boolean.parseBoolean(FinancialServicesConfigParser.getInstance().getResponsePayloadSigningConfig());
+    }
+
+    /**
      * Extract and add query parameters from a URL to existing resource map.
      * Resource parameter map will contain the resource path(ex:
      * /aisp/accounts/{AccountId}?queryParam=queryParamValue),

@@ -46,7 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 
 /**
- * ResourceInterceptorService
+ * ResourceInterceptorService.
  * <p>
  * Contains methods to process requests that are forwarding to IS
  */

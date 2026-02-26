@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FS specific default introspection data provider implementation
+ * FS specific default introspection data provider implementation.
  */
 public class FSDefaultIntrospectionDataProvider extends FSIntrospectionDataProvider {
 

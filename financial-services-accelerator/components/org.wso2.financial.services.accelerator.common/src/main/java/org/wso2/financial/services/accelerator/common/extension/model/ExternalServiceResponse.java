@@ -21,7 +21,7 @@ package org.wso2.financial.services.accelerator.common.extension.model;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Model class to represent the external service response
+ * Model class to represent the external service response.
  */
 public class ExternalServiceResponse {
 
