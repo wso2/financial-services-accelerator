@@ -16,7 +16,7 @@ security:
   - BasicAuth: []
   - OAuth2: []
 tags:
-  - name: Client
+  - name: Dynamic Client Registration
     description: APIs for dynamically registering/updating client  related extensions
   - name: Consent
     description: APIs for consent flow extensions
@@ -81,7 +81,7 @@ paths:
   /pre-process-client-creation:
     post:
       tags:
-        - Client
+        - Dynamic Client Registration
       summary: handle pre validations & obtain custom data to store in dynamic client registration step
       requestBody:
         content:
@@ -151,7 +151,7 @@ paths:
   /pre-process-client-update:
     post:
       tags:
-        - Client
+        - Dynamic Client Registration
       summary: handle pre validations & obtain  custom data to store in dynamic client update step
       requestBody:
         content:
@@ -222,8 +222,8 @@ paths:
   /pre-process-client-retrieval:
     post:
       tags:
-        - Client
-      summary: handle post client retrieval response generation
+        - Dynamic Client Registration
+      summary: handle post dynamic client retrieval response generation
       requestBody:
         content:
           application/json:
