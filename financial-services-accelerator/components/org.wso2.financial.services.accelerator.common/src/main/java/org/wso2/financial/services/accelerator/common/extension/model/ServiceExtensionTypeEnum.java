@@ -19,7 +19,7 @@
 package org.wso2.financial.services.accelerator.common.extension.model;
 
 /**
- * Service extension type enum
+ * Service extension type enum.
  */
 public enum ServiceExtensionTypeEnum {
 

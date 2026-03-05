@@ -764,7 +764,7 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
-     * This method is used to fetch consents which has a expiring time as a consent attribute
+     * This method is used to fetch consents which has a expiring time as a consent attribute.
      * (eligible for expiration)
      * @param statusesEligibleForExpiration
      * @return

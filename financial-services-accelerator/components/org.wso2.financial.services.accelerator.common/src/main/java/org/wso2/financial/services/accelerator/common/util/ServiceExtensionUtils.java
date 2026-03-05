@@ -195,7 +195,7 @@ public class ServiceExtensionUtils {
     }
 
     /**
-     * Method to map a json object to a model class
+     * Method to map a json object to a model class.
      *
      * @param jsonResponse   JSON response string to be mapped
      * @param clazz          Class type to which the JSON response should be mapped

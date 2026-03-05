@@ -1,5 +1,5 @@
 <%--
-~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+~ Copyright (c) 2025-2026, WSO2 LLC. (https://www.wso2.com).
 ~
 ~ WSO2 LLC. licenses this file to you under the Apache License,
 ~ Version 2.0 (the "License"); you may not use this file except
@@ -49,6 +49,7 @@
     session.setAttribute("handleAccountSelectionSeparately", request.getAttribute("handleAccountSelectionSeparately"));
     session.setAttribute("onFollowingAccounts", request.getAttribute("onFollowingAccounts"));
     session.setAttribute("buttonConfirm", request.getAttribute("buttonConfirm"));
+    session.setAttribute("additionalSections", request.getAttribute("additionalSections"));
 %>
 
 <html>
@@ -84,6 +85,39 @@
                                         </div>
                                     </div>
 
+                                    <c:if test="${not empty additionalSections}">
+                                        <c:forEach var="section" items="${additionalSections}">
+                                            <div class="form-group ui form select">
+                                                <hr class="separator">
+
+                                                <h4 class="ui body col-md-12">
+                                                    ${section.heading}
+                                                </h4>
+
+                                                <c:if test="${not empty section.subHeading}">
+                                                    <div class="col-md-12 pb-1">
+                                                        <p class="unavailable-account-popover hide" style="text-align:left">
+                                                            ${section.description}
+                                                        </p>
+
+                                                        <p>
+                                                            ${section.subHeading}
+                                                            <a class="unavailable-popover-content-element"
+                                                               title="${section.subHeading}"
+                                                               style="cursor: help; text-decoration: none;">&#9432;</a>
+                                                        </p>
+                                                    </div>
+                                                </c:if>
+                                                <div class="col-md-12">
+                                                    <c:forEach var="record" items="${section.displayList}">
+                                                        <label>${record.displayText}</label>
+                                                        <br/>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </c:if>
+
                                     <div class="form-group ui form row">
                                         <div class="ui body col-md-12">
                                             <input type="button" class="btn btn-primary" id="next" name="next"
@@ -101,6 +135,7 @@
             </div>
 
             <jsp:include page="includes/footer.jsp"/>
+            <script src="js/tooltip-functions.js"></script>
         </div>
     </body>
 </html>

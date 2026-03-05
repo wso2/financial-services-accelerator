@@ -52,6 +52,8 @@ public class ConsentAuthorizeConstants {
     public static final String HANDLE_ACCOUNT_SELECTION_SEPARATELY = "handleAccountSelectionSeparately";
     public static final String CONSUMER_ACCOUNTS = "consumerAccounts";
     public static final String UID = "uid";
+    public static final String ADDITIONAL_DISPLAY_DATA = "additionalDisplayData";
+    public static final String ADDITIONAL_DISPLAY_SECTION_TAG = "additionalSections";
 
     // For payload to persist authorized consent
     public static final String REQUEST_PARAMETERS = "requestParameters";
