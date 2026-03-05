@@ -164,7 +164,6 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
                         new JSONArray(objectMapper.writeValueAsString(responseDTO.getAdditionalDisplayData())));
             }
 
-
             // Set request parameters as metadata to be used in persistence extension
             consentData.addData(ConsentExtensionConstants.REQUEST_PARAMETERS, requestParameters);
 
@@ -266,6 +265,4 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
         JSONObject responseJson = new JSONObject(externalServiceResponse.getData().toString());
         return objectMapper.readValue(responseJson.toString(), PopulateConsentAuthorizeScreenDTO.class);
     }
-
-
 }
