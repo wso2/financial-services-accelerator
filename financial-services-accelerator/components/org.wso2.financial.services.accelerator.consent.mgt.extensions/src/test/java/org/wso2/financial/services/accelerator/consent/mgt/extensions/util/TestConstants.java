@@ -39,6 +39,7 @@ public class TestConstants {
     public static final String INVALID_REQUEST_PATH = "accounts";
     public static final String REQUEST_PATH_WITH_INVALID_CONSENT_ID = "accounts/1234";
     public static final String ACCOUNT_CONSENT_GET_PATH = "account-access-consents/" + SAMPLE_CONSENT_ID;
+    public static final String ACCOUNT_CONSENT_UPDATE_PATH = "account-access-consents/" + SAMPLE_CONSENT_ID;
     public static final String PAYMENTS_FILE_UPLOAD_PATH = "fileUpload/" + SAMPLE_CONSENT_ID;
     public static final String INVALID_INITIATION_OBJECT = "Invalid Object";
     public static final int SAMPLE_CONSENT_FREQUENCY = 1;
@@ -70,6 +71,12 @@ public class TestConstants {
     public static final String  SAMPLE_PREVIOUS_STATUS = "Received";
     public static final String SAMPLE_CONSENT_FILE = "sample file content";
     public static final long CREATED_TIME = Instant.now().toEpochMilli();
+    public static final String AUTHORISATION_UPDATE_PATH = "/consent/" + SAMPLE_CONSENT_ID + "/authorisations/"
+            + SAMPLE_AUTH_ID;
+    public static final String AUTHORISATION_UPDATE_PATH_WITHOUT_AUTH_ID = "/consent/" + SAMPLE_CONSENT_ID +
+            "/authorisations/";
+    public static final String AUTHORISATION_UPDATE_PATH_WITH_INVALID_AUTH_ID = "/consent/" + SAMPLE_CONSENT_ID +
+            "/authorisations/" + SAMPLE_CONSENT_ID;
     public static final Map<String, String> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, String>() {
         {
             put("x-request-id", UUID.randomUUID().toString());
@@ -616,5 +623,18 @@ public class TestConstants {
             "      }\n" +
             "   ]\n" +
             "}";
+
+    public static final String CONSENT_AUTHORISATION_UPDATE_PAYLOAD = "{\n" +
+            "          \"userId\": \"test@wso2.com\",\n" +
+            "          \"type\": \"authorisation\",\n" +
+            "          \"status\": \"Created\",\n" +
+            "          \"resources\": [\n" +
+            "            {\n" +
+            "              \"accountId\": \"1234\",\n" +
+            "              \"permission\": \"auth\",\n" +
+            "              \"status\": \"active\"\n" +
+            "            }\n" +
+            "          ]\n" +
+            "        }";
 
 }

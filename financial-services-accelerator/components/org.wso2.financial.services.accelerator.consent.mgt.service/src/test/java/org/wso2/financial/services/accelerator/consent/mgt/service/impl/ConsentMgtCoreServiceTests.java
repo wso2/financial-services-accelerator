@@ -537,6 +537,40 @@ public class ConsentMgtCoreServiceTests {
     }
 
     @Test
+    public void testUpdateConsent() throws ConsentManagementException,
+            ConsentDataRetrievalException, ConsentDataUpdationException {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .getConsentResource(any(), anyString());
+        doNothing().when(mockedConsentCoreDAO).updateConsentResource(any(), any());
+
+        ConsentResource result = consentCoreServiceImpl.updateConsent(
+                ConsentMgtServiceTestData.getSampleStoredConsentResource());
+        Assert.assertNotNull(result);
+    }
+
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentWithoutConsentId() throws ConsentManagementException {
+
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setConsentID(null);
+
+        consentCoreServiceImpl.updateConsent(consentResource);
+    }
+
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentWithConsentUpdateError() throws ConsentManagementException,
+            ConsentDataUpdationException, ConsentDataRetrievalException {
+
+        doReturn(ConsentMgtServiceTestData.getSampleStoredConsentResource()).when(mockedConsentCoreDAO)
+                .getConsentResource(any(), anyString());
+        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO).updateConsentResource(any(), any());
+
+        ConsentResource result = consentCoreServiceImpl.updateConsent(
+                ConsentMgtServiceTestData.getSampleStoredConsentResource());
+    }
+
+    @Test
     public void testUpdateConsentAndCreateAuthResources() throws ConsentManagementException,
             ConsentDataRetrievalException, ConsentDataInsertionException {
 

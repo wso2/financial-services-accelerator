@@ -46,7 +46,9 @@ public enum ServiceExtensionTypeEnum {
     ENRICH_EVENT_POLLING_RESPONSE("enrich_event_polling_response"),
     MAP_ACCELERATOR_ERROR_RESPONSE("map_accelerator_error_response"),
     PRE_PROCESS_APPLICATION_CREATION("pre_process_application_creation"),
-    PRE_PROCESS_APPLICATION_UPDATE("pre_process_application_update");
+    PRE_PROCESS_APPLICATION_UPDATE("pre_process_application_update"),
+    PRE_PROCESS_CONSENT_UPDATE("pre_process_consent_update"),
+    ENRICH_CONSENT_UPDATE_RESPONSE("enrich_consent_update_response");
 
     private final String type;
 

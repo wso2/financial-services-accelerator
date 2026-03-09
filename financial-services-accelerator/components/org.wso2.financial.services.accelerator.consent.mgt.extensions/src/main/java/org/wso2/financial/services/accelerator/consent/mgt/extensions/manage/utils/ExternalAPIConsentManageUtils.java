@@ -33,9 +33,12 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentUpdateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentUpdateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentUpdateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
 
@@ -165,6 +168,39 @@ public class ExternalAPIConsentManageUtils {
         log.debug("Calling external service for file retrieval");
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
+        return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
+    }
+
+    /**
+     * Method to call external service for pre consent update.
+     *
+     * @param requestDTO - Request DTO
+     * @return - Response DTO
+     * @throws FinancialServicesException - If there is an error while calling the external service
+     */
+    public static ExternalAPIPreConsentUpdateResponseDTO callExternalService(
+            ExternalAPIPreConsentUpdateRequestDTO requestDTO) throws FinancialServicesException {
+
+        log.debug("Calling external service for pre consent update");
+        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject responseJson = callExternalService(requestJson, ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_UPDATE);
+        return gson.fromJson(responseJson.toString(), ExternalAPIPreConsentUpdateResponseDTO.class);
+    }
+
+    /**
+     * Method to call external service for post consent update.
+     *
+     * @param requestDTO - Request DTO
+     * @return - Response DTO
+     * @throws FinancialServicesException - If there is an error while calling the external service
+     */
+    public static ExternalAPIModifiedResponseDTO callExternalService(
+            ExternalAPIPostConsentUpdateRequestDTO requestDTO) throws FinancialServicesException {
+
+        log.debug("Calling external service for post consent update");
+        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject responseJson = callExternalService(requestJson,
+                ServiceExtensionTypeEnum.ENRICH_CONSENT_UPDATE_RESPONSE);
         return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
     }
 

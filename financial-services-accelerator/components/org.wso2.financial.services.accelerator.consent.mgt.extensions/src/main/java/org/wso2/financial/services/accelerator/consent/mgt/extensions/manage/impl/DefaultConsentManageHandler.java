@@ -38,6 +38,8 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ExternalAPIUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.idempotency.IdempotencyValidator;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIBasicConsentResourceRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIBasicConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
@@ -49,9 +51,12 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRevokeResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentGenerateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostConsentUpdateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPostFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentUpdateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentUpdateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageConstants;
@@ -79,6 +84,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     boolean isExternalPreFileUploadEnabled;
     boolean isExternalPostFileUploadEnabled;
     boolean isExternalPreFileRetrievalEnabled;
+    boolean isExternalPreConsentUpdateEnabled;
+    boolean isExternalPostConsentUpdateEnabled;
     String idempotencyHeaderName;
     IdempotencyValidator idempotencyValidator;
 
@@ -101,6 +108,10 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_FILE_RESPONSE);
         isExternalPreFileRetrievalEnabled = configParser.getServiceExtensionTypes()
                 .contains(ServiceExtensionTypeEnum.VALIDATE_CONSENT_FILE_RETRIEVAL);
+        isExternalPreConsentUpdateEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.PRE_PROCESS_CONSENT_UPDATE);
+        isExternalPostConsentUpdateEnabled = configParser.getServiceExtensionTypes()
+                .contains(ServiceExtensionTypeEnum.ENRICH_CONSENT_UPDATE_RESPONSE);
         idempotencyHeaderName = configParser.getIdempotencyHeaderName();
         idempotencyValidator = new IdempotencyValidator();
     }
@@ -149,6 +160,16 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 ConsentOperationEnum.CONSENT_RETRIEVE);
 
         try {
+
+            if (ConsentManageUtils.isInternalConsentRequest(consentManageData)) {
+                // Allowing consent retrieval for internal purpose. Retrieving the detailed consent and response back
+                // for internal consent retrieval requests
+                DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                consentManageData.setResponsePayload(detailedConsentResource);
+                consentManageData.setResponseStatus(ResponseStatus.OK);
+                return;
+            }
+
             ConsentResource consent = consentCoreService.getConsent(consentId, false);
             if (consent == null) {
                 log.error("Consent not found");
@@ -228,7 +249,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_CREATE);
         }
 
         //Validate Initiation headers
@@ -352,7 +373,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_DELETE);
         }
 
         //Validate Initiation headers
@@ -446,9 +467,133 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
 
-        log.error("Method PUT is not supported");
-        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method PUT is not supported",
+        if (consentManageData.getHeaders().containsKey(ConsentExtensionConstants.INTERACTION_ID_HEADER)) {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    consentManageData.getHeaders().get(ConsentExtensionConstants.INTERACTION_ID_HEADER));
+        } else {
+            consentManageData.setResponseHeader(ConsentExtensionConstants.INTERACTION_ID_HEADER,
+                    UUID.randomUUID().toString());
+        }
+
+        //Check whether client ID exists
+        if (StringUtils.isEmpty(consentManageData.getClientId())) {
+            log.error("Client ID missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        if (consentManageData.getRequestPath() == null) {
+            log.error("Resource Path Not Found");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(consentManageData.getRequestPath(),
                 ConsentOperationEnum.CONSENT_UPDATE);
+
+        try {
+
+            // Allowing the developers to use /consent/{ConsentId}/authorisations/{authId} endpoint with
+            // wso2 internal header to update authorisation resources for a particular authorisation ID
+            if (ConsentManageUtils.isInternalConsentRequest(consentManageData) &&
+                    consentManageData.getRequestPath().contains("authorisations")) {
+                // Allowing consent update for internal purpose.
+                ExternalAPIConsentResourceRequestDTO.Authorization updatedAuthResource = ConsentManageUtils
+                        .updateConsentAuthResource(consentManageData, consentId, consentCoreService);
+                consentManageData.setResponsePayload(updatedAuthResource);
+                consentManageData.setResponseStatus(ResponseStatus.OK);
+                return;
+            }
+
+            ConsentResource storedConsentResource = consentCoreService.getConsent(consentId, true);
+
+            if (storedConsentResource == null) {
+                log.error("Consent not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                        ConsentOperationEnum.CONSENT_DELETE);
+            }
+
+            if (!storedConsentResource.getClientID().equals(consentManageData.getClientId())) {
+                //Throwing this error in a generic manner since client will not be able to identify if consent
+                // exists if consent does not belong to them
+                log.error(ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                        ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_UPDATE);
+            }
+
+            ConsentResource updatedConsent;
+            if (isExtensionsEnabled && isExternalPreConsentUpdateEnabled) {
+                // Call external service before updating consent
+                ExternalAPIBasicConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIBasicConsentResourceRequestDTO(storedConsentResource);
+                ExternalAPIPreConsentUpdateRequestDTO preRequestDTO =
+                        new ExternalAPIPreConsentUpdateRequestDTO(consentManageData, externalAPIConsentResource);
+                ExternalAPIPreConsentUpdateResponseDTO preResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(preRequestDTO);
+                updatedConsent = constructUpdatingConsent(preResponseDTO, storedConsentResource);
+            } else {
+                String consentType = ConsentManageUtils.getConsentManageValidator().getConsentType(consentManageData);
+                //Validate Initiation request
+                ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
+                        .validateRequestPayload(consentManageData, consentType);
+                if (!validationResponse.isValid()) {
+                    log.error(validationResponse.getErrorMessage().replaceAll("[\r\n]+", " "));
+                    throw new ConsentException(validationResponse.getHttpCode(), validationResponse.getErrorCode(),
+                            validationResponse.getErrorMessage());
+                }
+
+                ConsentResource updatingConsent = new ConsentResource(consentManageData.getClientId(),
+                        consentManageData.getPayload().toString(), storedConsentResource.getConsentType(),
+                        storedConsentResource.getCurrentStatus());
+                updatingConsent.setValidityPeriod(ConsentManageUtils.getValidityTime(consentManageData.getPayload(),
+                        consentType));
+
+                updatedConsent = consentCoreService.updateConsent(updatingConsent);
+            }
+
+            if (isExtensionsEnabled && isExternalPostConsentUpdateEnabled) {
+                // Call external service after generating consent
+                ConsentResource createdConsentResource = consentCoreService.getConsent(
+                        updatedConsent.getConsentID(), true);
+                ExternalAPIBasicConsentResourceRequestDTO externalAPIConsentResource =
+                        new ExternalAPIBasicConsentResourceRequestDTO(createdConsentResource);
+                ExternalAPIPostConsentUpdateRequestDTO postRequestDTO = new ExternalAPIPostConsentUpdateRequestDTO(
+                        externalAPIConsentResource, consentManageData.getRequestPath());
+                ExternalAPIModifiedResponseDTO postResponseDTO = ExternalAPIConsentManageUtils.
+                        callExternalService(postRequestDTO);
+
+                if (postResponseDTO.getModifiedResponse() != null) {
+                    consentManageData.setResponsePayload(postResponseDTO.getModifiedResponse());
+                } else {
+                    consentManageData.setResponsePayload(new JSONObject());
+                }
+                if (postResponseDTO.getResponseHeaders() != null) {
+                    consentManageData.setResponseHeaders(postResponseDTO.getResponseHeaders());
+                } else {
+                    consentManageData.setResponseHeaders(new HashMap<>());
+                }
+            } else {
+                consentManageData.setResponsePayload(ConsentExtensionUtils
+                        .getInitiationResponse(consentManageData.getPayload(), updatedConsent));
+            }
+            consentManageData.setResponseStatus(ResponseStatus.OK);
+
+        } catch (ConsentManagementException e) {
+            log.error("Error Occurred while creating the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error Occurred while creating the consent", ConsentOperationEnum.CONSENT_CREATE);
+        } catch (FinancialServicesException e) {
+            log.error("Error Occurred while creating the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
+                    ConsentOperationEnum.CONSENT_CREATE);
+        }
     }
 
     @Override
@@ -473,7 +618,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
@@ -590,7 +735,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
 
@@ -665,6 +810,30 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             DetailedConsentResource detailedConsentResource = ExternalAPIUtil.constructDetailedConsentResource(
                     externalAPIConsentResource, clientId);
             return consentCoreService.storeDetailedConsentResource(detailedConsentResource);
+        } catch (ConsentManagementException e) {
+            log.error("Error persisting consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent",
+                    ConsentOperationEnum.CONSENT_CREATE);
+        }
+    }
+
+    /**
+     * Constructs the consent resource to be updated based on the response from external service and updates the consent
+     *
+     * @param responseDTO                Response from external service for pre consent update call
+     * @param storedConsentResource      Consent resource stored in the system before update
+     * @return  Consent resource to update
+     * @throws ConsentException If error occurs while constructing the consent resource or updating the consent
+     */
+    private ConsentResource constructUpdatingConsent(ExternalAPIPreConsentUpdateResponseDTO responseDTO,
+                                                     ConsentResource storedConsentResource) throws ConsentException {
+
+        ExternalAPIBasicConsentResourceResponseDTO externalAPIConsentResource = responseDTO.getConsentResource();
+        try {
+            ConsentResource consentResource = ExternalAPIUtil.buildConsentResource(
+                    externalAPIConsentResource, storedConsentResource.getConsentID(),
+                    storedConsentResource.getClientID(), storedConsentResource.getCreatedTime());
+            return consentCoreService.updateConsent(consentResource);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent",

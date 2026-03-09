@@ -29,6 +29,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ExternalAPIPreConsentPersistResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIBasicConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 
 import java.util.ArrayList;
@@ -437,6 +438,25 @@ public class ExternalAPIUtil {
         resource.setPermission(amendedMappingResource.getPermission());
         resource.setMappingStatus(amendedMappingResource.getStatus());
         return resource;
+    }
+
+    /**
+     * Combines all resolved data into a final {@link ConsentResource}.
+     *
+     * @param basicConsentResource    The consent resource received from the external API pre-consent-update step.
+     * @param consentID               Consent ID.
+     * @param clientID                Client ID.
+     * @param createTime              Consent Created timestamp.
+     * @return A fully constructed {@link ConsentResource}.
+     */
+    public static ConsentResource buildConsentResource(ExternalAPIBasicConsentResourceResponseDTO basicConsentResource,
+                                                       String consentID, String clientID, long createTime) {
+
+        String receipt = new JSONObject(basicConsentResource.getReceipt()).toString();
+        return new ConsentResource(consentID, clientID, receipt, basicConsentResource.getType(),
+                basicConsentResource.getFrequency(), basicConsentResource.getValidityTime(),
+                basicConsentResource.getRecurringIndicator(), basicConsentResource.getStatus(),
+                createTime, 0);
     }
 
 }

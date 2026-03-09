@@ -121,6 +121,17 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to update an existing consent (excluding client ID and CreatedTime)
+     * based on the given consent.
+     * An audit record will be created.
+     *
+     * @param consentResource the consent resource with updated values and new associations
+     * @return the updated consent resource
+     * @throws ConsentManagementException thrown if an error occurs during the operation
+     */
+    ConsentResource updateConsent(ConsentResource consentResource) throws ConsentManagementException;
+
+    /**
      * This method is used to update an existing consent (excluding client ID and CreatedTime) and create
      * new authorization and mapping records based on the given detailed consent.
      * Consent attributes are also stored if provided. An audit record will be created.

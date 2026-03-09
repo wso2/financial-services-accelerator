@@ -281,6 +281,49 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
+    public ConsentResource updateConsent(ConsentResource consentResource) throws ConsentManagementException {
+
+        if (consentResource == null || StringUtils.isBlank(consentResource.getConsentID())) {
+            log.error("Consent or consentId is missing");
+            throw new ConsentManagementException("Consent or consentId is missing");
+        }
+
+        Connection connection = DatabaseUtils.getDBConnection();
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+
+            try {
+                ConsentResource previousConsent = getConsent(consentResource.getConsentID(), false);
+                /* Update the base consent using updated values from ConsentResource.
+                   Immutable parameters are ignored in the update (i.e. clientId, createdTime) at DAO level.*/
+                consentCoreDAO.updateConsentResource(connection, consentResource);
+
+                // Add audit record
+                HashMap<String, Object> consentDataMap = new HashMap<>();
+                consentDataMap.put(ConsentCoreServiceConstants.CONSENT_RESOURCE, consentResource);
+
+                ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO, consentResource.getConsentID(),
+                        null, consentResource.getCurrentStatus(), previousConsent.getCurrentStatus(),
+                        ConsentCoreServiceConstants.BASIC_CONSENT_UPDATE_REASON, consentResource.getClientID(),
+                        consentDataMap
+                );
+
+                DatabaseUtils.commitTransaction(connection);
+                log.debug("Updated consent successfully.");
+                return consentResource;
+
+            } catch (ConsentDataInsertionException | ConsentDataUpdationException e) {
+                log.error("Error during updating consent, rolling back", e);
+                DatabaseUtils.rollbackTransaction(connection);
+                throw new ConsentManagementException("Failed to update consent and create related records", e);
+            }
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtils.closeConnection(connection);
+        }
+    }
+
+    @Override
     public DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource,
             String primaryUserId) throws ConsentManagementException {
 

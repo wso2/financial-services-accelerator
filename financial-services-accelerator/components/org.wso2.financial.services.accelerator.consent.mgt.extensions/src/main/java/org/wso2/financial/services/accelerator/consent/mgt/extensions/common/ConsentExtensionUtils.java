@@ -121,6 +121,28 @@ public class ConsentExtensionUtils {
     }
 
     /**
+     * Method to construct Initiation response.
+     *
+     * @param responseObj       Response of the request
+     * @param createdConsent    Consent response received from service layer
+     * @return  JSONObject Initiation Response
+     */
+    public static JSONObject getInitiationResponse(Object responseObj, ConsentResource createdConsent) {
+        JSONObject response = (JSONObject) responseObj;
+        JSONObject dataObject = response.getJSONObject(ConsentExtensionConstants.DATA);
+        dataObject.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getConsentID());
+        dataObject.put(ConsentExtensionConstants.CREATION_DATE_TIME, convertToISO8601(createdConsent.getCreatedTime()));
+        dataObject.put(ConsentExtensionConstants.STATUS_UPDATE_DATE_TIME,
+                convertToISO8601(createdConsent.getUpdatedTime()));
+        dataObject.put(ConsentExtensionConstants.STATUS, createdConsent.getCurrentStatus());
+
+        response.remove(ConsentExtensionConstants.DATA);
+        response.put(ConsentExtensionConstants.DATA, dataObject);
+
+        return response;
+    }
+
+    /**
      * Method to construct Retrieval Initiation response.
      *
      * @param receiptJSON Initiation of the request

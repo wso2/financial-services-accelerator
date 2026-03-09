@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.util;
 
+import com.google.gson.JsonParser;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentAttributes;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentFile;
@@ -26,8 +27,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMap
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentStatusAuditRecord;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIBasicConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIModifiedResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentUpdateResponseDTO;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -255,6 +259,39 @@ public class TestUtil {
         resource.setAmendments(Collections.singletonList(amendedAuth));
 
         responseDTO.setConsentResource(resource);
+        return responseDTO;
+    }
+
+    public static ExternalAPIPreConsentUpdateResponseDTO getSampleExternalAPIPreConsentUpdateResponseDTO() {
+
+        ExternalAPIPreConsentUpdateResponseDTO responseDTO = new ExternalAPIPreConsentUpdateResponseDTO();
+
+        ExternalAPIBasicConsentResourceResponseDTO resource = new ExternalAPIBasicConsentResourceResponseDTO();
+        resource.setType("ACCOUNT");
+        resource.setStatus("AWAITING_AUTHORIZATION");
+        resource.setFrequency(3);
+        resource.setValidityTime(3600L);
+        resource.setRecurringIndicator(true);
+
+        // Sample receipt
+        Map<String, Object> receipt = new HashMap<>();
+        receipt.put("confirmationCode", "ABC123");
+        resource.setReceipt(receipt);
+
+        // Sample attributes
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("channel", "MOBILE");
+        resource.setAttributes(attributes);
+
+        responseDTO.setConsentResource(resource);
+        return responseDTO;
+    }
+
+    public static ExternalAPIModifiedResponseDTO getSampleExternalAPIModifiedResponseDTO() {
+
+        ExternalAPIModifiedResponseDTO responseDTO = new ExternalAPIModifiedResponseDTO();
+        responseDTO.setModifiedResponse(JsonParser.parseString("{}"));
+        responseDTO.setResponseHeaders(new HashMap<>());
         return responseDTO;
     }
 }
