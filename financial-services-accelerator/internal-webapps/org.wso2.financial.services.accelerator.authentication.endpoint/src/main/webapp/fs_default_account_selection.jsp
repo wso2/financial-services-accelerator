@@ -96,7 +96,7 @@
 
                                                 <c:if test="${not empty section.subHeading}">
                                                     <div class="col-md-12 pb-1">
-                                                        <p class="unavailable-account-popover hide" style="text-align:left">
+                                                        <p class="tooltip-popover-content hide" style="text-align:left">
                                                             ${section.description}
                                                         </p>
 

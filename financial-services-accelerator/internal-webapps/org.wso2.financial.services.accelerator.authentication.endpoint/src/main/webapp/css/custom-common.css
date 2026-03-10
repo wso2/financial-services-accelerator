@@ -614,8 +614,3 @@ li.sub::before {
     z-index: 1060 !important;
 }
 
-#unavailablePopoverContentElement {
-    color: #007bff;
-    font-weight: bold;
-    padding: 0 5px;
-}

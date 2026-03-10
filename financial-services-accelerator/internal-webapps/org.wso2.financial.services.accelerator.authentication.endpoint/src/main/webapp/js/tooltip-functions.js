@@ -21,24 +21,76 @@
        return;
     }
     $(document).ready(function () {
+        var getTooltipContent = function ($infoIcon) {
+            var $tooltipWrapper = $infoIcon.closest('.tooltip-content-wrapper, .pb-1, .account-select-tooltip-container');
+
+            if (!$tooltipWrapper.length) {
+                return $();
+            }
+
+            return $tooltipWrapper.find('.tooltip-popover-content').first();
+        };
+
+        var initializePopover = function ($infoIcon) {
+            var $hiddenContent = getTooltipContent($infoIcon);
+
+            if (!$hiddenContent.length || !$hiddenContent.text().trim()) {
+                return;
+            }
+
+            $infoIcon.popover({
+                html: true,
+                container: 'body',
+                placement: 'right',
+                trigger: 'hover focus',
+                content: function () {
+                    return $hiddenContent.html();
+                }
+            });
+        };
+
+        var updateAccountSelectTooltip = function ($accountSelect) {
+            var $tooltipContainer = $accountSelect.siblings('.account-select-tooltip-container');
+            if (!$tooltipContainer.length) {
+                return;
+            }
+
+            var $selectedOption = $accountSelect.find('option:selected');
+            var tooltipText = $selectedOption.data('tooltipDescription') || '';
+            var hasTooltipText = String(tooltipText).trim().length > 0;
+            var $tooltipContent = $tooltipContainer.find('.account-select-tooltip-content');
+            var $tooltipTrigger = $tooltipContainer.find('.account-select-tooltip-trigger');
+
+            $tooltipContent.text(tooltipText);
+            $tooltipTrigger.attr('title', $selectedOption.text());
+
+            if (hasTooltipText) {
+                if (!$tooltipTrigger.data('bs.popover')) {
+                    initializePopover($tooltipTrigger);
+                }
+                $tooltipTrigger.removeClass('hide');
+            } else {
+                $tooltipTrigger.popover('hide');
+                $tooltipTrigger.addClass('hide');
+            }
+        };
+
         var $infoIcons = $('.unavailable-popover-content-element');
+        var $accountSelects = $('.account-select-with-tooltip');
 
         if ($ && typeof $.fn.popover === 'function' && $infoIcons.length) {
             $infoIcons.each(function () {
-                var $infoIcon = $(this);
-                var $hiddenContent = $infoIcon.closest('.pb-1').find('.unavailable-account-popover');
+                initializePopover($(this));
+            });
+        }
 
-                if (!$hiddenContent.length) {
-                    return;
-                }
+        if ($accountSelects.length) {
+            $accountSelects.each(function () {
+                updateAccountSelectTooltip($(this));
+            });
 
-                $infoIcon.popover({
-                    html: true,
-                    container: 'body',
-                    placement: 'right',
-                    trigger: 'hover focus',
-                    content: $hiddenContent.html()
-                });
+            $accountSelects.on('change', function () {
+                updateAccountSelectTooltip($(this));
             });
         }
     });
