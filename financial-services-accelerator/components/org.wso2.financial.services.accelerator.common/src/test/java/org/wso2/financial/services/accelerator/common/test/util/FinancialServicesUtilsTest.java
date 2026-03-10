@@ -74,11 +74,32 @@ public class FinancialServicesUtilsTest {
     }
 
     @Test
-    public void testStartsWithUUID() {
+    public void testContainsUUID() {
 
-        Assert.assertFalse(FinancialServicesUtils.startsWithUUID("String Body"));
+        Assert.assertFalse(FinancialServicesUtils.containsUUID("String Body"));
 
-        Assert.assertTrue(FinancialServicesUtils.startsWithUUID(UUID.randomUUID().toString()));
+        Assert.assertTrue(FinancialServicesUtils.containsUUID(UUID.randomUUID().toString()));
+        Assert.assertTrue(FinancialServicesUtils.containsUUID("abc" + UUID.randomUUID()));
+        Assert.assertTrue(FinancialServicesUtils.containsUUID(UUID.randomUUID() + "abc"));
+        Assert.assertTrue(FinancialServicesUtils.containsUUID("abc" + UUID.randomUUID() + "abc"));
+        Assert.assertTrue(FinancialServicesUtils.containsUUID("abc   " + UUID.randomUUID() + "   abc"));
+    }
+
+    @Test
+    public void testExtractUUID() {
+
+        String uuid = UUID.randomUUID().toString();
+
+        Assert.assertEquals(FinancialServicesUtils
+                .extractUUID(uuid + "@carbon.super"), uuid);
+        Assert.assertEquals(FinancialServicesUtils
+                .extractUUID(uuid + "@carbon.super@carbon.super"), uuid);
+        Assert.assertEquals(FinancialServicesUtils
+                .extractUUID("SECONDARY/" + uuid + "@carbon.super@carbon.super"), uuid);
+        Assert.assertNull(FinancialServicesUtils
+                .extractUUID("SECONDARY/@carbon.super@carbon.super"));
+        Assert.assertNull(FinancialServicesUtils
+                .extractUUID("psu@gold.com"));
     }
 
     @Test
