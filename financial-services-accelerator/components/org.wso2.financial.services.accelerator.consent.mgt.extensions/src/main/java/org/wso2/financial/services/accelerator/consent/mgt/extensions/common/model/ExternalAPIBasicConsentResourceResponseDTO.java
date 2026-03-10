@@ -21,7 +21,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mo
 import java.util.Map;
 
 /**
- * BAsic Consent resource response model for the API extension consent management.
+ * Basic Consent resource response model for the API extension consent management.
  */
 public class ExternalAPIBasicConsentResourceResponseDTO {
 

@@ -452,7 +452,8 @@ public class ExternalAPIUtil {
     public static ConsentResource buildConsentResource(ExternalAPIBasicConsentResourceResponseDTO basicConsentResource,
                                                        String consentID, String clientID, long createTime) {
 
-        String receipt = new JSONObject(basicConsentResource.getReceipt()).toString();
+        String receipt = basicConsentResource.getReceipt() != null ?
+                new JSONObject(basicConsentResource.getReceipt()).toString() : "{}";
         return new ConsentResource(consentID, clientID, receipt, basicConsentResource.getType(),
                 basicConsentResource.getFrequency(), basicConsentResource.getValidityTime(),
                 basicConsentResource.getRecurringIndicator(), basicConsentResource.getStatus(),

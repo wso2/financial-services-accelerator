@@ -625,14 +625,14 @@ public class TestConstants {
             "}";
 
     public static final String CONSENT_AUTHORISATION_UPDATE_PAYLOAD = "{\n" +
-            "          \"userId\": \"test@wso2.com\",\n" +
-            "          \"type\": \"authorisation\",\n" +
-            "          \"status\": \"Created\",\n" +
-            "          \"resources\": [\n" +
+            "          \"userID\": \"test@wso2.com\",\n" +
+            "          \"authorizationType\": \"authorisation\",\n" +
+            "          \"authorizationStatus\": \"Created\",\n" +
+            "          \"mappingResources\": [\n" +
             "            {\n" +
-            "              \"accountId\": \"1234\",\n" +
+            "              \"accountID\": \"1234\",\n" +
             "              \"permission\": \"auth\",\n" +
-            "              \"status\": \"active\"\n" +
+            "              \"mappingStatus\": \"active\"\n" +
             "            }\n" +
             "          ]\n" +
             "        }";

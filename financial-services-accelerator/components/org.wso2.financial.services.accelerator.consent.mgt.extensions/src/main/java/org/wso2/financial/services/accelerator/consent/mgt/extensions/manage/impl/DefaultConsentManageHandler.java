@@ -44,6 +44,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageHandler;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageAuthorizationUpdateDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIConsentRetrieveRequestDTO;
@@ -164,22 +165,24 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             if (ConsentManageUtils.isInternalConsentRequest(consentManageData)) {
                 // Allowing consent retrieval for internal purpose. Retrieving the detailed consent and response back
                 // for internal consent retrieval requests
+                log.info(String.format("Processing internal consent retrieval request for consentId: %s",
+                        consentId.replaceAll("[\r\n]+", " ")));
                 DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
-                consentManageData.setResponsePayload(detailedConsentResource);
+                consentManageData.setResponsePayload(new JSONObject(detailedConsentResource));
                 consentManageData.setResponseStatus(ResponseStatus.OK);
                 return;
             }
 
             ConsentResource consent = consentCoreService.getConsent(consentId, false);
             if (consent == null) {
-                log.error("Consent not found");
+                log.error(String.format("Consent not found for consent ID: %s", consentId.replaceAll("[\r\n]+", " ")));
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
                         ConsentOperationEnum.CONSENT_RETRIEVE);
             }
             // Check whether the client id is matching
             if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                log.error("Client ID mismatch");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
                         ConsentOperationEnum.CONSENT_RETRIEVE);
             }
 
@@ -409,9 +412,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
                 //Throwing this error in a generic manner since client will not be able to identify if consent
                 // exists if consent does not belong to them
-                log.error(ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR, ConsentOperationEnum.CONSENT_DELETE);
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
+                        ConsentOperationEnum.CONSENT_DELETE);
             }
 
             if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
@@ -505,9 +508,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             if (ConsentManageUtils.isInternalConsentRequest(consentManageData) &&
                     consentManageData.getRequestPath().contains("authorisations")) {
                 // Allowing consent update for internal purpose.
-                ExternalAPIConsentResourceRequestDTO.Authorization updatedAuthResource = ConsentManageUtils
+                ConsentManageAuthorizationUpdateDTO updatedAuthResource = ConsentManageUtils
                         .updateConsentAuthResource(consentManageData, consentId, consentCoreService);
-                consentManageData.setResponsePayload(updatedAuthResource);
+                consentManageData.setResponsePayload(new JSONObject(updatedAuthResource));
                 consentManageData.setResponseStatus(ResponseStatus.OK);
                 return;
             }
@@ -517,15 +520,15 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             if (storedConsentResource == null) {
                 log.error("Consent not found");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
-                        ConsentOperationEnum.CONSENT_DELETE);
+                        ConsentOperationEnum.CONSENT_UPDATE);
             }
 
             if (!storedConsentResource.getClientID().equals(consentManageData.getClientId())) {
                 //Throwing this error in a generic manner since client will not be able to identify if consent
                 // exists if consent does not belong to them
-                log.error(ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_UPDATE);
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
+                        ConsentOperationEnum.CONSENT_UPDATE);
             }
 
             ConsentResource updatedConsent;
@@ -552,6 +555,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 ConsentResource updatingConsent = new ConsentResource(consentManageData.getClientId(),
                         consentManageData.getPayload().toString(), storedConsentResource.getConsentType(),
                         storedConsentResource.getCurrentStatus());
+                updatingConsent.setConsentID(consentId);
                 updatingConsent.setValidityPeriod(ConsentManageUtils.getValidityTime(consentManageData.getPayload(),
                         consentType));
 
@@ -588,11 +592,11 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while creating the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while creating the consent", ConsentOperationEnum.CONSENT_CREATE);
+                    "Error Occurred while updating the consent", ConsentOperationEnum.CONSENT_UPDATE);
         } catch (FinancialServicesException e) {
-            log.error("Error Occurred while creating the consent", e);
+            log.error("Error Occurred while updating the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
-                    ConsentOperationEnum.CONSENT_CREATE);
+                    ConsentOperationEnum.CONSENT_UPDATE);
         }
     }
 
@@ -764,8 +768,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             // Check whether the client id is matching
             if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                log.error("Client ID mismatch");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
                         ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
             }
             ConsentFile consentFile = consentCoreService.getConsentFile(consentId);
@@ -837,7 +841,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent",
-                    ConsentOperationEnum.CONSENT_CREATE);
+                    ConsentOperationEnum.CONSENT_UPDATE);
         }
     }
 

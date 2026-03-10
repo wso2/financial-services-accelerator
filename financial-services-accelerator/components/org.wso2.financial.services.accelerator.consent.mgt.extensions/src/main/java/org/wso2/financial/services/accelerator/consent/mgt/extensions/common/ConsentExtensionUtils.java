@@ -128,6 +128,7 @@ public class ConsentExtensionUtils {
      * @return  JSONObject Initiation Response
      */
     public static JSONObject getInitiationResponse(Object responseObj, ConsentResource createdConsent) {
+
         JSONObject response = (JSONObject) responseObj;
         JSONObject dataObject = response.getJSONObject(ConsentExtensionConstants.DATA);
         dataObject.put(ConsentExtensionConstants.CONSENT_ID, createdConsent.getConsentID());
@@ -139,6 +140,11 @@ public class ConsentExtensionUtils {
         response.remove(ConsentExtensionConstants.DATA);
         response.put(ConsentExtensionConstants.DATA, dataObject);
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Initiation response constructed for consent ID: %s with status: %s",
+                    createdConsent.getConsentID().replaceAll("[\r\n]", ""),
+                    createdConsent.getCurrentStatus().replaceAll("[\r\n]", "")));
+        }
         return response;
     }
 

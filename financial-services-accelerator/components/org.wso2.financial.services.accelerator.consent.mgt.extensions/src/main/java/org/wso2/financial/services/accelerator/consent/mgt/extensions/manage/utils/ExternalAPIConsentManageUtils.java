@@ -198,7 +198,7 @@ public class ExternalAPIConsentManageUtils {
             ExternalAPIPostConsentUpdateRequestDTO requestDTO) throws FinancialServicesException {
 
         log.debug("Calling external service for post consent update");
-        JSONObject requestJson = new JSONObject(requestDTO);
+        JSONObject requestJson = requestDTO.toJson();
         JSONObject responseJson = callExternalService(requestJson,
                 ServiceExtensionTypeEnum.ENRICH_CONSENT_UPDATE_RESPONSE);
         return gson.fromJson(responseJson.toString(), ExternalAPIModifiedResponseDTO.class);
