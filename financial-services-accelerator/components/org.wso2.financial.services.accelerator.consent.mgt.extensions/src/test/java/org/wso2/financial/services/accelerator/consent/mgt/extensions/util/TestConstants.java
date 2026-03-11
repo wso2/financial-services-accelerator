@@ -71,12 +71,6 @@ public class TestConstants {
     public static final String  SAMPLE_PREVIOUS_STATUS = "Received";
     public static final String SAMPLE_CONSENT_FILE = "sample file content";
     public static final long CREATED_TIME = Instant.now().toEpochMilli();
-    public static final String AUTHORISATION_UPDATE_PATH = "/consent/" + SAMPLE_CONSENT_ID + "/authorisations/"
-            + SAMPLE_AUTH_ID;
-    public static final String AUTHORISATION_UPDATE_PATH_WITHOUT_AUTH_ID = "/consent/" + SAMPLE_CONSENT_ID +
-            "/authorisations/";
-    public static final String AUTHORISATION_UPDATE_PATH_WITH_INVALID_AUTH_ID = "/consent/" + SAMPLE_CONSENT_ID +
-            "/authorisations/" + SAMPLE_CONSENT_ID;
     public static final Map<String, String> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, String>() {
         {
             put("x-request-id", UUID.randomUUID().toString());

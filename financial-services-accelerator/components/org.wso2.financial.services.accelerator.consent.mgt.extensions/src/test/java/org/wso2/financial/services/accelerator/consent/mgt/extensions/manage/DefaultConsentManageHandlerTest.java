@@ -61,7 +61,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestU
 import org.wso2.financial.services.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,12 +113,6 @@ public class DefaultConsentManageHandlerTest {
                 anyBoolean());
         doReturn(TestUtil.getSampleConsentResource(TestConstants.AWAITING_AUTH_STATUS)).when(consentCoreServiceMock)
                 .updateConsent(any());
-        doReturn(true).when(consentCoreServiceMock).updateAuthorizationResources(any());
-        doReturn(TestUtil.getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
-                TestConstants.SAMPLE_AUTH_ID)).when(consentCoreServiceMock).getAuthorizationResource(any());
-        doReturn(true).when(consentCoreServiceMock).deactivateAccountMappings(any());
-        doReturn(Collections.singletonList(TestUtil.getSampleConsentMappingResource(TestConstants.SAMPLE_AUTH_ID)))
-                .when(consentCoreServiceMock).createConsentMappingResources(any());
 
         configs = new HashMap<String, Object>();
         configs.put(FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT, "1000");
@@ -557,28 +550,6 @@ public class DefaultConsentManageHandlerTest {
     }
 
     @Test
-    public void testHandleGetForInternalRequests() {
-
-        setConsentManageBuilder();
-        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-        JSONObject payload = new JSONObject();
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
-                .getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true");
-        doReturn(headers).when(consentManageDataMock).getHeaders();
-
-        defaultConsentManageHandler.handleGet(consentManageDataMock);
-
-        Mockito.verify(consentManageDataMock).getRequestPath();
-        Mockito.verify(consentManageDataMock, Mockito.times(2)).getClientId();
-        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
-    }
-
-    @Test
     public void testHandleGet() {
 
         setConsentManageBuilder();
@@ -588,7 +559,6 @@ public class DefaultConsentManageHandlerTest {
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
                 .getRequestPath();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(new HashMap<>()).when(consentManageDataMock).getHeaders();
 
         defaultConsentManageHandler.handleGet(consentManageDataMock);
 
@@ -892,13 +862,13 @@ public class DefaultConsentManageHandlerTest {
 
         try {
             ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-            doReturn(TestConstants.AUTHORISATION_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
             doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
             doReturn(headers).when(consentManageDataMock).getHeaders();
             defaultConsentManageHandler.handlePut(consentManageDataMock);
         } catch (ConsentException e) {
             Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
-                    "Invalid request path found.");
+                    "Invalid Request Path. Valid consent id not found.");
         }
     }
 
@@ -967,67 +937,6 @@ public class DefaultConsentManageHandlerTest {
             Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
             Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
         }
-    }
-
-    @Test
-    public void testHandlePutAuthorisationWithoutAuthID() {
-
-        try {
-            setConsentManageBuilder();
-            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-            Map<String, String> internalHeaders = Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true");
-            doReturn(TestConstants.AUTHORISATION_UPDATE_PATH_WITHOUT_AUTH_ID).when(consentManageDataMock)
-                    .getRequestPath();
-            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-            JSONObject payload = new JSONObject(TestConstants.CONSENT_AUTHORISATION_UPDATE_PAYLOAD);
-            doReturn(payload).when(consentManageDataMock).getPayload();
-            doReturn(internalHeaders).when(consentManageDataMock).getHeaders();
-            defaultConsentManageHandler.handlePut(consentManageDataMock);
-            doReturn(headers).when(consentManageDataMock).getHeaders();
-        } catch (ConsentException e) {
-            Assert.assertTrue(e.getPayload().getJSONObject("error").getString("description")
-                    .contains("Invalid request path: Auth id is missing."));
-        }
-    }
-
-    @Test
-    public void testHandlePutAuthorisationWithInvalidAuthID() {
-
-        try {
-            setConsentManageBuilder();
-            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-            Map<String, String> internalHeaders = Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true");
-            doReturn(TestConstants.AUTHORISATION_UPDATE_PATH_WITH_INVALID_AUTH_ID).when(consentManageDataMock)
-                    .getRequestPath();
-            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-            JSONObject payload = new JSONObject(TestConstants.CONSENT_AUTHORISATION_UPDATE_PAYLOAD);
-            doReturn(payload).when(consentManageDataMock).getPayload();
-            doReturn(internalHeaders).when(consentManageDataMock).getHeaders();
-            defaultConsentManageHandler.handlePut(consentManageDataMock);
-            doReturn(headers).when(consentManageDataMock).getHeaders();
-        } catch (ConsentException e) {
-            Assert.assertTrue(e.getPayload().getJSONObject("error").getString("description")
-                    .contains("No matching authorization resource found for consent id"));
-        }
-    }
-
-    @Test
-    public void testHandlePutAuthorisation() {
-
-        setConsentManageBuilder();
-        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-        Map<String, String> internalHeaders = Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true");
-        doReturn(TestConstants.AUTHORISATION_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        JSONObject payload = new JSONObject(TestConstants.CONSENT_AUTHORISATION_UPDATE_PAYLOAD);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(internalHeaders).when(consentManageDataMock).getHeaders();
-
-        defaultConsentManageHandler.handlePut(consentManageDataMock);
-
-        Mockito.verify(consentManageDataMock, Mockito.times(4)).getRequestPath();
-        Mockito.verify(consentManageDataMock, Mockito.times(2)).getClientId();
-        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
     }
 
     @Test

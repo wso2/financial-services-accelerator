@@ -28,26 +28,26 @@ import java.util.Map;
 public class ExternalAPIPreConsentUpdateRequestDTO {
 
     //Payload can either be a JSONObject or a JSONArray
-    private ExternalAPIBasicConsentResourceRequestDTO consentResource;
+    private ExternalAPIBasicConsentResourceRequestDTO storedConsentResource;
     private Object consentUpdateData;
     private String consentResourcePath;
     private Map<String, String> requestHeaders;
 
     public ExternalAPIPreConsentUpdateRequestDTO(ConsentManageData consentManageData,
-                                                 ExternalAPIBasicConsentResourceRequestDTO consentResource) {
+                                                 ExternalAPIBasicConsentResourceRequestDTO storedConsentResource) {
 
-        this.consentResource = consentResource;
+        this.storedConsentResource = storedConsentResource;
         this.consentUpdateData = consentManageData.getPayload();
         this.consentResourcePath = consentManageData.getRequestPath();
         this.requestHeaders = consentManageData.getAllowedExtensionHeaders();
     }
 
-    public ExternalAPIBasicConsentResourceRequestDTO getConsentResource() {
-        return consentResource;
+    public ExternalAPIBasicConsentResourceRequestDTO getStoredConsentResource() {
+        return storedConsentResource;
     }
 
-    public void setConsentResource(ExternalAPIBasicConsentResourceRequestDTO consentResource) {
-        this.consentResource = consentResource;
+    public void setStoredConsentResource(ExternalAPIBasicConsentResourceRequestDTO storedConsentResource) {
+        this.storedConsentResource = storedConsentResource;
     }
 
     public Object getConsentUpdateData() {

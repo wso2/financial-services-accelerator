@@ -18,19 +18,11 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
-import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
-import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
@@ -38,9 +30,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageAuthorizationUpdateDTO;
-import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
-import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -48,13 +37,10 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for consent manage module.
@@ -64,7 +50,6 @@ public class ConsentManageUtils {
     private static final Log log = LogFactory.getLog(ConsentManageUtils.class);
     private static final FinancialServicesConfigParser parser = FinancialServicesConfigParser.getInstance();
     private static final Pattern UUID_PATTERN = Pattern.compile(FinancialServicesConstants.UUID_REGEX);
-    private static final Gson gson = new Gson();
 
     public static boolean isConsentExpirationTimeValid(String expDateVal) {
 
@@ -300,209 +285,19 @@ public class ConsentManageUtils {
     }
 
     /**
-     * Method to get whether the request is an internal consent API request.
+     * Get status value from the request payload. If not present, return null.
      *
-     * @param consentManageData consentManageData
-     * @return boolean whether the request is an internal consent API request
+     * @param payload      request payload
+     * @return  status value if present in the request, null otherwise
      */
-    public static boolean isInternalConsentRequest(ConsentManageData consentManageData) {
-        Map<String, String> headers = consentManageData.getHeaders();
-        if (headers != null && headers.containsKey(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER)) {
-            return Boolean.parseBoolean(headers.get(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER));
+    public static String getStatus(Object payload) {
+
+        JSONObject requestPayload = (JSONObject) payload;
+        JSONObject data = requestPayload.getJSONObject(ConsentExtensionConstants.DATA);
+
+        if (data.has(ConsentExtensionConstants.STATUS)) {
+            return data.getString(ConsentExtensionConstants.STATUS);
         }
-        return false;
-    }
-
-    /**
-     * Method to update the authorization resource of a consent based on the auth id and
-     * consent id in the request path and return the updated authorization resource.
-     * The payload of the /consent/{ConsentId}/authorisations/{authId} API should be in the format
-     * {@link ConsentManageAuthorizationUpdateDTO}.
-     *
-     * @param consentManageData    data containing the request path and headers
-     * @param consentId            consent id extracted from the request path
-     * @param consentCoreService   service to retrieve and update the consent and authorization resource
-     * @return                      updated AuthorizationResource object
-     * @throws ConsentException in case of errors in retrieving/updating the consent or authorization resource
-     */
-    public static ConsentManageAuthorizationUpdateDTO updateConsentAuthResource(
-            ConsentManageData consentManageData, String consentId, ConsentCoreService consentCoreService)
-            throws ConsentException {
-
-        log.info(String.format("Updating authorization resource for consent: %s", consentId.replaceAll("[\r\n]", "")));
-        try {
-            ConsentManageAuthorizationUpdateDTO authDetails = gson.fromJson(consentManageData.getPayload().toString(),
-                    ConsentManageAuthorizationUpdateDTO.class);
-
-            // Splitting resource path /consent/{ConsentId}/authorisations/{authId} from "/authorisations/"
-            // to get the auth Id
-            String authId = extractAuthIdFromPath(consentManageData.getRequestPath());
-
-            // Creating an AuthorizationResource object with the details from the request payload and the consent id.
-            // Setting updated time as 0 since the updating time will be set in the DAO layer
-            AuthorizationResource updatingAuthResource = new AuthorizationResource(consentId, authDetails.getUserID(),
-                    authDetails.getAuthorizationStatus(), authDetails.getAuthorizationType(), 0);
-            updatingAuthResource.setAuthorizationID(authId);
-
-            DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
-            if (detailedConsentResource.getAuthorizationResources().isEmpty()) {
-                log.error(String.format("No authorization resource found for consent id: %s",
-                        consentId.replaceAll("[\r\n]", "")));
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        "No authorization resource found for consent id: " + consentId,
-                        ConsentOperationEnum.CONSENT_UPDATE);
-            }
-
-            Optional<AuthorizationResource> matchingAuthResource = detailedConsentResource.getAuthorizationResources()
-                    .stream()
-                    .filter(resource -> authId.equals(resource.getAuthorizationID()))
-                    .findFirst();
-
-            if (matchingAuthResource.isPresent()) {
-                // Update the authorization resource if authId is found
-                consentCoreService.updateAuthorizationResources(Collections.singletonList(updatingAuthResource));
-                consentCoreService.updateAuthorizationUser(authId, updatingAuthResource.getUserID());
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Authorization resource updated successfully for auth id: %s",
-                            authId.replaceAll("[\r\n]", "")));
-                }
-                AuthorizationResource updatedAuthResource = consentCoreService.getAuthorizationResource(authId);
-                List<ConsentMappingResource> createdMappingResources = null;
-                if (CollectionUtils.isNotEmpty(authDetails.getMappingResources())) {
-                    // Deactivate the current account mappings of the authorization resource if available
-                    deactivateAccountMappings(detailedConsentResource, consentCoreService, authId);
-                    // Create new account mappings based on the request payload
-                    createdMappingResources = createConsentMappings(authDetails.getMappingResources(),
-                            consentCoreService, authId);
-                }
-                return constructUpdateResponse(updatedAuthResource, createdMappingResources);
-            } else {
-                // Throw an error if authId is not found
-                String errorMsg = String.format("No matching authorization resource found for consent id: %s and" +
-                                " auth id: %s", consentId.replaceAll("[\r\n]", ""),
-                        authId.replaceAll("[\r\n]", ""));
-                log.error(errorMsg);
-                throw new ConsentManagementException(errorMsg);
-            }
-        } catch (JsonSyntaxException e) {
-            log.error("Payload is not in the correct format", e);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not in the correct format",
-                    ConsentOperationEnum.CONSENT_UPDATE);
-        } catch (ConsentManagementException e) {
-            log.error(String.format("Error occurred while updating consent authorization resource: %s",
-                    e.getMessage().replaceAll("[\r\n]", "")));
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage(), ConsentOperationEnum.CONSENT_UPDATE);
-        }
-
-    }
-
-    /**
-     * Method to extract auth id from the request path. The request path will be in the format
-     * /consent/{ConsentId}/authorisations/{authId}.
-     *
-     * @param requestPath  request path of the API request
-     * @return auth id extracted from the request path
-     * @throws ConsentManagementException in case the auth id is not found in the request path
-     */
-    private static String extractAuthIdFromPath(String requestPath) throws ConsentManagementException {
-
-        String[] pathParts = requestPath.split("/authorisations/");
-        String authId = pathParts.length > 1 ? pathParts[1] : null;
-        if (StringUtils.isBlank(authId)) {
-            log.error("Auth id is missing in the request path.");
-            throw new ConsentManagementException("Invalid request path: Auth id is missing.");
-        }
-        return authId;
-    }
-
-    /**
-     * Method to deactivate all the account mappings of a consent.
-     *
-     * @param storedResource       detailed consent resource containing the account mappings to be deactivated
-     * @param consentCoreService   service to call the method to deactivate the account mappings
-     * @param authId               auth id for which the mappings need to be deactivated (used for logging purposes)
-     * @throws ConsentManagementException in case of errors in deactivating the account mappings
-     */
-    private static void deactivateAccountMappings(DetailedConsentResource storedResource,
-                                                     ConsentCoreService consentCoreService, String authId)
-            throws ConsentManagementException {
-
-        ArrayList<String> mappingIdsToDeactivate = new ArrayList<>();
-        storedResource.getConsentMappingResources().stream()
-                .filter(consentMappingResource ->
-                        consentMappingResource.getAuthorizationID().equals(authId))
-                .map(ConsentMappingResource::getMappingID)
-                .forEach(mappingIdsToDeactivate::add);
-        if (CollectionUtils.isNotEmpty(mappingIdsToDeactivate)) {
-            consentCoreService.deactivateAccountMappings(mappingIdsToDeactivate);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Authorization resource mappings deactivate successfully for auth id: %s",
-                        authId.replaceAll("[\r\n]", "")));
-            }
-            return;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Authorization resource mappings not available for auth id: %s hence skipping" +
-                            " deactivation", authId.replaceAll("[\r\n]", "")));
-        }
-    }
-
-    /**
-     * Method to create new account mappings for an authorization resource based on the request payload.
-     *
-     * @param authMappingResources  list of resources in the request payload for which the mappings need to be created
-     * @param consentCoreService    service to call the method to create the account mappings
-     * @param authId                auth id for which the mappings need to be created (used for logging purposes)
-     * @return list of created ConsentMappingResource objects
-     * @throws ConsentManagementException in case of errors in creating the account mappings
-     */
-    private static List<ConsentMappingResource> createConsentMappings(
-            List<ConsentManageAuthorizationUpdateDTO.MappingResource> authMappingResources,
-            ConsentCoreService consentCoreService, String authId)
-            throws ConsentManagementException {
-
-        List<ConsentMappingResource> updatingMappingResources = authMappingResources.stream()
-                .map(resource -> new ConsentMappingResource(authId, resource.getAccountID(),
-                        resource.getPermission(), resource.getMappingStatus()))
-                .collect(Collectors.toList());
-        List<ConsentMappingResource> createdMappings = consentCoreService
-                .createConsentMappingResources(updatingMappingResources);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Authorization resource mappings created successfully for auth id: %s",
-                    authId.replaceAll("[\r\n]", "")));
-        }
-        return createdMappings;
-    }
-
-    /**
-     * Method to construct the response object of the /consent/{ConsentId}/authorisations/{authId} API after updating
-     * the authorization resource and creating the account mappings based on the request payload.
-     *
-     * @param updatedAuthResource         updated AuthorizationResource object
-     * @param createdMappingResources     list of created ConsentMappingResource objects for the authorization resource
-     * @return ConsentManageAuthorizationUpdateDTO object to be sent in the response of the API
-     */
-    private static ConsentManageAuthorizationUpdateDTO constructUpdateResponse(
-            AuthorizationResource updatedAuthResource, List<ConsentMappingResource> createdMappingResources) {
-
-        ConsentManageAuthorizationUpdateDTO authorization = new ConsentManageAuthorizationUpdateDTO(
-                updatedAuthResource.getConsentID(), updatedAuthResource.getUserID(),
-                updatedAuthResource.getAuthorizationStatus(), updatedAuthResource.getAuthorizationType(),
-                updatedAuthResource.getUpdatedTime());
-        authorization.setAuthorizationID(updatedAuthResource.getAuthorizationID());
-
-        if (CollectionUtils.isNotEmpty(createdMappingResources)) {
-            List<ConsentManageAuthorizationUpdateDTO.MappingResource> resources = createdMappingResources.stream()
-                    .map(mapping -> {
-                        ConsentManageAuthorizationUpdateDTO.MappingResource resource =
-                                new ConsentManageAuthorizationUpdateDTO.MappingResource(mapping.getAuthorizationID(),
-                                        mapping.getAccountID(), mapping.getPermission(), mapping.getMappingStatus());
-                        resource.setMappingID(mapping.getMappingID());
-                        return resource;
-                    })
-                    .collect(Collectors.toList());
-            authorization.setMappingResources(resources);
-        }
-        return authorization;
+        return null;
     }
 }
