@@ -341,7 +341,8 @@ allowed_extensions = ["pre_process_client_creation", "pre_process_client_update"
     "pre_process_consent_revoke", "enrich_consent_search_response", "populate_consent_authorize_screen",
     "persist_authorized_consent", "validate_consent_access", "issue_refresh_token", "validate_authorization_request",
     "validate_event_subscription", "enrich_event_subscription_response", "validate_event_creation",
-    "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response"]
+    "validate_event_polling", "enrich_event_polling_response", "map_accelerator_error_response",
+    "pre_process_consent_update", "enrich_consent_update_response"]
 base_url = ""
 retry_count = 5
 connect_timeout = 5
