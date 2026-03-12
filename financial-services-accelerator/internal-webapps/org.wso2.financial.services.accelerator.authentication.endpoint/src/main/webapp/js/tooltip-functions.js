@@ -22,13 +22,13 @@
     }
     $(document).ready(function () {
         var getTooltipContent = function ($infoIcon) {
-            var $tooltipWrapper = $infoIcon.closest('.tooltip-content-wrapper, .pb-1, .account-select-tooltip-container');
+            var $tooltipWrapper = $infoIcon.closest('.fs-tooltip-wrapper, .pb-1, .fs-select-tooltip-container');
 
             if (!$tooltipWrapper.length) {
                 return $();
             }
 
-            return $tooltipWrapper.find('.tooltip-popover-content').first();
+            return $tooltipWrapper.find('.fs-tooltip-content').first();
         };
 
         var initializePopover = function ($infoIcon) {
@@ -50,7 +50,7 @@
         };
 
         var updateAccountSelectTooltip = function ($accountSelect) {
-            var $tooltipContainer = $accountSelect.siblings('.account-select-tooltip-container');
+            var $tooltipContainer = $accountSelect.siblings('.fs-select-tooltip-container');
             if (!$tooltipContainer.length) {
                 return;
             }
@@ -58,8 +58,8 @@
             var $selectedOption = $accountSelect.find('option:selected');
             var tooltipText = $selectedOption.data('tooltipDescription') || '';
             var hasTooltipText = String(tooltipText).trim().length > 0;
-            var $tooltipContent = $tooltipContainer.find('.account-select-tooltip-content');
-            var $tooltipTrigger = $tooltipContainer.find('.account-select-tooltip-trigger');
+            var $tooltipContent = $tooltipContainer.find('.fs-select-tooltip-content');
+            var $tooltipTrigger = $tooltipContainer.find('.fs-select-tooltip-trigger');
 
             $tooltipContent.text(tooltipText);
             $tooltipTrigger.attr('title', $selectedOption.text());
@@ -75,8 +75,8 @@
             }
         };
 
-        var $infoIcons = $('.unavailable-popover-content-element');
-        var $accountSelects = $('.account-select-with-tooltip');
+        var $infoIcons = $('.fs-tooltip-trigger');
+        var $accountSelects = $('.fs-select-with-tooltip');
 
         if ($ && typeof $.fn.popover === 'function' && $infoIcons.length) {
             $infoIcons.each(function () {

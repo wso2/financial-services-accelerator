@@ -36,13 +36,13 @@
                 <b>${onFollowingAccounts}</b>
                 <ul class="scopes-list padding">
                     <c:forEach items="${initiatedAccountsForConsent}" var="account">
-                        <li class="tooltip-content-wrapper">
+                        <li class="fs-tooltip-wrapper">
                             ${account.displayName}
                             <c:if test="${not empty account.description}">
-                                <p class="tooltip-popover-content hide" style="text-align:left">
+                                <p class="fs-tooltip-content hide" style="text-align:left">
                                     ${account.description}
                                 </p>
-                                <a class="unavailable-popover-content-element"
+                                <a class="fs-tooltip-trigger"
                                    title="${account.title}"
                                    style="cursor: help; text-decoration: none;">&#9432;
                                 </a>
@@ -56,13 +56,13 @@
                 <b>${onFollowingAccounts}</b>
                 <ul class="scopes-list padding">
                     <c:forEach items="${permission.initiatedAccounts}" var="account">
-                        <li class="tooltip-content-wrapper">
+                        <li class="fs-tooltip-wrapper">
                             ${account.displayName}
                             <c:if test="${not empty account.description}">
-                                <p class="tooltip-popover-content hide" style="text-align:left">
+                                <p class="fs-tooltip-content hide" style="text-align:left">
                                     ${account.description}
                                 </p>
-                                <a class="unavailable-popover-content-element"
+                                <a class="fs-tooltip-trigger"
                                    title="${account.title}"
                                    style="cursor: help; text-decoration: none;">&#9432;
                                 </a>

@@ -29,9 +29,9 @@
         <div class="${accountSelectorClass}">
             <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
                 <%-- Display checkboxes for each account if multiple account selection is allowed --%>
-                <div class="tooltip-content-wrapper">
+                <div class="fs-tooltip-wrapper">
                     <c:if test="${not empty account.description}">
-                        <p class="tooltip-popover-content hide" style="text-align:left">
+                        <p class="fs-tooltip-content hide" style="text-align:left">
                             ${account.description}
                         </p>
                     </c:if>
@@ -44,7 +44,7 @@
                         />
                         ${account.displayName}
                         <c:if test="${not empty account.description}">
-                            <a class="unavailable-popover-content-element"
+                            <a class="fs-tooltip-trigger"
                                title="${account.title}"
                                style="cursor: help; text-decoration: none;">&#9432;
                             </a>
@@ -59,7 +59,7 @@
     <c:otherwise>
         <div class="${accountSelectorClass}">
             <%-- Display an account select for all accounts if multiple account selection is not allowed --%>
-            <select class="account-select account-select-with-tooltip"
+            <select class="account-select fs-select-with-tooltip"
                 name="<c:choose><c:when test='${not empty idSuffix}'>accounts-${idSuffix}</c:when><c:otherwise>accounts</c:otherwise></c:choose>">
                 <option hidden disabled selected value>${defaultSelect}</option>
                 <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
@@ -68,9 +68,9 @@
                     </option>
                 </c:forEach>
             </select>
-            <div class="account-select-tooltip-container" style="padding-top: 6px;">
-                <p class="tooltip-popover-content account-select-tooltip-content hide" style="text-align:left"></p>
-                <a class="unavailable-popover-content-element account-select-tooltip-trigger hide"
+            <div class="fs-select-tooltip-container" style="padding-top: 6px;">
+                <p class="fs-tooltip-content fs-select-tooltip-content hide" style="text-align:left"></p>
+                <a class="fs-tooltip-trigger fs-select-tooltip-trigger hide"
                    title="${defaultSelect}"
                    style="cursor: help; text-decoration: none;">&#9432;
                 </a>

@@ -96,13 +96,13 @@
 
                                                 <c:if test="${not empty section.subHeading}">
                                                     <div class="col-md-12 pb-1">
-                                                        <p class="tooltip-popover-content hide" style="text-align:left">
+                                                        <p class="fs-tooltip-content hide" style="text-align:left">
                                                             ${section.description}
                                                         </p>
 
                                                         <p>
                                                             ${section.subHeading}
-                                                            <a class="unavailable-popover-content-element"
+                                                            <a class="fs-tooltip-trigger"
                                                                title="${section.subHeading}"
                                                                style="cursor: help; text-decoration: none;">&#9432;</a>
                                                         </p>
