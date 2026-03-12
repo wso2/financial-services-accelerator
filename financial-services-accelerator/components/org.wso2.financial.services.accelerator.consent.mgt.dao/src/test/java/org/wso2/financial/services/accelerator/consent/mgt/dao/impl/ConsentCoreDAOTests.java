@@ -47,6 +47,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -676,6 +677,44 @@ public class ConsentCoreDAOTests {
     }
 
     @Test
+    public void testDeleteAuthorizationResource() throws Exception {
+
+        ConsentResource storedConsentResource;
+        AuthorizationResource storedAuthorizationResource;
+        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+
+            storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
+            Assert.assertNotNull(storedConsentResource.getConsentID());
+
+            AuthorizationResource authorizationResource = new AuthorizationResource();
+            authorizationResource.setConsentID(storedConsentResource.getConsentID());
+            authorizationResource.setAuthorizationType(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_TYPE);
+            authorizationResource.setUserID(ConsentMgtDAOTestData.SAMPLE_USER_ID);
+            authorizationResource.setAuthorizationStatus(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_STATUS);
+
+            storedAuthorizationResource = consentCoreDAO.storeAuthorizationResource(connection,
+                    authorizationResource);
+
+            Assert.assertNotNull(storedAuthorizationResource.getConsentID());
+            Assert.assertNotNull(storedAuthorizationResource.getAuthorizationID());
+
+            boolean result = consentCoreDAO.deleteAuthorizationResources(connection,
+                    Collections.singletonList(storedAuthorizationResource.getAuthorizationID()));
+            Assert.assertTrue(result);
+        }
+    }
+
+    @Test(expectedExceptions = ConsentDataDeletionException.class)
+    public void testDeleteAuthorizationResourceError() throws Exception {
+
+        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
+
+        consentCoreDAO.deleteAuthorizationResources(mockedConnection, Collections.singletonList("1234"));
+    }
+
+    @Test
     public void testStoreConsentMappingResource() throws Exception {
 
         ConsentResource consentResource;
@@ -848,6 +887,57 @@ public class ConsentCoreDAOTests {
         Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
         consentCoreDAO.updateConsentMappingStatus(mockedConnection, ConsentMgtDAOTestData.UNMATCHED_MAPPING_IDS,
                 ConsentMgtDAOTestData.SAMPLE_MAPPING_STATUS);
+    }
+
+    @Test
+    public void testDeleteConsentMappingResource() throws Exception {
+
+        ConsentResource storedConsentResource;
+        AuthorizationResource storedAuthorizationResource;
+        ConsentMappingResource storedConsentMappingResource;
+        ConsentResource consentResource = ConsentMgtDAOTestData.getSampleTestConsentResource();
+
+        try (Connection connection = DAOUtils.getConnection(DB_NAME)) {
+
+            storedConsentResource = consentCoreDAO.storeConsentResource(connection, consentResource);
+            Assert.assertNotNull(storedConsentResource.getConsentID());
+
+            AuthorizationResource authorizationResource = new AuthorizationResource();
+            authorizationResource.setConsentID(storedConsentResource.getConsentID());
+            authorizationResource.setAuthorizationType(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_TYPE);
+            authorizationResource.setUserID(ConsentMgtDAOTestData.SAMPLE_USER_ID);
+            authorizationResource.setAuthorizationStatus(ConsentMgtDAOTestData.SAMPLE_AUTHORIZATION_STATUS);
+
+            storedAuthorizationResource = consentCoreDAO.storeAuthorizationResource(connection,
+                    authorizationResource);
+
+            Assert.assertNotNull(storedAuthorizationResource.getConsentID());
+            Assert.assertNotNull(storedAuthorizationResource.getAuthorizationID());
+
+            ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+            consentMappingResource.setAuthorizationID(storedAuthorizationResource.getAuthorizationID());
+            consentMappingResource.setAccountID(ConsentMgtDAOTestData.SAMPLE_ACCOUNT_ID);
+            consentMappingResource.setPermission(ConsentMgtDAOTestData.SAMPLE_PERMISSION);
+            consentMappingResource.setMappingStatus(ConsentMgtDAOTestData.SAMPLE_MAPPING_STATUS);
+
+            storedConsentMappingResource = consentCoreDAO.storeConsentMappingResource(connection,
+                    consentMappingResource);
+
+            Assert.assertNotNull(storedConsentMappingResource.getMappingID());
+            Assert.assertNotNull(storedConsentMappingResource.getAuthorizationID());
+
+            boolean result = consentCoreDAO.deleteConsentMappingResources(connection,
+                    Collections.singletonList(storedConsentMappingResource.getMappingID()));
+            Assert.assertTrue(result);
+        }
+    }
+
+    @Test(expectedExceptions = ConsentDataDeletionException.class)
+    public void testDeleteConsentMappingResourceError() throws Exception {
+
+        Mockito.doThrow(SQLException.class).when(mockedConnection).prepareStatement(Mockito.anyString());
+
+        consentCoreDAO.deleteConsentMappingResources(mockedConnection, Collections.singletonList("1234"));
     }
 
     @Test

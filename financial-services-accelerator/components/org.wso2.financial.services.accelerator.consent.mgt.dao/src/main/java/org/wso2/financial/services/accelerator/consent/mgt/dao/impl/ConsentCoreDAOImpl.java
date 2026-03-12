@@ -546,6 +546,38 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
         return true;
     }
 
+    @Override
+    public boolean deleteAuthorizationResources(Connection connection, List<String> authorizationResourceIds)
+            throws ConsentDataDeletionException {
+
+        String deleteAuthorizationResourcePrepStatement =
+                sqlStatements.getDeleteAuthorizationResourcePreparedStatement();
+
+        try (PreparedStatement deleteAuthorizationResourcePreparedStmt =
+                     connection.prepareStatement(deleteAuthorizationResourcePrepStatement)) {
+
+            log.debug("Setting parameters to prepared statement to batch delete authorization resources");
+
+            for (String authId : authorizationResourceIds) {
+                deleteAuthorizationResourcePreparedStmt.setString(1, authId);
+                deleteAuthorizationResourcePreparedStmt.addBatch();
+            }
+
+            int[] results = deleteAuthorizationResourcePreparedStmt.executeBatch();
+            boolean allUpdated = Arrays.stream(results).allMatch(result -> result > 0);
+            if (allUpdated) {
+                log.debug("Batch delete for authorization resources completed successfully.");
+            } else {
+                log.debug("Some or all rows were not deleted in batch delete for authorization resources.");
+            }
+        } catch (SQLException e) {
+            log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG, e);
+            throw new ConsentDataDeletionException(
+                    ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG, e);
+        }
+        return true;
+    }
+
 
     @Override
     public ConsentMappingResource storeConsentMappingResource(Connection connection,
@@ -729,6 +761,37 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_UPDATE_ERROR_MSG, e);
             throw new ConsentDataUpdationException(
                     ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_UPDATE_ERROR_MSG, e);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean deleteConsentMappingResources(Connection connection, List<String> consentMappingResourceIds)
+            throws ConsentDataDeletionException {
+
+        String deleteConsentMappingResourcePrepStatement =
+                sqlStatements.getDeleteConsentMappingResourcePreparedStatement();
+
+        try (PreparedStatement deleteConsentMappingResourcePreparedStmt =
+                     connection.prepareStatement(deleteConsentMappingResourcePrepStatement)) {
+
+            log.debug("Setting parameters to prepared statement to batch delete consent mapping resources");
+
+            for (String mappingId : consentMappingResourceIds) {
+                deleteConsentMappingResourcePreparedStmt.setString(1, mappingId);
+                deleteConsentMappingResourcePreparedStmt.addBatch();
+            }
+
+            int[] results = deleteConsentMappingResourcePreparedStmt.executeBatch();
+            boolean allDeleted = Arrays.stream(results).allMatch(result -> result > 0);
+            if (allDeleted) {
+                log.debug("Batch delete for consent mapping resources completed successfully.");
+            } else {
+                log.debug("Some or all rows were not deleted in batch delete for consent mapping resources.");
+            }
+        } catch (SQLException e) {
+            log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_DELETE_ERROR_MSG, e);
+            throw new ConsentDataDeletionException(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_DELETE_ERROR_MSG, e);
         }
         return true;
     }

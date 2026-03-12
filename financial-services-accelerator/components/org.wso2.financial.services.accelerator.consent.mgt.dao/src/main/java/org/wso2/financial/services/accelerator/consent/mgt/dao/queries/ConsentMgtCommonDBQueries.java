@@ -41,7 +41,7 @@ public class ConsentMgtCommonDBQueries {
 
         return "SELECT FS_CONSENT.CONSENT_ID, RECEIPT, CREATED_TIME, UPDATED_TIME, CLIENT_ID, CONSENT_TYPE, " +
                 "CURRENT_STATUS, CONSENT_FREQUENCY, VALIDITY_TIME, RECURRING_INDICATOR, " +
-                "FS_CONSENT_ATTRIBUTE.ATT_KEY, FS_CONSENT_ATTRIBUTE.ATT_VALUE FROM FS_CONSENT RIGHT JOIN " +
+                "FS_CONSENT_ATTRIBUTE.ATT_KEY, FS_CONSENT_ATTRIBUTE.ATT_VALUE FROM FS_CONSENT LEFT JOIN " +
                 "FS_CONSENT_ATTRIBUTE ON FS_CONSENT.CONSENT_ID = FS_CONSENT_ATTRIBUTE.CONSENT_ID WHERE FS_CONSENT" +
                 ".CONSENT_ID = ?";
     }
@@ -125,6 +125,11 @@ public class ConsentMgtCommonDBQueries {
                 "WHERE AUTH_ID = ?";
     }
 
+    public String getDeleteAuthorizationResourcePreparedStatement() {
+
+        return "DELETE FROM FS_CONSENT_AUTH_RESOURCE WHERE AUTH_ID = ?";
+    }
+
     public String getStoreConsentMappingPreparedStatement() {
 
         return "INSERT INTO FS_CONSENT_MAPPING (MAPPING_ID, AUTH_ID, ACCOUNT_ID, PERMISSION, MAPPING_STATUS) VALUES " +
@@ -145,6 +150,12 @@ public class ConsentMgtCommonDBQueries {
 
         return "UPDATE FS_CONSENT_MAPPING SET PERMISSION = ?, MAPPING_STATUS = ? WHERE MAPPING_ID = ?";
     }
+
+    public String getDeleteConsentMappingResourcePreparedStatement() {
+
+        return "DELETE FROM FS_CONSENT_MAPPING WHERE MAPPING_ID = ? ";
+    }
+
 
     public String getStoreConsentAttributesPreparedStatement() {
 
