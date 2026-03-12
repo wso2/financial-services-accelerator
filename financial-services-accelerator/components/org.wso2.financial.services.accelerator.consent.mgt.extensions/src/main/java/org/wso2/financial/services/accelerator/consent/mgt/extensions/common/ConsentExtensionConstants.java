@@ -27,10 +27,12 @@ public class ConsentExtensionConstants {
     public static final String ACCOUNTS = "accounts";
     public static final String PAYMENTS = "payments";
     public static final String FUNDS_CONFIRMATIONS = "fundsconfirmations";
+    public static final String INTERNAL_UPDATE = "internal-consent-update";
     public static final String DEFAULT = "default";
     public static final String ACCOUNT_CONSENT_PATH = "account-access-consents";
     public static final String COF_CONSENT_PATH = "funds-confirmation-consents";
     public static final String PAYMENT_CONSENT_PATH = "payment-consents";
+    public static final String CONSENT_UPDATE_PATH = "^consent/([^/?]+)$";
     public static final String CONSENT_DATA = "consentData";
     public static final String CONSUMER_DATA = "consumerData";
     public static final String TITLE = "title";
