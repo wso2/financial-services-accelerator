@@ -45,6 +45,7 @@ public class ConsentCoreServiceConstants {
     public static final String USER_ACCOUNTS_BINDING_REASON = "Bind user accounts to consent";
     public static final String CONSENT_REVOKE_REASON = "Revoke the consent";
     public static final String CONSENT_REAUTHORIZE_REASON = "Reauthorize consent";
+    public static final String DETAIL_CONSENT_UPDATE_REASON = "Update detailed consent";
     public static final String CONSENT_AMEND_REASON = "Amend consent";
     public static final String DEFAULT_PERMISSION_VALUE = "n/a";
     public static final String ADDITIONAL_AUTHORIZATION_RESOURCES =  "AdditionalAuthorizationResources";

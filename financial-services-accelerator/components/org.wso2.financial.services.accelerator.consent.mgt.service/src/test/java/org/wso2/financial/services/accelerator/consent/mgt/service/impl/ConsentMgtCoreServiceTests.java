@@ -537,6 +537,44 @@ public class ConsentMgtCoreServiceTests {
     }
 
     @Test
+    public void testUpdateDetailedConsent() throws ConsentManagementException,
+            ConsentDataRetrievalException, ConsentDataUpdationException, ConsentDataInsertionException {
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), anyString());
+        doNothing().when(mockedConsentCoreDAO).updateConsentResource(any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(), any());
+
+        DetailedConsentResource result = consentCoreServiceImpl.updateDetailedConsent(
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+        Assert.assertNotNull(result);
+    }
+
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentWithoutConsentId() throws ConsentManagementException {
+
+        DetailedConsentResource consentResource = new DetailedConsentResource();
+        consentResource.setConsentID(null);
+
+        consentCoreServiceImpl.updateDetailedConsent(consentResource);
+    }
+
+    @Test(expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentWithConsentUpdateError() throws ConsentManagementException,
+            ConsentDataUpdationException, ConsentDataRetrievalException {
+
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), anyString());
+        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO).updateConsentResource(any(), any());
+
+        consentCoreServiceImpl.updateDetailedConsent(
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+    }
+
+    @Test
     public void testUpdateConsentAndCreateAuthResources() throws ConsentManagementException,
             ConsentDataRetrievalException, ConsentDataInsertionException {
 
