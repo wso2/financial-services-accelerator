@@ -223,4 +223,13 @@ public class ConsentCache extends FinancialServicesBaseCache<ConsentCacheKey, Ob
 
         return FinancialServicesConfigParser.getInstance().getCommonCacheModifiedExpiryTime();
     }
+
+    /**
+     * Remove from the consent cache
+     * @param cacheKey Cache key
+     */
+    public static void removeFromCache(String cacheKey) {
+
+        ConsentCache.getInstance().removeFromCache(ConsentCacheKey.of(cacheKey));
+    }
 }

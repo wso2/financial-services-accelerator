@@ -256,6 +256,13 @@ public class ConsentAuthorizeEndpoint {
             throws ConsentException, ConsentManagementException, URISyntaxException {
 
         ConsentData consentData = ConsentCache.getConsentDataFromCache(sessionDataKey);
+
+        /*
+        Remove consent data from the cache to prevent multiple calls to the persist endpoint.
+        This ensures the flow is completed and avoids further updates after a single persistence.
+         */
+        ConsentCache.removeFromCache(sessionDataKey);
+
         URI location;
         try {
             if (consentData == null) {
