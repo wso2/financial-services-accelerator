@@ -155,6 +155,19 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 log.info(String.format("Processing internal consent retrieval request for consentId: %s",
                         consentId.replaceAll("[\r\n]+", " ")));
                 DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                if (detailedConsentResource == null) {
+                    log.error(String.format("Consent not found for consent ID: %s",
+                            consentId.replaceAll("[\r\n]+", " ")));
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                            ConsentOperationEnum.CONSENT_RETRIEVE);
+                }
+                if (!detailedConsentResource.getClientID().equals(consentManageData.getClientId())) {
+                    //Throwing this error in a generic manner since client will not be able to identify if consent
+                    // exists if consent does not belong to them
+                    log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                            ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_UPDATE);
+                }
                 consentManageData.setResponsePayload(new JSONObject(detailedConsentResource));
                 consentManageData.setResponseStatus(ResponseStatus.OK);
                 return;

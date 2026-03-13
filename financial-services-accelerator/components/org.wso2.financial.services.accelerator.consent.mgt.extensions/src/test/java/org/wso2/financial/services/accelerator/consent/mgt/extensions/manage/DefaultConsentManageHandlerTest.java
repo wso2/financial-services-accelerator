@@ -544,6 +544,24 @@ public class DefaultConsentManageHandlerTest {
     }
 
     @Test
+    public void testHandleGetWithInvalidClientId() {
+
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn("TestClient").when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+        }
+    }
+
+    @Test
     public void testHandleGet() {
 
         setConsentManageBuilder();
@@ -557,6 +575,28 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handleGet(consentManageDataMock);
 
         Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
+    }
+
+    @Test
+    public void testHandleGetForInternalRequests() {
+
+        setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+        JSONObject payload = new JSONObject();
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
+                .getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true");
+        doReturn(headers).when(consentManageDataMock).getHeaders();
+
+        defaultConsentManageHandler.handleGet(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock).getRequestPath();
         Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
         Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
     }
@@ -879,7 +919,7 @@ public class DefaultConsentManageHandlerTest {
             ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
             doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true"))
                     .when(consentManageDataMock).getHeaders();
-            doReturn("consents/1213").when(consentManageDataMock).getRequestPath();
+            doReturn("consent/1213").when(consentManageDataMock).getRequestPath();
             doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
             doReturn(headers).when(consentManageDataMock).getHeaders();
             defaultConsentManageHandler.handlePut(consentManageDataMock);

@@ -39,7 +39,7 @@ public class TestConstants {
     public static final String INVALID_REQUEST_PATH = "accounts";
     public static final String REQUEST_PATH_WITH_INVALID_CONSENT_ID = "accounts/1234";
     public static final String ACCOUNT_CONSENT_GET_PATH = "account-access-consents/" + SAMPLE_CONSENT_ID;
-    public static final String CONSENT_UPDATE_PATH = "consents/" + SAMPLE_CONSENT_ID;
+    public static final String CONSENT_UPDATE_PATH = "consent/" + SAMPLE_CONSENT_ID;
     public static final String PAYMENTS_FILE_UPLOAD_PATH = "fileUpload/" + SAMPLE_CONSENT_ID;
     public static final String INVALID_INITIATION_OBJECT = "Invalid Object";
     public static final int SAMPLE_CONSENT_FREQUENCY = 1;

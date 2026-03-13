@@ -489,6 +489,7 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
      */
     public static ConsentPayloadValidationResult validateConsentUpdatePayload(JSONObject request) {
 
+        log.info("Validating consent update request payload");
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.readValue(request.toString(), InternalConsentUpdateRequestDTO.class);

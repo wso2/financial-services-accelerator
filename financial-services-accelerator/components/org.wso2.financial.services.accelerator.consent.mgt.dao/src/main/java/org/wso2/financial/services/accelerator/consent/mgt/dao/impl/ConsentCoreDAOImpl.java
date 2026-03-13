@@ -550,6 +550,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public boolean deleteAuthorizationResources(Connection connection, List<String> authorizationResourceIds)
             throws ConsentDataDeletionException {
 
+        log.info(String.format("Deleting authorization resources. Count: %s", authorizationResourceIds.size()));
         String deleteAuthorizationResourcePrepStatement =
                 sqlStatements.getDeleteAuthorizationResourcePreparedStatement();
 
@@ -567,15 +568,16 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             boolean allUpdated = Arrays.stream(results).allMatch(result -> result > 0);
             if (allUpdated) {
                 log.debug("Batch delete for authorization resources completed successfully.");
+                return true;
             } else {
-                log.debug("Some or all rows were not deleted in batch delete for authorization resources.");
+                log.error("Some or all rows were not deleted in batch delete for authorization resources.");
+                throw new ConsentDataDeletionException("Failed to delete one or more authorization resources.");
             }
         } catch (SQLException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG, e);
             throw new ConsentDataDeletionException(
                     ConsentMgtDAOConstants.CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG, e);
         }
-        return true;
     }
 
 
@@ -769,6 +771,7 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
     public boolean deleteConsentMappingResources(Connection connection, List<String> consentMappingResourceIds)
             throws ConsentDataDeletionException {
 
+        log.info(String.format("Deleting consent mapping resources. Count: %s", consentMappingResourceIds.size()));
         String deleteConsentMappingResourcePrepStatement =
                 sqlStatements.getDeleteConsentMappingResourcePreparedStatement();
 
@@ -786,14 +789,15 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             boolean allDeleted = Arrays.stream(results).allMatch(result -> result > 0);
             if (allDeleted) {
                 log.debug("Batch delete for consent mapping resources completed successfully.");
+                return true;
             } else {
-                log.debug("Some or all rows were not deleted in batch delete for consent mapping resources.");
+                log.error("Some or all rows were not deleted in batch delete for consent mapping resources.");
+                throw new ConsentDataDeletionException("Failed to delete one or more consent mapping resources.");
             }
         } catch (SQLException e) {
             log.error(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_DELETE_ERROR_MSG, e);
             throw new ConsentDataDeletionException(ConsentMgtDAOConstants.CONSENT_MAPPING_RESOURCE_DELETE_ERROR_MSG, e);
         }
-        return true;
     }
 
 

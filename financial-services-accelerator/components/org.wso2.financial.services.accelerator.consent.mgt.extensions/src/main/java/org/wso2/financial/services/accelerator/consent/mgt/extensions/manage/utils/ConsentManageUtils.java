@@ -323,6 +323,8 @@ public class ConsentManageUtils {
                                                         DetailedConsentResource storedConsent, Object requestPayload)
             throws ConsentManagementException {
 
+        log.info(String.format("Constructing DetailedConsentResource from update payload for consentId: %s",
+                consentId.replaceAll("[\r\n]", "")));
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             InternalConsentUpdateRequestDTO updateRequestDTO =  objectMapper.readValue(requestPayload.toString(),
@@ -352,6 +354,11 @@ public class ConsentManageUtils {
                         }
                     }
                 }
+            } else {
+                // If the request doesn't contain authorization resources, use the existing authorization resources
+                // of the consent
+                authorizationResources = storedConsent.getAuthorizationResources();
+                consentMappingResources = storedConsent.getConsentMappingResources();
             }
 
             return new DetailedConsentResource(consentId,
@@ -362,6 +369,8 @@ public class ConsentManageUtils {
                     authorizationResources, consentMappingResources);
 
         } catch (JsonProcessingException e) {
+            log.error(String.format("Failed to parse update consent request payload for consentId: %s. Error: %s",
+                    consentId.replaceAll("[\r\n]", ""), e.getMessage().replaceAll("[\r\n]", "")));
             throw  new ConsentManagementException("Invalid request payload", e);
         }
     }

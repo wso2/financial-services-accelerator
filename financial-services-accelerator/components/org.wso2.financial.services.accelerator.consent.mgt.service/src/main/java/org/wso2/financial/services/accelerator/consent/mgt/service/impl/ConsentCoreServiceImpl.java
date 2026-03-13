@@ -296,7 +296,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
             String consentIdToUpdate = detailedConsentResource.getConsentID();
 
-            DetailedConsentResource previousConsent = getDetailedConsent(consentIdToUpdate);
+            DetailedConsentResource previousConsent = consentCoreDAO.getDetailedConsentResource(connection,
+                    consentIdToUpdate);
             /* Update the base consent using updated values from ConsentResource.
                Immutable parameters are ignored in the update (i.e. clientId, createdTime) at DAO level.*/
             ConsentResource consentResourceToUpdate = new ConsentResource(detailedConsentResource);
@@ -308,7 +309,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             // Update consent attributes
             // Delete existing attributes and store new attributes.
-            if (MapUtils.isNotEmpty(detailedConsentResource.getConsentAttributes())) {
+            if (detailedConsentResource.getConsentAttributes() != null) {
                 ConsentCoreServiceUtil.deleteExistingConsentAttributes(consentCoreDAO, connection, consentIdToUpdate,
                         previousConsent);
                 ConsentCoreServiceUtil.addConsentAttributes(consentCoreDAO, connection, detailedConsentResource);
@@ -316,7 +317,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             // Update Authorization Resources
             // Delete existing authorization resources and store new authorization resources.
-            if (CollectionUtils.isNotEmpty(detailedConsentResource.getAuthorizationResources())) {
+            if (detailedConsentResource.getAuthorizationResources() != null) {
                 ConsentCoreServiceUtil.deleteExistingAuthorizationResources(consentCoreDAO, connection,
                         consentIdToUpdate, previousConsent);
                 ConsentCoreServiceUtil.addAuthorizationResources(consentCoreDAO, connection,
@@ -325,7 +326,7 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             // Update Consent Mapping Resources
             // Delete existing consent mapping resources and store new consent mapping resources.
-            if (CollectionUtils.isNotEmpty(detailedConsentResource.getConsentMappingResources())) {
+            if (detailedConsentResource.getConsentMappingResources() != null) {
                 ConsentCoreServiceUtil.deleteExistingConsentMappings(consentCoreDAO, connection, consentIdToUpdate,
                         previousConsent);
                 ConsentCoreServiceUtil.addConsentMappingResources(consentCoreDAO, connection,
@@ -349,7 +350,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
 
             return getDetailedConsent(consentIdToUpdate);
 
-        } catch (ConsentDataInsertionException | ConsentDataUpdationException | ConsentDataDeletionException e) {
+        } catch (ConsentDataInsertionException | ConsentDataUpdationException | ConsentDataDeletionException |
+                 ConsentDataRetrievalException e) {
             log.error("Error during updating consent, rolling back", e);
             DatabaseUtils.rollbackTransaction(connection);
             throw new ConsentManagementException("Failed to update consent and create related records", e);
