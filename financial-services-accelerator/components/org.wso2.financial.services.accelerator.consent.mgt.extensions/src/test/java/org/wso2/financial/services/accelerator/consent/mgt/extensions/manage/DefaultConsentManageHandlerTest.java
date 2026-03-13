@@ -917,8 +917,6 @@ public class DefaultConsentManageHandlerTest {
 
         try {
             ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-            doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true"))
-                    .when(consentManageDataMock).getHeaders();
             doReturn("consent/1213").when(consentManageDataMock).getRequestPath();
             doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
             doReturn(headers).when(consentManageDataMock).getHeaders();
@@ -935,8 +933,6 @@ public class DefaultConsentManageHandlerTest {
         try {
             setConsentManageBuilder();
             ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
-            doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true"))
-                    .when(consentManageDataMock).getHeaders();
             doReturn(TestConstants.CONSENT_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
             doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
             doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
