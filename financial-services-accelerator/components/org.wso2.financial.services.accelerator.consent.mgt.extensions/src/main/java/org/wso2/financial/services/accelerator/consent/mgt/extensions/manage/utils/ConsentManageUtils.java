@@ -382,7 +382,7 @@ public class ConsentManageUtils {
      * @param consent  DetailedConsentResource object to construct the response DTO
      * @return constructed response from the DetailedConsentResource
      */
-    public static JSONObject constructConsentUpdateResponse(DetailedConsentResource consent) {
+    public static JSONObject constructInternalConsentResponse(DetailedConsentResource consent) {
         InternalConsentUpdateResponseDTO responseDTO =  new InternalConsentUpdateResponseDTO(consent);
         return new JSONObject(responseDTO);
     }

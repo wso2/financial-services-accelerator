@@ -781,7 +781,7 @@ public class ConsentCoreServiceUtil {
      * @throws ConsentDataDeletionException If an error occurs when deleting the existing consent attributes
      */
     public static void deleteExistingConsentAttributes(ConsentCoreDAO consentCoreDAO, Connection connection,
-                                                       String consentId, DetailedConsentResource previousConsent)
+                                                     String consentId, DetailedConsentResource previousConsent)
             throws ConsentDataDeletionException {
 
         if (MapUtils.isNotEmpty(previousConsent.getConsentAttributes())) {
@@ -849,7 +849,7 @@ public class ConsentCoreServiceUtil {
      * @throws ConsentDataInsertionException  If an error occurs when inserting the new authorization resources
      */
     public static void addAuthorizationResources(ConsentCoreDAO consentCoreDAO, Connection connection,
-                                                 List<AuthorizationResource> authorizationResources, String consentId)
+                                            List<AuthorizationResource> authorizationResources, String consentId)
             throws ConsentDataInsertionException {
 
         if (log.isDebugEnabled()) {
@@ -905,5 +905,4 @@ public class ConsentCoreServiceUtil {
         }
         consentCoreDAO.storeConsentMappingResources(connection, mappingResources);
     }
-
 }

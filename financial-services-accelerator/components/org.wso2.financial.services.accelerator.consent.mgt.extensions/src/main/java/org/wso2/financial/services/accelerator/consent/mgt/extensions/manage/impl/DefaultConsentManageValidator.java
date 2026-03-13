@@ -495,6 +495,8 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
             objectMapper.readValue(request.toString(), InternalConsentUpdateRequestDTO.class);
             return new ConsentPayloadValidationResult(true);
         } catch (JsonProcessingException e) {
+            log.error(String.format("Failed to validate consent update payload: %s",
+                    e.getMessage().replaceAll("[\r\n]", "")));
             return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
                     ResponseStatus.BAD_REQUEST.getReasonPhrase(),
                     "Invalid request payload: " + e.getMessage());

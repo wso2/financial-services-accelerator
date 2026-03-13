@@ -315,6 +315,13 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                 ConsentCoreServiceUtil.addConsentAttributes(consentCoreDAO, connection, detailedConsentResource);
             }
 
+            // Update Consent Mapping Resources
+            // Delete existing consent mapping resources
+            if (detailedConsentResource.getConsentMappingResources() != null) {
+                ConsentCoreServiceUtil.deleteExistingConsentMappings(consentCoreDAO, connection, consentIdToUpdate,
+                        previousConsent);
+            }
+
             // Update Authorization Resources
             // Delete existing authorization resources and store new authorization resources.
             if (detailedConsentResource.getAuthorizationResources() != null) {
@@ -325,10 +332,8 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
             }
 
             // Update Consent Mapping Resources
-            // Delete existing consent mapping resources and store new consent mapping resources.
+            // Store new consent mapping resources after adding the consent auth resources.
             if (detailedConsentResource.getConsentMappingResources() != null) {
-                ConsentCoreServiceUtil.deleteExistingConsentMappings(consentCoreDAO, connection, consentIdToUpdate,
-                        previousConsent);
                 ConsentCoreServiceUtil.addConsentMappingResources(consentCoreDAO, connection,
                         detailedConsentResource.getConsentMappingResources(), consentIdToUpdate);
             }

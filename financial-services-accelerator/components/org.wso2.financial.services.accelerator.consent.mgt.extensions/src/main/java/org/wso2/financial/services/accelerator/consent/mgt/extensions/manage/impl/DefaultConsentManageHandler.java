@@ -168,7 +168,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
                             ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
                 }
-                consentManageData.setResponsePayload(new JSONObject(detailedConsentResource));
+                consentManageData.setResponsePayload(ConsentManageUtils
+                        .constructInternalConsentResponse(detailedConsentResource));
                 consentManageData.setResponseStatus(ResponseStatus.OK);
                 return;
             }
@@ -503,6 +504,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         try {
 
             DetailedConsentResource storedConsentResource = consentCoreService.getDetailedConsent(consentId);
+
             if (storedConsentResource == null) {
                 log.error("Consent not found");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
@@ -532,7 +534,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             log.info(String.format("Successfully updated consent with ID: %s",
                     consentId.replaceAll("[\r\n]+", " ")));
 
-            consentManageData.setResponsePayload(ConsentManageUtils.constructConsentUpdateResponse(updatedConsent));
+            consentManageData.setResponsePayload(ConsentManageUtils.constructInternalConsentResponse(updatedConsent));
             consentManageData.setResponseStatus(ResponseStatus.OK);
 
         } catch (ConsentManagementException e) {
