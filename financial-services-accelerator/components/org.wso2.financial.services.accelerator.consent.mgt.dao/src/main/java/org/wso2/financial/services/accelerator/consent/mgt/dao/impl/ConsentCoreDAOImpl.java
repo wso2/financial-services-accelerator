@@ -565,8 +565,9 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             }
 
             int[] results = deleteAuthorizationResourcePreparedStmt.executeBatch();
-            boolean allUpdated = Arrays.stream(results).allMatch(result -> result > 0);
-            if (allUpdated) {
+            boolean allDeleted = Arrays.stream(results)
+                    .allMatch(result -> result > 0 || result == java.sql.Statement.SUCCESS_NO_INFO);
+            if (allDeleted) {
                 log.debug("Batch delete for authorization resources completed successfully.");
                 return true;
             } else {
@@ -786,7 +787,8 @@ public class ConsentCoreDAOImpl implements ConsentCoreDAO {
             }
 
             int[] results = deleteConsentMappingResourcePreparedStmt.executeBatch();
-            boolean allDeleted = Arrays.stream(results).allMatch(result -> result > 0);
+            boolean allDeleted = Arrays.stream(results)
+                    .allMatch(result -> result > 0 || result == java.sql.Statement.SUCCESS_NO_INFO);
             if (allDeleted) {
                 log.debug("Batch delete for consent mapping resources completed successfully.");
                 return true;

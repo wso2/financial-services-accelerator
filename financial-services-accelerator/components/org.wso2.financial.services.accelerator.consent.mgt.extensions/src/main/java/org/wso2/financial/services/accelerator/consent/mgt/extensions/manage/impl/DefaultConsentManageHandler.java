@@ -503,13 +503,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         try {
 
             DetailedConsentResource storedConsentResource = consentCoreService.getDetailedConsent(consentId);
-            log.info(String.format("Retrieved consent for ID: %s", consentId.replaceAll("[\r\n]+", " ")));
-
             if (storedConsentResource == null) {
                 log.error("Consent not found");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
                         ConsentOperationEnum.CONSENT_UPDATE);
             }
+            log.info(String.format("Retrieved consent for ID: %s", consentId.replaceAll("[\r\n]+", " ")));
 
             if (!storedConsentResource.getClientID().equals(consentManageData.getClientId())) {
                 //Throwing this error in a generic manner since client will not be able to identify if consent
