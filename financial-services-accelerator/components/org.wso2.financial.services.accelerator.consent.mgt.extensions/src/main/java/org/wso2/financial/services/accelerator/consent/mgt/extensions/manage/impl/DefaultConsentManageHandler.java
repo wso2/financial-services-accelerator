@@ -166,7 +166,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     // exists if consent does not belong to them
                     log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
                     throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_UPDATE);
+                            ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
                 }
                 consentManageData.setResponsePayload(new JSONObject(detailedConsentResource));
                 consentManageData.setResponseStatus(ResponseStatus.OK);
@@ -573,7 +573,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
         String resourcePath = consentManageData.getRequestPath();
@@ -583,7 +583,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
         String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
-                ConsentOperationEnum.CONSENT_DELETE);
+                ConsentOperationEnum.CONSENT_FILE_UPLOAD);
 
         //Perform idempotency validation
         if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
@@ -690,7 +690,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
 
         String resourcePath = consentManageData.getRequestPath();

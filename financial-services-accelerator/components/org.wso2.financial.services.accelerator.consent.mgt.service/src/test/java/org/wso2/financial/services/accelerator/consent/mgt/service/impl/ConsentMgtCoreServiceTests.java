@@ -557,6 +557,14 @@ public class ConsentMgtCoreServiceTests {
     public void testUpdateDetailedConsentWithEmptyObjects() throws ConsentManagementException,
             ConsentDataRetrievalException, ConsentDataUpdationException, ConsentDataInsertionException {
 
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
+        doNothing().when(mockedConsentCoreDAO).updateConsentResource(any(), any());
+        doReturn(ConsentMgtServiceTestData
+                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(), any());
+
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource(
                 ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, UUID.randomUUID().toString(),
                 ConsentMgtServiceTestData.SAMPLE_CONSENT_RECEIPT, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
@@ -565,15 +573,7 @@ public class ConsentMgtCoreServiceTests {
                 System.currentTimeMillis() / 1000, ConsentMgtServiceTestData.SAMPLE_RECURRING_INDICATOR,
                 new HashMap<>(), new ArrayList<>(), new ArrayList<>());
 
-        doReturn(detailedConsentResource).when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
-        doNothing().when(mockedConsentCoreDAO).updateConsentResource(any(), any());
-        doReturn(ConsentMgtServiceTestData
-                .getSampleTestConsentStatusAuditRecord(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
-                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
-                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(), any());
-
-        DetailedConsentResource result = consentCoreServiceImpl.updateDetailedConsent(
-                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+        DetailedConsentResource result = consentCoreServiceImpl.updateDetailedConsent(detailedConsentResource);
         Assert.assertNotNull(result);
     }
 

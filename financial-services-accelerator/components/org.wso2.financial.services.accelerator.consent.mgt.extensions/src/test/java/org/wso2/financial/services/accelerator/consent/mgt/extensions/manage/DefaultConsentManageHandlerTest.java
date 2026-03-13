@@ -953,6 +953,8 @@ public class DefaultConsentManageHandlerTest {
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
         JSONObject payload = new JSONObject(TestConstants.CONSENT_UPDATE_PAYLOAD);
         doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "false"))
+                .when(consentManageDataMock).getHeaders();
 
         defaultConsentManageHandler.handlePut(consentManageDataMock);
 
