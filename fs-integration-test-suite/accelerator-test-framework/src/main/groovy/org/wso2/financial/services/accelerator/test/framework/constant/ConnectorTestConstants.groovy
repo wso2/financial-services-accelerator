@@ -57,6 +57,7 @@ class ConnectorTestConstants extends Constants{
     public static final String PAYMENTS_TYPE = "payments"
     public static final String COF_TYPE = "cof"
     public static final String X_WSO2_MUTUAL_CERT = "x-wso2-mutual-auth-cert"
+    public static final String X_WSO2_INTERNAL_HEADER = "x-wso2-internal-request"
     public static final String CHARSET = "charset"
     public static final String CHARSET_TYPE = "UTF-8"
     public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id"
@@ -217,6 +218,7 @@ class ConnectorTestConstants extends Constants{
     static final String IS_VALID = "isValid"
     static final String CONSENT_ID_INVALID_ERROR = "Consent ID invalid"
     static final String API_REQUEST_NOT_FOUND = "No matching resource found for given API Request"
+    static final String CONSENT_UPDATE_PATH = CONSENT_API + "/consent"
 
     //Internal Rest API Url
     static final String SP_INTERNAL_ENDPOINT = "/t/carbon.super/api/server/v1/applications"

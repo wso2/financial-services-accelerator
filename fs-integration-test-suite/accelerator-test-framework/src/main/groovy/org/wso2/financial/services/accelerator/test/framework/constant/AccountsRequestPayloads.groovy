@@ -160,6 +160,37 @@ class AccountsRequestPayloads {
             }
 """.stripIndent()
 
+    static String getAccountConsentUpdatePayload(String consentId) {
+        return """
+            {
+                "consentID": "${consentId}",
+                "status": "AwaitingAuthorisation",
+                "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
+                "recurringIndicator": true,
+                "consentFrequency": 0,
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"2026-03-17T15:43:35.946770+05:30\\",\\"TransactionFromDateTime\\": \\"2026-03-12T15:43:35.947399+05:30\\",\\"TransactionToDateTime\\": \\"2026-03-15T15:43:35.947514+05:30\\"},\\"Risk\\": { }}",
+                "consentAttributes": {
+                    "key1": "value1",
+                    "key2": "value2"
+                },
+                "authorizationResources": [
+                    {
+                        "userID": "admin@wso2.com",
+                        "authorizationType": "auth",
+                        "authorizationStatus": "Created",
+                        "resources": [
+                            {
+                            "accountID": "1962368",
+                            "permission": "account",
+                            "mappingStatus": "active"
+                            }
+                        ]
+                    }
+                ]
+            }
+        """.stripIndent()
+    }
+
     /**
      * Build Validation Payload
      * @param clientId - Client Id
