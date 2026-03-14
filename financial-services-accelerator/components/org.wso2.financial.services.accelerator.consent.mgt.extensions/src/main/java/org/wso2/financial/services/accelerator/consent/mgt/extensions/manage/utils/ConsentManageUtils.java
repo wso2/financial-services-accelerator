@@ -18,11 +18,17 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
@@ -30,6 +36,9 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Con
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.builder.ConsentManageBuilder;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.InternalConsentUpdateRequestDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.InternalConsentUpdateResponseDTO;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -39,7 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -282,5 +293,97 @@ public class ConsentManageUtils {
                 return Instant.now().plus(90, ChronoUnit.DAYS).getEpochSecond();
             }
         }
+    }
+
+    /**
+     * Method to get whether the request is an internal consent API request.
+     *
+     * @param consentManageData consentManageData
+     * @return boolean whether the request is an internal consent API request
+     */
+    public static boolean isInternalConsentRequest(ConsentManageData consentManageData) {
+        Map<String, String> headers = consentManageData.getHeaders();
+        if (headers != null && headers.containsKey(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER)) {
+            return Boolean.parseBoolean(headers.get(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER));
+        }
+        return false;
+    }
+
+    /**
+     * Construct DetailedConsentResource from the update consent request payload. For fields that are not present in the
+     * update consent request payload, values from the stored consent will be used.
+     *
+     * @param consentId       consent id
+     * @param storedConsent   consent stored in the database before the update operation
+     * @param requestPayload  request payload of the update consent request
+     * @return DetailedConsentResource constructed from the update consent request payload and stored consent
+     * @throws ConsentManagementException if there is an error while processing the request payload
+     */
+    public static DetailedConsentResource constructDetailedConsentResourceFromUpdatePayload(String consentId,
+                                                        DetailedConsentResource storedConsent, Object requestPayload)
+            throws ConsentManagementException {
+
+        log.info(String.format("Constructing DetailedConsentResource from update payload for consentId: %s",
+                consentId.replaceAll("[\r\n]", "")));
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            InternalConsentUpdateRequestDTO updateRequestDTO =  objectMapper.readValue(requestPayload.toString(),
+                    InternalConsentUpdateRequestDTO.class);
+
+            ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
+            ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+            if (updateRequestDTO.getAuthorizationResources() != null) {
+                for (InternalConsentUpdateRequestDTO.Authorization authorization:
+                        updateRequestDTO.getAuthorizationResources()) {
+                    String authId = authorization.getAuthorizationID() != null ? authorization.getAuthorizationID() :
+                            UUID.randomUUID().toString();
+                    AuthorizationResource authorizationResource = new AuthorizationResource(consentId,
+                            authorization.getUserID(), authorization.getAuthorizationStatus(),
+                            authorization.getAuthorizationType(), 0L);
+                    authorizationResource.setAuthorizationID(authId);
+                    authorizationResources.add(authorizationResource);
+
+                    if (authorization.getResources() != null) {
+                        for (InternalConsentUpdateRequestDTO.Resource resource: authorization.getResources()) {
+                            String mappingId = resource.getMappingID() != null ? resource.getMappingID() :
+                                    UUID.randomUUID().toString();
+                            ConsentMappingResource consentMappingResource = new ConsentMappingResource(authId,
+                                    resource.getAccountID(), resource.getPermission(), resource.getMappingStatus());
+                            consentMappingResource.setMappingID(mappingId);
+                            consentMappingResources.add(consentMappingResource);
+                        }
+                    }
+                }
+            } else {
+                // If the request doesn't contain authorization resources, use the existing authorization resources
+                // of the consent
+                authorizationResources = storedConsent.getAuthorizationResources();
+                consentMappingResources = storedConsent.getConsentMappingResources();
+            }
+
+            return new DetailedConsentResource(consentId,
+                    storedConsent.getClientID(), updateRequestDTO.getReceipt(), storedConsent.getConsentType(),
+                    updateRequestDTO.getStatus(), updateRequestDTO.getConsentFrequency(),
+                    updateRequestDTO.getValidityPeriod(), storedConsent.getCreatedTime(), 0L,
+                    updateRequestDTO.isRecurringIndicator(), updateRequestDTO.getConsentAttributes(),
+                    authorizationResources, consentMappingResources);
+
+        } catch (JsonProcessingException e) {
+            log.error(String.format("Failed to parse update consent request payload for consentId: %s. Error: %s",
+                    consentId.replaceAll("[\r\n]", ""), e.getMessage().replaceAll("[\r\n]", "")));
+            throw  new ConsentManagementException("Invalid request payload", e);
+        }
+    }
+
+    /**
+     * Construct InternalConsentUpdateResponseDTO from DetailedConsentResource. This will be used to send the response
+     * of the update consent request to the internal API caller.
+     *
+     * @param consent  DetailedConsentResource object to construct the response DTO
+     * @return constructed response from the DetailedConsentResource
+     */
+    public static JSONObject constructInternalConsentResponse(DetailedConsentResource consent) {
+        InternalConsentUpdateResponseDTO responseDTO =  new InternalConsentUpdateResponseDTO(consent);
+        return new JSONObject(responseDTO);
     }
 }

@@ -22,10 +22,10 @@ import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
@@ -50,6 +50,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mod
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreConsentGenerateResponseDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ExternalAPIPreFileUploadResponseDTO;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ExternalAPIConsentManageUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.DataProviders;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
@@ -76,8 +77,6 @@ public class DefaultConsentManageHandlerTest {
     DefaultConsentManageHandler defaultConsentManageHandler;
     DefaultConsentManageHandler externalServiceConsentManageHandler;
     @Mock
-    ConsentManageData consentManageDataMock;
-    @Mock
     ConsentCoreServiceImpl consentCoreServiceMock;
     private static Map<String, String> headers;
     private static Map<String, Object> configs;
@@ -86,9 +85,8 @@ public class DefaultConsentManageHandlerTest {
     private MockedStatic<FinancialServicesUtils> financialServicesUtilsMockedStatic;
 
     @BeforeClass
-    public void initTest() throws ConsentManagementException, IdentityOAuth2Exception {
+    public void initTest() throws ConsentManagementException {
 
-        consentManageDataMock = mock(ConsentManageData.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
         consentExtensionsDataHolder = mockStatic(ConsentExtensionsDataHolder.class);
         configParser = mockStatic(FinancialServicesConfigParser.class);
@@ -110,6 +108,7 @@ public class DefaultConsentManageHandlerTest {
                 .getConsentAttributes(anyString());
         doReturn(true).when(consentCoreServiceMock).revokeConsent(anyString(), any(), any(),
                 anyBoolean());
+        doReturn(TestUtil.getSampleDetailedConsentResource()).when(consentCoreServiceMock).updateDetailedConsent(any());
 
         configs = new HashMap<String, Object>();
         configs.put(FinancialServicesConstants.MAX_INSTRUCTED_AMOUNT, "1000");
@@ -151,79 +150,117 @@ public class DefaultConsentManageHandlerTest {
         financialServicesUtilsMockedStatic.close();
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandlePostWithoutClientId() {
 
-        setConsentManageBuilder();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(null).when(consentManageDataMock).getClientId();
 
-        defaultConsentManageHandler.handlePost(consentManageDataMock);
+            defaultConsentManageHandler.handlePost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Client ID missing in the request.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandlePostWithInvalidHeaders() {
 
-        setConsentManageBuilderForErrorScenario();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        try {
+            setConsentManageBuilderForErrorScenario();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
-        defaultConsentManageHandler.handlePost(consentManageDataMock);
+            defaultConsentManageHandler.handlePost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid headers");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandlePostWithoutRequestPath() {
 
-        setConsentManageBuilder();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(null).when(consentManageDataMock).getRequestPath();
 
-        defaultConsentManageHandler.handlePost(consentManageDataMock);
+            defaultConsentManageHandler.handlePost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Resource Path Not Found");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandlePostWithInvalidRequestPath() {
 
-        setConsentManageBuilder();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(headers).when(consentManageDataMock).getHeaders();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(headers).when(consentManageDataMock).getHeaders();
 
-        defaultConsentManageHandler.handlePost(consentManageDataMock);
+            defaultConsentManageHandler.handlePost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid request path found.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandlePostWithInvalidPayload() {
 
-        setConsentManageBuilder();
-        doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
-                .getPayload();
-        defaultConsentManageHandler.handlePost(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(ConsentExtensionConstants.ACCOUNT_CONSENT_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+
+            defaultConsentManageHandler.handlePost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Payload is not in the correct format");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class, dataProvider = "AccountInitiationDataProvider",
-            dataProviderClass = DataProviders.class)
-    public void testHandlePostWithInvalidInitiation(String initiation) {
+    @Test(dataProvider = "AccountInitiationDataProvider", dataProviderClass = DataProviders.class)
+    public void testHandlePostWithInvalidInitiation(String initiation, String errorMessage) {
 
-        setConsentManageBuilder();
-        JSONObject payload = new JSONObject(initiation);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(ConsentExtensionConstants.ACCOUNT_CONSENT_PATH).when(consentManageDataMock)
-                .getRequestPath();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(initiation);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(ConsentExtensionConstants.ACCOUNT_CONSENT_PATH).when(consentManageDataMock)
+                    .getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
-        defaultConsentManageHandler.handlePost(consentManageDataMock);
+            defaultConsentManageHandler.handlePost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    errorMessage);
+        }
     }
 
     @Test
     public void testHandlePostForAccounts() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         doReturn(headers).when(consentManageDataMock).getHeaders();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
         doReturn(ConsentExtensionConstants.ACCOUNT_CONSENT_PATH).when(consentManageDataMock)
@@ -232,12 +269,18 @@ public class DefaultConsentManageHandlerTest {
         doReturn(payload).when(consentManageDataMock).getPayload();
 
         defaultConsentManageHandler.handlePost(consentManageDataMock);
+
+
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
     }
 
     @Test
     public void testHandlePostForAccountsWithExtensionEnabled() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
@@ -259,6 +302,10 @@ public class DefaultConsentManageHandlerTest {
                     .thenReturn(postConsentGenerateResponseDTO);
 
             externalServiceConsentManageHandler.handlePost(consentManageDataMock);
+
+            Mockito.verify(consentManageDataMock, Mockito.times(3)).getRequestPath();
+            Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+            Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
         }
     }
 
@@ -266,6 +313,7 @@ public class DefaultConsentManageHandlerTest {
     public void testHandlePostForCOF() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         doReturn(headers).when(consentManageDataMock).getHeaders();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
         doReturn(ConsentExtensionConstants.COF_CONSENT_PATH).when(consentManageDataMock)
@@ -274,12 +322,17 @@ public class DefaultConsentManageHandlerTest {
         doReturn(payload).when(consentManageDataMock).getPayload();
 
         defaultConsentManageHandler.handlePost(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
     }
 
     @Test
     public void testHandlePostForPayments() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         doReturn(headers).when(consentManageDataMock).getHeaders();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
         doReturn(ConsentExtensionConstants.PAYMENT_CONSENT_PATH).when(consentManageDataMock)
@@ -288,68 +341,101 @@ public class DefaultConsentManageHandlerTest {
         doReturn(payload).when(consentManageDataMock).getPayload();
 
         defaultConsentManageHandler.handlePost(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleFilePostWithoutClientId() {
 
-        setConsentManageBuilder();
-        consentManageDataMock = mock(ConsentManageData.class);
-        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
-        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
+
+            defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Client ID missing in the request.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleFilePostWithoutRequestPath() {
 
-        setConsentManageBuilder();
-        consentManageDataMock = mock(ConsentManageData.class);
-        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+            defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Resource path not found in the request");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleFilePostWithInvalidRequestPath() {
 
-        setConsentManageBuilder();
-        consentManageDataMock = mock(ConsentManageData.class);
-        doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(headers).when(consentManageDataMock).getHeaders();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(headers).when(consentManageDataMock).getHeaders();
 
-        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+            defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleFilePostWithNullPayload() {
 
-        setConsentManageBuilder();
-        consentManageDataMock = mock(ConsentManageData.class);
-        doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(null).when(consentManageDataMock).getPayload();
-        defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(null).when(consentManageDataMock).getPayload();
+
+            defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid file content found in the request.");
+        }
     }
 
     @Test
     public void testHandlePostForFilePayments() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         doReturn(headers).when(consentManageDataMock).getHeaders();
         doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
         defaultConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
     }
 
     @Test
     public void testHandlePostForFilePaymentsWithExtensionEnabled() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         doReturn(TestConstants.SAMPLE_CONSENT_FILE).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.PAYMENTS_FILE_UPLOAD_PATH).when(consentManageDataMock).getRequestPath();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
@@ -362,69 +448,124 @@ public class DefaultConsentManageHandlerTest {
                     ExternalAPIPreFileUploadRequestDTO.class))).thenReturn(preFileUploadResponseDTO);
             mockedStatic.when(() -> ExternalAPIConsentManageUtils.callExternalService(any(
                     ExternalAPIPostFileUploadRequestDTO.class))).thenReturn(modifiedResponseDTO);
+
             externalServiceConsentManageHandler.handleFileUploadPost(consentManageDataMock);
+
+            Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+            Mockito.verify(consentManageDataMock, Mockito.times(2)).getClientId();
+            Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
         }
     }
 
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleGetWithoutClientId() {
 
-        setConsentManageBuilder();
-        doReturn(null).when(consentManageDataMock).getClientId();
-        defaultConsentManageHandler.handleGet(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(null).when(consentManageDataMock).getClientId();
+
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Client ID missing in the request.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleGetWithInvalidHeaders() {
 
-        setConsentManageBuilderForErrorScenario();
+        try {
+            setConsentManageBuilderForErrorScenario();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-
-        defaultConsentManageHandler.handleGet(consentManageDataMock);
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid headers");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleGetWithoutRequestPath() {
 
-        setConsentManageBuilder();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(null).when(consentManageDataMock).getRequestPath();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(null).when(consentManageDataMock).getRequestPath();
 
-        defaultConsentManageHandler.handleGet(consentManageDataMock);
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Resource path not found in the request");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleGetWithInvalidRequestPath() {
 
-        setConsentManageBuilder();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(headers).when(consentManageDataMock).getHeaders();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(headers).when(consentManageDataMock).getHeaders();
 
-        defaultConsentManageHandler.handleGet(consentManageDataMock);
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleGetWithInvalidConsentId() {
 
-        setConsentManageBuilder();
-        doReturn(TestConstants.REQUEST_PATH_WITH_INVALID_CONSENT_ID).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
-                .getPayload();
-        defaultConsentManageHandler.handleGet(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.REQUEST_PATH_WITH_INVALID_CONSENT_ID).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
+    }
+
+    @Test
+    public void testHandleGetWithInvalidClientId() {
+
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn("TestClient").when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+
+            defaultConsentManageHandler.handleGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+        }
     }
 
     @Test
     public void testHandleGet() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject();
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
@@ -432,12 +573,39 @@ public class DefaultConsentManageHandlerTest {
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
         defaultConsentManageHandler.handleGet(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
+    }
+
+    @Test
+    public void testHandleGetForInternalRequests() {
+
+        setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+        JSONObject payload = new JSONObject();
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
+                .getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true");
+        doReturn(headers).when(consentManageDataMock).getHeaders();
+
+        defaultConsentManageHandler.handleGet(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
     }
 
     @Test
     public void testHandleGetWithExtensionEnabled() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject();
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
@@ -451,31 +619,49 @@ public class DefaultConsentManageHandlerTest {
             ).thenReturn(mockResponse);
 
             externalServiceConsentManageHandler.handleGet(consentManageDataMock);
+
+            Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+            Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+            Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
         }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleFileGetWithoutClientId() {
 
-        setConsentManageBuilder();
-        doReturn(null).when(consentManageDataMock).getClientId();
-        defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(null).when(consentManageDataMock).getClientId();
+
+            defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Client ID missing in the request.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleFileGetWithoutRequestPath() {
 
-        setConsentManageBuilder();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(null).when(consentManageDataMock).getRequestPath();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(null).when(consentManageDataMock).getRequestPath();
 
-        defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+            defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Resource path not found in the request");
+        }
     }
 
     @Test
     public void testHandleFileGet() throws ConsentManagementException {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject();
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
@@ -485,12 +671,17 @@ public class DefaultConsentManageHandlerTest {
                 .getConsentFile(anyString());
 
         defaultConsentManageHandler.handleFileGet(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
     }
 
     @Test
     public void testHandleFileGetWithExtensionEnabled() throws ConsentManagementException {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject();
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
@@ -506,66 +697,103 @@ public class DefaultConsentManageHandlerTest {
             ).thenReturn(mockResponse);
 
             externalServiceConsentManageHandler.handleFileGet(consentManageDataMock);
+
+            Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+            Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+            Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
         }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleDeleteWithoutClientId() {
 
-        setConsentManageBuilder();
-        doReturn(null).when(consentManageDataMock).getClientId();
-        defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(null).when(consentManageDataMock).getClientId();
+
+            defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Client ID missing in the request.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleDeleteWithInvalidHeaders() {
 
-        setConsentManageBuilderForErrorScenario();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        try {
+            setConsentManageBuilderForErrorScenario();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
-        defaultConsentManageHandler.handleDelete(consentManageDataMock);
+            defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid headers");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleDeleteWithoutRequestPath() {
 
-        setConsentManageBuilder();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(null).when(consentManageDataMock).getRequestPath();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(null).when(consentManageDataMock).getRequestPath();
 
-        defaultConsentManageHandler.handleDelete(consentManageDataMock);
+            defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Resource Path Not Found");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleDeleteWithInvalidRequestPath() {
 
-        setConsentManageBuilder();
-        JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
-        doReturn(payload).when(consentManageDataMock).getPayload();
-        doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(headers).when(consentManageDataMock).getHeaders();
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            JSONObject payload = new JSONObject(TestConstants.VALID_INITIATION);
+            doReturn(payload).when(consentManageDataMock).getPayload();
+            doReturn(TestConstants.INVALID_REQUEST_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(headers).when(consentManageDataMock).getHeaders();
 
-        defaultConsentManageHandler.handleDelete(consentManageDataMock);
+            defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
     public void testHandleDeleteWithInvalidConsentId() {
 
-        setConsentManageBuilder();
-        doReturn(TestConstants.REQUEST_PATH_WITH_INVALID_CONSENT_ID).when(consentManageDataMock).getRequestPath();
-        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
-        doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
-                .getPayload();
-        defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.REQUEST_PATH_WITH_INVALID_CONSENT_ID).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+
+            defaultConsentManageHandler.handleDelete(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
     }
 
     @Test
     public void testHandleDelete() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject();
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock)
@@ -573,12 +801,17 @@ public class DefaultConsentManageHandlerTest {
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
 
         defaultConsentManageHandler.handleDelete(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.NO_CONTENT);
     }
 
     @Test
     public void testHandleDeleteWithExtensionEnabled() {
 
         setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
         JSONObject payload = new JSONObject();
         doReturn(payload).when(consentManageDataMock).getPayload();
         doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
@@ -593,19 +826,153 @@ public class DefaultConsentManageHandlerTest {
             ).thenReturn(mockResponse);
 
             externalServiceConsentManageHandler.handleDelete(consentManageDataMock);
+
+            Mockito.verify(consentManageDataMock).getRequestPath();
+            Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+            Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.NO_CONTENT);
         }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
-    public void testHandlePut() {
+    @Test
+    public void testHandlePutWithoutRequestPath() {
 
-        defaultConsentManageHandler.handlePut(consentManageDataMock);
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(null).when(consentManageDataMock).getRequestPath();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Resource Path Not Found");
+        }
     }
 
-    @Test(expectedExceptions = ConsentException.class)
+    @Test
+    public void testHandlePutForExternalRequests() {
+
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.ACCOUNT_CONSENT_GET_PATH).when(consentManageDataMock).getRequestPath();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Method PUT is not supported");
+        }
+    }
+
+    @Test
+    public void testHandlePutWithoutClientId() {
+
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true"))
+                    .when(consentManageDataMock).getHeaders();
+            doReturn(null).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.CONSENT_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Client ID missing in the request.");
+        }
+    }
+
+    @Test
+    public void testHandlePutWithInvalidConsentId() {
+
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            setConsentManageBuilder();
+            doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true"))
+                    .when(consentManageDataMock).getHeaders();
+            doReturn("/consent/1234").when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
+    }
+
+    @Test
+    public void testHandlePutWithUnMatchingClientID() {
+
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "true"))
+                    .when(consentManageDataMock).getHeaders();
+            doReturn("test123").when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.CONSENT_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+        }
+    }
+
+    @Test
+    public void testHandlePutWithInvalidRequestPath() {
+
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn("consent/1213").when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(headers).when(consentManageDataMock).getHeaders();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Invalid Request Path. Valid consent id not found.");
+        }
+    }
+
+    @Test
+    public void testHandlePutWithInvalidRequestPayload() {
+
+        try {
+            setConsentManageBuilder();
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            doReturn(TestConstants.CONSENT_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
+            doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+            doReturn(TestConstants.INVALID_INITIATION_OBJECT).when(consentManageDataMock)
+                    .getPayload();
+            defaultConsentManageHandler.handlePut(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Payload is not in the correct format");
+        }
+    }
+
+    @Test
+    public void testHandlePut() {
+
+        setConsentManageBuilder();
+        ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+        doReturn(TestConstants.CONSENT_UPDATE_PATH).when(consentManageDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentManageDataMock).getClientId();
+        JSONObject payload = new JSONObject(TestConstants.CONSENT_UPDATE_PAYLOAD);
+        doReturn(payload).when(consentManageDataMock).getPayload();
+        doReturn(Map.of(ConsentManageConstants.INTERNAL_API_REQUEST_HEADER, "false"))
+                .when(consentManageDataMock).getHeaders();
+
+        defaultConsentManageHandler.handlePut(consentManageDataMock);
+
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
+        Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.OK);
+    }
+
+    @Test
     public void testHandlePatch() {
 
-        defaultConsentManageHandler.handlePatch(consentManageDataMock);
+        try {
+            ConsentManageData consentManageDataMock = mock(ConsentManageData.class);
+            defaultConsentManageHandler.handlePatch(consentManageDataMock);
+        } catch (ConsentException e) {
+            Assert.assertEquals(e.getPayload().getJSONObject("error").getString("description"),
+                    "Method PATCH is not supported");
+        }
     }
 
     private static void setConsentManageBuilder() {

@@ -39,6 +39,7 @@ public class TestConstants {
     public static final String INVALID_REQUEST_PATH = "accounts";
     public static final String REQUEST_PATH_WITH_INVALID_CONSENT_ID = "accounts/1234";
     public static final String ACCOUNT_CONSENT_GET_PATH = "account-access-consents/" + SAMPLE_CONSENT_ID;
+    public static final String CONSENT_UPDATE_PATH = "consent/" + SAMPLE_CONSENT_ID;
     public static final String PAYMENTS_FILE_UPLOAD_PATH = "fileUpload/" + SAMPLE_CONSENT_ID;
     public static final String INVALID_INITIATION_OBJECT = "Invalid Object";
     public static final int SAMPLE_CONSENT_FREQUENCY = 1;
@@ -615,6 +616,33 @@ public class TestConstants {
             "         \"consentFrequency\":0\n" +
             "      }\n" +
             "   ]\n" +
+            "}";
+
+    public static final String CONSENT_UPDATE_PAYLOAD = "{\n" +
+            "    \"consentID\": \"" + SAMPLE_CONSENT_ID + "\",\n" +
+            "    \"status\": \"authorised\",\n" +
+            "    \"validityPeriod\": 0,\n" +
+            "    \"recurringIndicator\": true,\n" +
+            "    \"consentFrequency\": 0,\n" +
+            "    \"receipt\": \"\",\n" +
+            "    \"consentAttributes\": {\n" +
+            "      \"key1\": \"value1\",\n" +
+            "      \"key2\": \"value2\"\n" +
+            "    },\n" +
+            "    \"authorizationResources\": [\n" +
+            "        {\n" +
+            "          \"userID\": \"admin@wso2.com\",\n" +
+            "          \"authorizationType\": \"auth\",\n" +
+            "          \"authorizationStatus\": \"active\",\n" +
+            "          \"resources\": [\n" +
+            "            {\n" +
+            "              \"accountID\": \"1962368\",\n" +
+            "              \"permission\": \"account\",\n" +
+            "              \"mappingStatus\": \"active\"\n" +
+            "            }\n" +
+            "          ]\n" +
+            "        }\n" +
+            "    ]\n" +
             "}";
 
 }

@@ -126,6 +126,8 @@ public class ConsentMgtDAOConstants {
             "authorization user in the database";
     public static final String CONSENT_AUTHORIZATION_RESOURCE_UPDATE_ERROR_MSG = "Error occurred while updating " +
             "authorization resource in the database";
+    public static final String CONSENT_AUTHORIZATION_RESOURCE_DELETE_ERROR_MSG = "Error occurred while deleting " +
+            "authorization resource in the database";
     public static final String CONSENT_MAPPING_RESOURCE_STORE_ERROR_MSG = "Error occurred while storing consent " +
             "mapping resource in the database";
     public static final String CONSENT_MAPPING_RETRIEVE_ERROR_MSG = "Error occurred while retrieving consent mapping " +
@@ -133,6 +135,8 @@ public class ConsentMgtDAOConstants {
     public static final String CONSENT_MAPPING_STATUS_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
             "mapping status in the database";
     public static final String CONSENT_MAPPING_RESOURCE_UPDATE_ERROR_MSG = "Error occurred while updating consent " +
+            "mapping resource in the database";
+    public static final String CONSENT_MAPPING_RESOURCE_DELETE_ERROR_MSG = "Error occurred while deleting consent " +
             "mapping resource in the database";
     public static final String CONSENT_ATTRIBUTES_STORE_ERROR_MSG = "Error occurred while storing consent attributes " +
             "in the database";

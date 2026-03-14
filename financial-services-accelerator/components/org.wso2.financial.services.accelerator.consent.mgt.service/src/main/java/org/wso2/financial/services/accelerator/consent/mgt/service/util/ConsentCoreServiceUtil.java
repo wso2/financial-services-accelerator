@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -770,4 +771,138 @@ public class ConsentCoreServiceUtil {
         return "";
     }
 
+    /**
+     * Method to delete the existing consent attributes of a consent.
+     *
+     * @param consentCoreDAO    Consent core DAO
+     * @param connection        Database connection
+     * @param consentId         Consent ID
+     * @param previousConsent   Previous consent resource containing the existing consent attributes
+     * @throws ConsentDataDeletionException If an error occurs when deleting the existing consent attributes
+     */
+    public static void deleteExistingConsentAttributes(ConsentCoreDAO consentCoreDAO, Connection connection,
+                                                     String consentId, DetailedConsentResource previousConsent)
+            throws ConsentDataDeletionException {
+
+        if (MapUtils.isNotEmpty(previousConsent.getConsentAttributes())) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Deleting existing consent attributes for consent ID: %s",
+                        consentId.replaceAll("[\r\n]", "")));
+            }
+            ArrayList<String> existingAttributeKeys = previousConsent.getConsentAttributes().keySet()
+                    .stream().collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            consentCoreDAO.deleteConsentAttributes(connection, consentId, existingAttributeKeys);
+        }
+    }
+
+    /**
+     * Method to add the consent attributes of a consent.
+     *
+     * @param consentCoreDAO           Consent core DAO
+     * @param connection               Database connection
+     * @param detailedConsentToUpdate  Detailed consent resource containing the new consent attributes to be added
+     * @throws ConsentDataInsertionException If an error occurs when inserting the new consent attributes
+     */
+    public static void addConsentAttributes(ConsentCoreDAO consentCoreDAO, Connection connection,
+                                            DetailedConsentResource detailedConsentToUpdate)
+            throws ConsentDataInsertionException {
+
+        ConsentAttributes attributes = ConsentCoreServiceUtil.getConsentAttributes(detailedConsentToUpdate);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding new consent attributes for consent ID: %s",
+                    detailedConsentToUpdate.getConsentID().replaceAll("[\r\n]", "")));
+        }
+        consentCoreDAO.storeConsentAttributes(connection, attributes);
+    }
+
+    /**
+     * Method to delete the existing authorization resources of a consent.
+     * @param consentCoreDAO     Consent core DAO
+     * @param connection         Database connection
+     * @param consentId          Consent ID
+     * @param previousConsent    Previous consent resource containing the existing authorization resources
+     * @throws ConsentDataDeletionException If an error occurs when deleting the existing authorization resources
+     */
+    public static void deleteExistingAuthorizationResources(ConsentCoreDAO consentCoreDAO, Connection connection,
+                                                            String consentId, DetailedConsentResource previousConsent)
+            throws ConsentDataDeletionException {
+
+        if (CollectionUtils.isNotEmpty(previousConsent.getAuthorizationResources())) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Deleting existing authorization resources for consent ID: %s",
+                        consentId.replaceAll("[\r\n]", "")));
+            }
+            List<String> authIdsToDelete = previousConsent.getAuthorizationResources().stream()
+                    .map(AuthorizationResource::getAuthorizationID).collect(ArrayList::new, ArrayList::add,
+                            ArrayList::addAll);
+            consentCoreDAO.deleteAuthorizationResources(connection, authIdsToDelete);
+        }
+    }
+
+    /**
+     * Method to add the authorization resources of a consent.
+     *
+     * @param consentCoreDAO          Consent core DAO
+     * @param connection              Database connection
+     * @param authorizationResources  List of authorization resources to be added
+     * @param consentId               Consent ID
+     * @throws ConsentDataInsertionException  If an error occurs when inserting the new authorization resources
+     */
+    public static void addAuthorizationResources(ConsentCoreDAO consentCoreDAO, Connection connection,
+                                            List<AuthorizationResource> authorizationResources, String consentId)
+            throws ConsentDataInsertionException {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding new authorization resources for consent ID: %s",
+                    consentId.replaceAll("[\r\n]", "")));
+        }
+        for (AuthorizationResource authResource : authorizationResources) {
+            consentCoreDAO.storeAuthorizationResource(connection, authResource);
+        }
+    }
+
+    /**
+     * Method to delete the existing consent mapping resources of a consent.
+     *
+     * @param consentCoreDAO     Consent core DAO
+     * @param connection         Database connection
+     * @param consentId          Consent ID
+     * @param previousConsent    Previous consent resource containing the existing consent mapping resources
+     * @throws ConsentDataDeletionException If an error occurs when deleting the existing consent mapping resources
+     */
+    public static void deleteExistingConsentMappings(ConsentCoreDAO consentCoreDAO, Connection connection,
+                                                     String consentId, DetailedConsentResource previousConsent)
+            throws ConsentDataDeletionException {
+
+        if (CollectionUtils.isNotEmpty(previousConsent.getConsentMappingResources())) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Deleting existing consent mapping resources for consent ID: %s",
+                        consentId.replaceAll("[\r\n]", "")));
+            }
+            List<String> mappingIdsToDelete = previousConsent.getConsentMappingResources().stream()
+                    .map(ConsentMappingResource::getMappingID).collect(ArrayList::new, ArrayList::add,
+                            ArrayList::addAll);
+            consentCoreDAO.deleteConsentMappingResources(connection, mappingIdsToDelete);
+        }
+    }
+
+    /**
+     * Method to add the consent mapping resources of a consent.
+     *
+     * @param consentCoreDAO    Consent core DAO
+     * @param connection        Database connection
+     * @param mappingResources  List of consent mapping resources to be added
+     * @param consentId         Consent ID
+     * @throws ConsentDataInsertionException  If an error occurs when inserting the new consent mapping resources
+     */
+    public static void addConsentMappingResources(ConsentCoreDAO consentCoreDAO, Connection connection,
+                                                  List<ConsentMappingResource> mappingResources, String consentId)
+            throws ConsentDataInsertionException {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Adding new consent mapping resources for consent ID: %s",
+                    consentId.replaceAll("[\r\n]", "")));
+        }
+        consentCoreDAO.storeConsentMappingResources(connection, mappingResources);
+    }
 }

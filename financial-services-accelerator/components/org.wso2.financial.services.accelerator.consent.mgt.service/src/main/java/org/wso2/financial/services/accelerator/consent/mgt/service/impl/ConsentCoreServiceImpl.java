@@ -281,6 +281,92 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
     }
 
     @Override
+    public DetailedConsentResource updateDetailedConsent(DetailedConsentResource detailedConsentResource)
+            throws ConsentManagementException {
+
+        if (detailedConsentResource == null || StringUtils.isBlank(detailedConsentResource.getConsentID())) {
+            log.error("Consent resource or consentId is missing");
+            throw new ConsentManagementException("Consent resource or consentId is missing");
+        }
+        log.info(String.format("Updating consent with ID: %s",
+                detailedConsentResource.getConsentID().replaceAll("[\r\n]", "")));
+
+        Connection connection = DatabaseUtils.getDBConnection();
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+            String consentIdToUpdate = detailedConsentResource.getConsentID();
+
+            DetailedConsentResource previousConsent = consentCoreDAO.getDetailedConsentResource(connection,
+                    consentIdToUpdate);
+            /* Update the base consent using updated values from ConsentResource.
+               Immutable parameters are ignored in the update (i.e. clientId, createdTime) at DAO level.*/
+            ConsentResource consentResourceToUpdate = new ConsentResource(detailedConsentResource);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Updating the consent for consent ID: %s",
+                        consentIdToUpdate.replaceAll("[\r\n]", "")));
+            }
+            consentCoreDAO.updateConsentResource(connection, consentResourceToUpdate);
+
+            // Update consent attributes
+            // Delete existing attributes and store new attributes.
+            if (detailedConsentResource.getConsentAttributes() != null) {
+                ConsentCoreServiceUtil.deleteExistingConsentAttributes(consentCoreDAO, connection, consentIdToUpdate,
+                        previousConsent);
+                ConsentCoreServiceUtil.addConsentAttributes(consentCoreDAO, connection, detailedConsentResource);
+            }
+
+            // Update Consent Mapping Resources
+            // Delete existing consent mapping resources
+            if (detailedConsentResource.getConsentMappingResources() != null) {
+                ConsentCoreServiceUtil.deleteExistingConsentMappings(consentCoreDAO, connection, consentIdToUpdate,
+                        previousConsent);
+            }
+
+            // Update Authorization Resources
+            // Delete existing authorization resources and store new authorization resources.
+            if (detailedConsentResource.getAuthorizationResources() != null) {
+                ConsentCoreServiceUtil.deleteExistingAuthorizationResources(consentCoreDAO, connection,
+                        consentIdToUpdate, previousConsent);
+                ConsentCoreServiceUtil.addAuthorizationResources(consentCoreDAO, connection,
+                        detailedConsentResource.getAuthorizationResources(), consentIdToUpdate);
+            }
+
+            // Update Consent Mapping Resources
+            // Store new consent mapping resources after adding the consent auth resources.
+            if (detailedConsentResource.getConsentMappingResources() != null) {
+                ConsentCoreServiceUtil.addConsentMappingResources(consentCoreDAO, connection,
+                        detailedConsentResource.getConsentMappingResources(), consentIdToUpdate);
+            }
+
+            // Add audit record
+            HashMap<String, Object> consentDataMap = new HashMap<>();
+            consentDataMap.put(ConsentCoreServiceConstants.CONSENT_RESOURCE, detailedConsentResource);
+            String actionByUser = ConsentCoreServiceUtil.resolveActionByUser(detailedConsentResource);
+
+            ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO, consentIdToUpdate, actionByUser,
+                    detailedConsentResource.getCurrentStatus(), previousConsent.getCurrentStatus(),
+                    ConsentCoreServiceConstants.DETAIL_CONSENT_UPDATE_REASON, detailedConsentResource.getClientID(),
+                    consentDataMap
+            );
+
+            DatabaseUtils.commitTransaction(connection);
+            log.debug("Updated the basic consent details, consent attributes, authorization resources and " +
+                    "mapping resource successfully.");
+
+            return getDetailedConsent(consentIdToUpdate);
+
+        } catch (ConsentDataInsertionException | ConsentDataUpdationException | ConsentDataDeletionException |
+                 ConsentDataRetrievalException e) {
+            log.error("Error during updating consent, rolling back", e);
+            DatabaseUtils.rollbackTransaction(connection);
+            throw new ConsentManagementException("Failed to update consent and create related records", e);
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtils.closeConnection(connection);
+        }
+    }
+
+    @Override
     public DetailedConsentResource updateConsentAndCreateAuthResources(DetailedConsentResource detailedConsentResource,
             String primaryUserId) throws ConsentManagementException {
 
