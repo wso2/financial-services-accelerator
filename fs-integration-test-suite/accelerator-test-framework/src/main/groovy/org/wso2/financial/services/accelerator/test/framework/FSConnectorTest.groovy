@@ -74,10 +74,12 @@ class FSConnectorTest extends CommonTest{
     String code
     String denyResponse
     Response consentResponse
+    Response consentUpdateResponse
     Response consentRevocationResponse
     Response consentValidateResponse
     Response accountValidationResponse
     String consentPath
+    String consentUpdatePath
     String initiationPayload
     String initiationIncorrectPayload = RequestPayloads.initiationIncorrectPayload
     String initiationPayloadPayloadWithoutReadAccountsDetail = RequestPayloads.initiationPayloadWithoutReadAccountsDetail
@@ -700,6 +702,18 @@ class FSConnectorTest extends CommonTest{
                 .delete(incorrectConsentPath + "/${consentId}")
 
         return consentRevocationResponse
+    }
+
+    /**
+     * Account Consent Update.
+     */
+    void doConsentUpdate(String payload, String consentId) {
+
+        consentUpdateResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.X_WSO2_INTERNAL_HEADER, "true")
+                .body(payload)
+                .baseUri(configuration.getISServerUrl())
+                .put(consentUpdatePath + "/${consentId}")
     }
 
     /**Consent Authorisation.
