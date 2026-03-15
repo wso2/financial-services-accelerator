@@ -56,7 +56,7 @@ function updateAccountNamesFromPermissions() {
     // Handle unindexed "accounts"
     const standalonePermission = document.querySelector('input[type="hidden"][name="permission"]');
     const standaloneAccounts = document.querySelectorAll('[name="accounts"]');
-    if (standalonePermission && standaloneAccount.length > 0) {
+    if (standalonePermission && standaloneAccounts.length > 0) {
         standaloneAccounts.forEach(standaloneAccount => {
             standaloneAccount.setAttribute('name', standalonePermission.value);
         });
@@ -94,3 +94,4 @@ function denyDefaultClaim() {
     document.getElementById('consent').value = "deny";
     document.getElementById("profile").submit();
 }
+

@@ -29,15 +29,28 @@
         <div class="${accountSelectorClass}">
             <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
                 <%-- Display checkboxes for each account if multiple account selection is allowed --%>
-                <label for="<c:choose><c:when test='${not empty idSuffix}'>${account.displayName}-${idSuffix}</c:when><c:otherwise>${account.displayName}</c:otherwise></c:choose>">
-                    <input type="checkbox"
-                        id="<c:choose><c:when test='${not empty idSuffix}'>${account.displayName}-${idSuffix}</c:when><c:otherwise>${account.displayName}</c:otherwise></c:choose>"
-                        name="<c:choose><c:when test='${not empty idSuffix}'>accounts-${idSuffix}</c:when><c:otherwise>accounts</c:otherwise></c:choose>"
-                        value="${account.displayName}"
-                        <c:if test="${ignorePreSelect ne 'true' and account.selected}">checked</c:if>
-                    />
-                    ${account.displayName}
-                </label>
+                <div class="fs-tooltip-wrapper">
+                    <c:if test="${not empty account.description}">
+                        <p class="fs-tooltip-content hide" style="text-align:left">
+                            ${account.description}
+                        </p>
+                    </c:if>
+                    <label for="<c:choose><c:when test='${not empty idSuffix}'>${account.displayName}-${idSuffix}</c:when><c:otherwise>${account.displayName}</c:otherwise></c:choose>">
+                        <input type="checkbox"
+                            id="<c:choose><c:when test='${not empty idSuffix}'>${account.displayName}-${idSuffix}</c:when><c:otherwise>${account.displayName}</c:otherwise></c:choose>"
+                            name="<c:choose><c:when test='${not empty idSuffix}'>accounts-${idSuffix}</c:when><c:otherwise>accounts</c:otherwise></c:choose>"
+                            value="${account.displayName}"
+                            <c:if test="${ignorePreSelect ne 'true' and account.selected}">checked</c:if>
+                        />
+                        ${account.displayName}
+                        <c:if test="${not empty account.description}">
+                            <a class="fs-tooltip-trigger"
+                               title="${account.title}"
+                               style="cursor: help; text-decoration: none;">&#9432;
+                            </a>
+                        </c:if>
+                    </label>
+                </div>
                 <br>
             </c:forEach>
         </div>
@@ -46,15 +59,22 @@
     <c:otherwise>
         <div class="${accountSelectorClass}">
             <%-- Display an account select for all accounts if multiple account selection is not allowed --%>
-            <select class="account-select"
+            <select class="account-select fs-select-with-tooltip"
                 name="<c:choose><c:when test='${not empty idSuffix}'>accounts-${idSuffix}</c:when><c:otherwise>accounts</c:otherwise></c:choose>">
                 <option hidden disabled selected value>${defaultSelect}</option>
                 <c:forEach items="${consumerAccounts}" var="account" varStatus="accountIdx">
-                    <option value="${account.displayName}">
+                    <option value="${account.displayName}" data-tooltip-description="<c:out value='${account.description}'/>">
                         ${account['displayName']}
                     </option>
                 </c:forEach>
             </select>
+            <div class="fs-select-tooltip-container" style="padding-top: 6px;">
+                <p class="fs-tooltip-content fs-select-tooltip-content hide" style="text-align:left"></p>
+                <a class="fs-tooltip-trigger fs-select-tooltip-trigger hide"
+                   title="${defaultSelect}"
+                   style="cursor: help; text-decoration: none;">&#9432;
+                </a>
+            </div>
         </div>
     </c:otherwise>
 </c:choose>
