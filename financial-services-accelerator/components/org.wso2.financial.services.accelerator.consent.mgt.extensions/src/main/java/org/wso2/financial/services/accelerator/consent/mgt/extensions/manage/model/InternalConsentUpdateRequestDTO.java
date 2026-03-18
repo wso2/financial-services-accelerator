@@ -18,6 +18,7 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 public class InternalConsentUpdateRequestDTO {
 
+    @NotNull(message = "Consent ID cannot be null")
     private String consentID;
     private String receipt;
     private String status;
