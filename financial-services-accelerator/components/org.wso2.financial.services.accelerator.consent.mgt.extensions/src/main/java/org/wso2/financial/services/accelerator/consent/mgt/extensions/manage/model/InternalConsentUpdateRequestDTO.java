@@ -29,9 +29,9 @@ public class InternalConsentUpdateRequestDTO {
     private String consentID;
     private String receipt;
     private String status;
-    private int consentFrequency;
-    private long validityPeriod;
-    private boolean recurringIndicator;
+    private Integer consentFrequency;
+    private Long validityPeriod;
+    private Boolean recurringIndicator;
     private Map<String, String> consentAttributes;
     private List<Authorization> authorizationResources;
 
@@ -59,27 +59,27 @@ public class InternalConsentUpdateRequestDTO {
         this.status = status;
     }
 
-    public int getConsentFrequency() {
+    public Integer getConsentFrequency() {
         return consentFrequency;
     }
 
-    public void setConsentFrequency(int consentFrequency) {
+    public void setConsentFrequency(Integer consentFrequency) {
         this.consentFrequency = consentFrequency;
     }
 
-    public long getValidityPeriod() {
+    public Long getValidityPeriod() {
         return validityPeriod;
     }
 
-    public void setValidityPeriod(long validityPeriod) {
+    public void setValidityPeriod(Long validityPeriod) {
         this.validityPeriod = validityPeriod;
     }
 
-    public boolean isRecurringIndicator() {
+    public Boolean isRecurringIndicator() {
         return recurringIndicator;
     }
 
-    public void setRecurringIndicator(boolean recurringIndicator) {
+    public void setRecurringIndicator(Boolean recurringIndicator) {
         this.recurringIndicator = recurringIndicator;
     }
 

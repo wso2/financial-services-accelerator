@@ -330,9 +330,24 @@ public class ConsentManageUtils {
             InternalConsentUpdateRequestDTO updateRequestDTO =  objectMapper.readValue(requestPayload.toString(),
                     InternalConsentUpdateRequestDTO.class);
 
-            ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-            ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+            String receipt = updateRequestDTO.getReceipt() != null ? updateRequestDTO.getReceipt()
+                    : storedConsent.getReceipt();
+            String status = updateRequestDTO.getStatus() != null ? updateRequestDTO.getStatus()
+                    : storedConsent.getCurrentStatus();
+            int frequency = updateRequestDTO.getConsentFrequency() != null ?
+                    updateRequestDTO.getConsentFrequency() : storedConsent.getConsentFrequency();
+            long validityPeriod = updateRequestDTO.getValidityPeriod() != null ?
+                    updateRequestDTO.getValidityPeriod() : storedConsent.getValidityPeriod();
+            boolean recurringIndicator = updateRequestDTO.isRecurringIndicator() != null ?
+                    updateRequestDTO.isRecurringIndicator() : storedConsent.isRecurringIndicator();
+            Map<String, String> consentAttributes = updateRequestDTO.getConsentAttributes() != null ?
+                    updateRequestDTO.getConsentAttributes() : null;
+
+            ArrayList<AuthorizationResource> authorizationResources = null;
+            ArrayList<ConsentMappingResource> consentMappingResources = null;
             if (updateRequestDTO.getAuthorizationResources() != null) {
+                authorizationResources = new ArrayList<>();
+                consentMappingResources = new ArrayList<>();
                 for (InternalConsentUpdateRequestDTO.Authorization authorization:
                         updateRequestDTO.getAuthorizationResources()) {
                     String authId = authorization.getAuthorizationID() != null ? authorization.getAuthorizationID() :
@@ -354,19 +369,12 @@ public class ConsentManageUtils {
                         }
                     }
                 }
-            } else {
-                // If the request doesn't contain authorization resources, use the existing authorization resources
-                // of the consent
-                authorizationResources = storedConsent.getAuthorizationResources();
-                consentMappingResources = storedConsent.getConsentMappingResources();
             }
 
-            return new DetailedConsentResource(consentId,
-                    storedConsent.getClientID(), updateRequestDTO.getReceipt(), storedConsent.getConsentType(),
-                    updateRequestDTO.getStatus(), updateRequestDTO.getConsentFrequency(),
-                    updateRequestDTO.getValidityPeriod(), storedConsent.getCreatedTime(), 0L,
-                    updateRequestDTO.isRecurringIndicator(), updateRequestDTO.getConsentAttributes(),
-                    authorizationResources, consentMappingResources);
+            return new DetailedConsentResource(consentId, storedConsent.getClientID(), receipt,
+                    storedConsent.getConsentType(), status, frequency, validityPeriod, storedConsent.getCreatedTime(),
+                    0L, recurringIndicator, consentAttributes, authorizationResources,
+                    consentMappingResources);
 
         } catch (JsonProcessingException e) {
             log.error(String.format("Failed to parse update consent request payload for consentId: %s. Error: %s",
