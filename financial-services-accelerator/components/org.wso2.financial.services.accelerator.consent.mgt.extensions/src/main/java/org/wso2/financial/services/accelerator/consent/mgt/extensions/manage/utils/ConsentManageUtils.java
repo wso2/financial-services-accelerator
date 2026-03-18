@@ -330,6 +330,13 @@ public class ConsentManageUtils {
             InternalConsentUpdateRequestDTO updateRequestDTO =  objectMapper.readValue(requestPayload.toString(),
                     InternalConsentUpdateRequestDTO.class);
 
+            if (!updateRequestDTO.getConsentID().equals(consentId)) {
+                log.error("Consent ID in the request body does not match with the consent ID in the " +
+                                "request path");
+                throw new ConsentManagementException("Consent ID in the request body does not match with the " +
+                    "consent ID in the request path");
+            }
+
             String receipt = updateRequestDTO.getReceipt() != null ? updateRequestDTO.getReceipt()
                     : storedConsent.getReceipt();
             String status = updateRequestDTO.getStatus() != null ? updateRequestDTO.getStatus()

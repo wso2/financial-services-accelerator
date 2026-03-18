@@ -18,9 +18,10 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Internal Consent Update Request DTO.
