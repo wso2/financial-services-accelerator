@@ -301,6 +301,108 @@ class InternalConsentManageFlowValidationTest extends FSConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_400)
     }
 
+    @Test(priority = 2)
+    void "Verify internal updating a Created Consent Status"() {
+
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.X_WSO2_INTERNAL_HEADER, "true")
+                .baseUri(configuration.getISServerUrl())
+                .get(consentPath + "/${consentId}")
+
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "status"),
+                "AwaitingAuthorisation")
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "authorizationResources"))
+        List<JSONObject> authorizationResources = extractListFromResponse(consentResponse, "authorizationResources")
+        authIdBeforeUpdate = authorizationResources.get(0).get("authorizationID")
+
+        String updateStatusPayload = AccountsRequestPayloads.getAccountConsentStatusUpdatePayload(consentId)
+        doConsentUpdate(updateStatusPayload, consentId)
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentUpdateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "updatedTime"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "consentID"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "clientID"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "status"))
+         Assert.assertEquals(TestUtil.parseResponseBody(consentUpdateResponse, "status"), "Rejected")
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "authorizationResources"))
+        List<JSONObject> updatedAuthResources = extractListFromResponse(consentUpdateResponse, "authorizationResources")
+        String newAuthId = updatedAuthResources.get(0).get("authorizationID")
+        Assert.assertEquals(newAuthId, authIdBeforeUpdate)
+    }
+
+    @Test(priority = 2)
+    void "Verify internal updating a Created basic Consent"() {
+
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.X_WSO2_INTERNAL_HEADER, "true")
+                .baseUri(configuration.getISServerUrl())
+                .get(consentPath + "/${consentId}")
+
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "status"),
+                "AwaitingAuthorisation")
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "authorizationResources"))
+        List<JSONObject> authorizationResources = extractListFromResponse(consentResponse, "authorizationResources")
+        authIdBeforeUpdate = authorizationResources.get(0).get("authorizationID")
+
+        String updateStatusPayload = AccountsRequestPayloads.getAccountBasicConsentUpdatePayload(consentId)
+        doConsentUpdate(updateStatusPayload, consentId)
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentUpdateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "updatedTime"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "consentID"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "clientID"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "status"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentUpdateResponse, "status"), "Rejected")
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "authorizationResources"))
+        List<JSONObject> updatedAuthResources = extractListFromResponse(consentUpdateResponse, "authorizationResources")
+        String newAuthId = updatedAuthResources.get(0).get("authorizationID")
+        Assert.assertEquals(newAuthId, authIdBeforeUpdate)
+    }
+
+    @Test(priority = 2)
+    void "Verify internal updating a Created Consent with null authorizations"() {
+
+        doDefaultInitiation()
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
+
+        consentResponse = consentRequestBuilder.buildKeyManagerRequest(configuration.getAppInfoClientID())
+                .header(ConnectorTestConstants.X_WSO2_INTERNAL_HEADER, "true")
+                .baseUri(configuration.getISServerUrl())
+                .get(consentPath + "/${consentId}")
+
+        Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertEquals(TestUtil.parseResponseBody(consentResponse, "status"),
+                "AwaitingAuthorisation")
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentResponse, "authorizationResources"))
+        List<JSONObject> authorizationResources = extractListFromResponse(consentResponse, "authorizationResources")
+        authIdBeforeUpdate = authorizationResources.get(0).get("authorizationID")
+
+        String updateStatusPayload = AccountsRequestPayloads.getAccountConsentUpdatePayloadWithNullAuthorizations(consentId)
+        doConsentUpdate(updateStatusPayload, consentId)
+        Assert.assertNotNull(consentId)
+        Assert.assertEquals(consentUpdateResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_200)
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "updatedTime"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "consentID"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "clientID"))
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "status"))
+        Assert.assertEquals(TestUtil.parseResponseBody(consentUpdateResponse, "status"), "Rejected")
+        Assert.assertNotNull(TestUtil.parseResponseBody(consentUpdateResponse, "authorizationResources"))
+        List<JSONObject> updatedAuthResources = extractListFromResponse(consentUpdateResponse, "authorizationResources")
+        String newAuthId = updatedAuthResources.get(0).get("authorizationID")
+        Assert.assertEquals(newAuthId, authIdBeforeUpdate)
+    }
+
     static List<JSONObject> extractListFromResponse(Response response, String jsonPath) {
         return response.jsonPath().getList(jsonPath)
     }

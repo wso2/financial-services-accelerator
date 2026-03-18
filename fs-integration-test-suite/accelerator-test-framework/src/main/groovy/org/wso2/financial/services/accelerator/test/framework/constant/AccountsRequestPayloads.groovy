@@ -168,7 +168,7 @@ class AccountsRequestPayloads {
                 "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
                 "recurringIndicator": true,
                 "consentFrequency": 0,
-                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"2026-03-17T15:43:35.946770+05:30\\",\\"TransactionFromDateTime\\": \\"2026-03-12T15:43:35.947399+05:30\\",\\"TransactionToDateTime\\": \\"2026-03-15T15:43:35.947514+05:30\\"},\\"Risk\\": { }}",
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"${ConnectorTestConstants.expirationInstant}\\",\\"TransactionFromDateTime\\": \\"${ConnectorTestConstants.fromInstant}\\",\\"TransactionToDateTime\\": \\"${ConnectorTestConstants.toInstant}\\"},\\"Risk\\": { }}",
                 "consentAttributes": {
                     "key1": "value1",
                     "key2": "value2"
@@ -187,6 +187,46 @@ class AccountsRequestPayloads {
                         ]
                     }
                 ]
+            }
+        """.stripIndent()
+    }
+
+    static String getAccountConsentStatusUpdatePayload(String consentId) {
+        return """
+            {
+                "consentID": "${consentId}",
+                "status": "Rejected",
+            }
+        """.stripIndent()
+    }
+
+    static String getAccountBasicConsentUpdatePayload(String consentId) {
+        return """
+            {
+                "consentID": "${consentId}",
+                "status": "Rejected",
+                "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
+                "recurringIndicator": true,
+                "consentFrequency": 0,
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"${ConnectorTestConstants.expirationInstant}\\",\\"TransactionFromDateTime\\": \\"${ConnectorTestConstants.fromInstant}\\",\\"TransactionToDateTime\\": \\"${ConnectorTestConstants.toInstant}\\"},\\"Risk\\": { }}",
+            }
+        """.stripIndent()
+    }
+
+    static String getAccountConsentUpdatePayloadWithNullAuthorizations(String consentId) {
+        return """
+            {
+                "consentID": "${consentId}",
+                "status": "Rejected",
+                "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
+                "recurringIndicator": true,
+                "consentFrequency": 0,
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"${ConnectorTestConstants.expirationInstant}\\",\\"TransactionFromDateTime\\": \\"${ConnectorTestConstants.fromInstant}\\",\\"TransactionToDateTime\\": \\"${ConnectorTestConstants.toInstant}\\"},\\"Risk\\": { }}",
+                "consentAttributes": {
+                    "key1": "value1",
+                    "key2": "value2"
+                },
+                "authorizationResources": null
             }
         """.stripIndent()
     }
