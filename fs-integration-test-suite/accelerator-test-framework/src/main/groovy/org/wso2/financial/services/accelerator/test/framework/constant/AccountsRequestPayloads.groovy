@@ -163,7 +163,6 @@ class AccountsRequestPayloads {
     static String getAccountConsentUpdatePayload(String consentId) {
         return """
             {
-                "consentID": "${consentId}",
                 "status": "AwaitingAuthorisation",
                 "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
                 "recurringIndicator": true,
@@ -194,7 +193,6 @@ class AccountsRequestPayloads {
     static String getAccountConsentStatusUpdatePayload(String consentId) {
         return """
             {
-                "consentID": "${consentId}",
                 "status": "Rejected",
             }
         """.stripIndent()
@@ -203,7 +201,6 @@ class AccountsRequestPayloads {
     static String getAccountBasicConsentUpdatePayload(String consentId) {
         return """
             {
-                "consentID": "${consentId}",
                 "status": "Rejected",
                 "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
                 "recurringIndicator": true,
@@ -216,7 +213,6 @@ class AccountsRequestPayloads {
     static String getAccountConsentUpdatePayloadWithNullAuthorizations(String consentId) {
         return """
             {
-                "consentID": "${consentId}",
                 "status": "Rejected",
                 "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
                 "recurringIndicator": true,
