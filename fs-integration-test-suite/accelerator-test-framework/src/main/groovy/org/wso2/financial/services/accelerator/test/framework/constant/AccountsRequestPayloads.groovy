@@ -160,6 +160,73 @@ class AccountsRequestPayloads {
             }
 """.stripIndent()
 
+    static String getAccountConsentUpdatePayload(String consentId) {
+        return """
+            {
+                "status": "AwaitingAuthorisation",
+                "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
+                "recurringIndicator": true,
+                "consentFrequency": 0,
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"${ConnectorTestConstants.expirationInstant}\\",\\"TransactionFromDateTime\\": \\"${ConnectorTestConstants.fromInstant}\\",\\"TransactionToDateTime\\": \\"${ConnectorTestConstants.toInstant}\\"},\\"Risk\\": { }}",
+                "consentAttributes": {
+                    "key1": "value1",
+                    "key2": "value2"
+                },
+                "authorizationResources": [
+                    {
+                        "userID": "admin@wso2.com",
+                        "authorizationType": "auth",
+                        "authorizationStatus": "Created",
+                        "resources": [
+                            {
+                            "accountID": "1962368",
+                            "permission": "account",
+                            "mappingStatus": "active"
+                            }
+                        ]
+                    }
+                ]
+            }
+        """.stripIndent()
+    }
+
+    static String getAccountConsentStatusUpdatePayload(String consentId) {
+        return """
+            {
+                "status": "Rejected",
+            }
+        """.stripIndent()
+    }
+
+    static String getAccountBasicConsentUpdatePayload(String consentId) {
+        return """
+            {
+                "status": "Rejected",
+                "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
+                "recurringIndicator": true,
+                "consentFrequency": 0,
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"${ConnectorTestConstants.expirationInstant}\\",\\"TransactionFromDateTime\\": \\"${ConnectorTestConstants.fromInstant}\\",\\"TransactionToDateTime\\": \\"${ConnectorTestConstants.toInstant}\\"},\\"Risk\\": { }}",
+            }
+        """.stripIndent()
+    }
+
+    static String getAccountConsentUpdatePayloadWithNullAuthorizations(String consentId) {
+        return """
+            {
+                "status": "Rejected",
+                "validityPeriod": ${ConnectorTestConstants.expirationInstant.toEpochSecond()},
+                "recurringIndicator": true,
+                "consentFrequency": 0,
+                "receipt": "{\\"Data\\": {\\"Permissions\\": [\\"ReadAccountsBasic\\",\\"ReadAccountsDetail\\",\\"ReadBalances\\"],\\"ExpirationDateTime\\": \\"${ConnectorTestConstants.expirationInstant}\\",\\"TransactionFromDateTime\\": \\"${ConnectorTestConstants.fromInstant}\\",\\"TransactionToDateTime\\": \\"${ConnectorTestConstants.toInstant}\\"},\\"Risk\\": { }}",
+                "consentAttributes": {
+                    "key1": "value1",
+                    "key2": "value2"
+                },
+                "authorizationResources": null
+            }
+        """.stripIndent()
+    }
+
     /**
      * Build Validation Payload
      * @param clientId - Client Id
