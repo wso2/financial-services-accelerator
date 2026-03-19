@@ -21,15 +21,11 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.mo
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * Internal Consent Update Request DTO.
  */
 public class InternalConsentUpdateRequestDTO {
 
-    @NotNull(message = "Consent ID cannot be null")
-    private String consentID;
     private String receipt;
     private String status;
     private Integer consentFrequency;
@@ -37,14 +33,6 @@ public class InternalConsentUpdateRequestDTO {
     private Boolean recurringIndicator;
     private Map<String, String> consentAttributes;
     private List<Authorization> authorizationResources;
-
-    public String getConsentID() {
-        return consentID;
-    }
-
-    public void setConsentID(String consentID) {
-        this.consentID = consentID;
-    }
 
     public String getReceipt() {
         return receipt;

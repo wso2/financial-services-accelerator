@@ -619,7 +619,6 @@ public class TestConstants {
             "}";
 
     public static final String CONSENT_UPDATE_PAYLOAD = "{\n" +
-            "    \"consentID\": \"" + SAMPLE_CONSENT_ID + "\",\n" +
             "    \"status\": \"authorised\",\n" +
             "    \"validityPeriod\": 0,\n" +
             "    \"recurringIndicator\": true,\n" +
