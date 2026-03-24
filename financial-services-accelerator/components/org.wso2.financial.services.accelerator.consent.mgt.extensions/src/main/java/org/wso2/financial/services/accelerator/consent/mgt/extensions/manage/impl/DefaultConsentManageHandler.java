@@ -149,16 +149,41 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                 ConsentOperationEnum.CONSENT_RETRIEVE);
 
         try {
+            if (ConsentManageUtils.isInternalConsentRequest(consentManageData)) {
+                // Allowing consent retrieval for internal purpose. Retrieving the detailed consent and response back
+                // for internal consent retrieval requests
+                log.info(String.format("Processing internal consent retrieval request for consentId: %s",
+                        consentId.replaceAll("[\r\n]+", " ")));
+                DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(consentId);
+                if (detailedConsentResource == null) {
+                    log.error(String.format("Consent not found for consent ID: %s",
+                            consentId.replaceAll("[\r\n]+", " ")));
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                            ConsentOperationEnum.CONSENT_RETRIEVE);
+                }
+                if (!detailedConsentResource.getClientID().equals(consentManageData.getClientId())) {
+                    //Throwing this error in a generic manner since client will not be able to identify if consent
+                    // exists if consent does not belong to them
+                    log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                            ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR, ConsentOperationEnum.CONSENT_RETRIEVE);
+                }
+                consentManageData.setResponsePayload(ConsentManageUtils
+                        .constructInternalConsentResponse(detailedConsentResource));
+                consentManageData.setResponseStatus(ResponseStatus.OK);
+                return;
+            }
+
             ConsentResource consent = consentCoreService.getConsent(consentId, false);
             if (consent == null) {
-                log.error("Consent not found");
+                log.error(String.format("Consent not found for consent ID: %s", consentId.replaceAll("[\r\n]+", " ")));
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
                         ConsentOperationEnum.CONSENT_RETRIEVE);
             }
             // Check whether the client id is matching
             if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                log.error("Client ID mismatch");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
                         ConsentOperationEnum.CONSENT_RETRIEVE);
             }
 
@@ -228,7 +253,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_CREATE);
         }
 
         //Validate Initiation headers
@@ -352,7 +377,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_DELETE);
         }
 
         //Validate Initiation headers
@@ -388,9 +413,9 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
                 //Throwing this error in a generic manner since client will not be able to identify if consent
                 // exists if consent does not belong to them
-                log.error(ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR);
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        ConsentManageConstants.NO_CONSENT_FOR_CLIENT_ERROR, ConsentOperationEnum.CONSENT_DELETE);
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
+                        ConsentOperationEnum.CONSENT_DELETE);
             }
 
             if (isExtensionsEnabled && isExternalPreConsentRevocationEnabled) {
@@ -446,9 +471,77 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
     @Override
     public void handlePut(ConsentManageData consentManageData) throws ConsentException {
 
-        log.error("Method PUT is not supported");
-        throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method PUT is not supported",
+        if (consentManageData.getRequestPath() == null) {
+            log.error("Resource Path Not Found");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Resource Path Not Found",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        if (!consentManageData.getRequestPath().matches(ConsentExtensionConstants.CONSENT_UPDATE_PATH) &&
+                !ConsentManageUtils.isInternalConsentRequest(consentManageData)) {
+            log.error("Method PUT is not supported");
+            throw new ConsentException(ResponseStatus.METHOD_NOT_ALLOWED, "Method PUT is not supported",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        //Check whether client ID exists
+        if (StringUtils.isEmpty(consentManageData.getClientId())) {
+            log.error("Client ID missing in the request.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        //Check whether client ID is valid
+        if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
+            log.error("Client ID does not exist in the system.");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
+                    ConsentOperationEnum.CONSENT_UPDATE);
+        }
+
+        String consentId = ConsentManageUtils.extractConsentIdFromPath(consentManageData.getRequestPath(),
                 ConsentOperationEnum.CONSENT_UPDATE);
+
+        try {
+
+            DetailedConsentResource storedConsentResource = consentCoreService.getDetailedConsent(consentId);
+
+            if (storedConsentResource == null) {
+                log.error("Consent not found");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Consent not found",
+                        ConsentOperationEnum.CONSENT_UPDATE);
+            }
+            log.info(String.format("Retrieved consent for ID: %s", consentId.replaceAll("[\r\n]+", " ")));
+
+            if (!storedConsentResource.getClientID().equals(consentManageData.getClientId())) {
+                //Throwing this error in a generic manner since client will not be able to identify if consent
+                // exists if consent does not belong to them
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
+                        ConsentOperationEnum.CONSENT_UPDATE);
+            }
+
+            ConsentPayloadValidationResult validationResponse = ConsentManageUtils.getConsentManageValidator()
+                    .validateRequestPayload(consentManageData, ConsentExtensionConstants.INTERNAL_UPDATE);
+            if (!validationResponse.isValid()) {
+                log.error(validationResponse.getErrorMessage().replaceAll("[\r\n]+", " "));
+                throw new ConsentException(validationResponse.getHttpCode(), validationResponse.getErrorCode(),
+                        validationResponse.getErrorMessage());
+            }
+
+            DetailedConsentResource updatedConsent = consentCoreService.updateDetailedConsent(ConsentManageUtils
+                    .constructDetailedConsentResourceFromUpdatePayload(consentId, storedConsentResource,
+                            consentManageData.getPayload()));
+            log.info(String.format("Successfully updated consent with ID: %s",
+                    consentId.replaceAll("[\r\n]+", " ")));
+
+            consentManageData.setResponsePayload(ConsentManageUtils.constructInternalConsentResponse(updatedConsent));
+            consentManageData.setResponseStatus(ResponseStatus.OK);
+
+        } catch (ConsentManagementException e) {
+            log.error("Error Occurred while updating the consent", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error Occurred while updating the consent", ConsentOperationEnum.CONSENT_UPDATE);
+        }
     }
 
     @Override
@@ -473,7 +566,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
@@ -481,7 +574,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
 
         String resourcePath = consentManageData.getRequestPath();
@@ -491,7 +584,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                     ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         }
         String consentId = ConsentManageUtils.extractConsentIdFromPath(resourcePath,
-                ConsentOperationEnum.CONSENT_DELETE);
+                ConsentOperationEnum.CONSENT_FILE_UPLOAD);
 
         //Perform idempotency validation
         if (consentManageData.getHeaders().containsKey(idempotencyHeaderName) &&
@@ -590,7 +683,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         //Check whether client ID exists
         if (StringUtils.isEmpty(consentManageData.getClientId())) {
             log.error("Client ID is missing in the request.");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID id missing in the request.",
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID missing in the request.",
                     ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
 
@@ -598,7 +691,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
         if (!FinancialServicesUtils.isValidClientId(consentManageData.getClientId())) {
             log.error("Client ID does not exist in the system.");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID does not exist in the system.",
-                    ConsentOperationEnum.CONSENT_RETRIEVE);
+                    ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         }
 
         String resourcePath = consentManageData.getRequestPath();
@@ -619,8 +712,8 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             // Check whether the client id is matching
             if (!consent.getClientID().equals(consentManageData.getClientId())) {
-                log.error("Client ID mismatch");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Client ID mismatch",
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
                         ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
             }
             ConsentFile consentFile = consentCoreService.getConsentFile(consentId);

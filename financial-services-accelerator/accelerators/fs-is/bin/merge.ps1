@@ -70,26 +70,30 @@ Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\dropins"
 Get-ChildItem (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\components\lib") | Where-Object{$_.Name -Match "org.wso2.financial.services.accelerator.*"} | Remove-Item
 Write-Output "[INFO] All previous FS artifacts have been deleted!"
 
-# Copying all the new FS artifacts to the base product
-# Copy-Item -Force -Recurse -Verbose (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home\*") -Destination $WSO2_BASE_PRODUCT_HOME
-# Using Robocopy.exe becuase powershell Copy-Item cmdlet doesn't do recursive copying after a certain number of subdirectories.
-Write-Output "[INFO] Copying new financial services artifacts..."
-Robocopy.exe (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home") $WSO2_BASE_PRODUCT_HOME * /E /NFL /NDL /NJH /NJS /nc /ns /np
-Write-Output "[INFO] All the new FS artifacts has been copied!"
-
 $WEB_APPS_PATH = (Join-Path $WSO2_BASE_PRODUCT_HOME "repository\deployment\server\webapps")
 
-# Delete the consentmgr web app if it exists.
+# Backup and delete the existing consentmgr web app BEFORE copying new artifacts.
 $CONSENTMGR_PATH = (Join-Path $WEB_APPS_PATH "consentmgr")
 $CONSENTMGR_RUNTIME_JS_PATH = (Join-Path $CONSENTMGR_PATH "runtime-config.js")
 $CONSENTMGR_RUNTIME_JS_BACKUP_PATH = (Join-Path $WEB_APPS_PATH "runtime-config.js")
+$CONSENTMGR_CONFIG_DIR_PATH = (Join-Path $CONSENTMGR_PATH "WEB-INF\classes")
+$CONSENTMGR_CONFIG_FILE_PATH = (Join-Path $CONSENTMGR_CONFIG_DIR_PATH "configurations.properties")
+$CONSENTMGR_CONFIG_BACKUP_PATH = (Join-Path $WEB_APPS_PATH "configurations.properties")
 if (Test-Path $CONSENTMGR_PATH) {
     Write-Output "[INFO] consentmgr web app detected at `"$CONSENTMGR_PATH`""
-    
+
     if (Test-Path $CONSENTMGR_RUNTIME_JS_PATH -PathType Leaf) {
-        # If the consentmgr/runtime-config,js file exists, backup it to the webapps directory before deleting the directory
+        # Backup runtime-config.js to webapps directory before deleting the consentmgr directory
         Write-Output "[INFO] Copying $CONSENTMGR_RUNTIME_JS_PATH to $CONSENTMGR_RUNTIME_JS_BACKUP_PATH..."
         Copy-Item $CONSENTMGR_RUNTIME_JS_PATH -Destination $CONSENTMGR_RUNTIME_JS_BACKUP_PATH -Force
+        Write-Output "[INFO] Backup of runtime-config.js complete!"
+    }
+
+    if (Test-Path $CONSENTMGR_CONFIG_FILE_PATH -PathType Leaf) {
+        # Backup configurations.properties to webapps directory before deleting the consentmgr directory
+        Write-Output "[INFO] Copying $CONSENTMGR_CONFIG_FILE_PATH to $CONSENTMGR_CONFIG_BACKUP_PATH..."
+        Copy-Item $CONSENTMGR_CONFIG_FILE_PATH -Destination $CONSENTMGR_CONFIG_BACKUP_PATH -Force
+        Write-Output "[INFO] Backup of configurations.properties complete!"
     }
 
     Write-Output "[INFO] Deleting the current consentmgr web app..."
@@ -97,26 +101,31 @@ if (Test-Path $CONSENTMGR_PATH) {
     Write-Output "[INFO] Deleted the current consentmgr web app!"
 }
 
-$CONSENTMGR_PATH_WAR = (Join-Path $WEB_APPS_PATH "consentmgr.war")
-$CONSENTMGR_PATH_ZIP = (Join-Path $WEB_APPS_PATH "consentmgr.zip")
+# Copying all the new FS artifacts to the base product (includes fresh consentmgr directory from carbon-home)
+# Copy-Item -Force -Recurse -Verbose (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home\*") -Destination $WSO2_BASE_PRODUCT_HOME
+# Using Robocopy.exe becuase powershell Copy-Item cmdlet doesn't do recursive copying after a certain number of subdirectories.
+Write-Output "[INFO] Copying new financial services artifacts..."
+Robocopy.exe (Join-Path $WSO2_ACCELERATOR_HOME "carbon-home") $WSO2_BASE_PRODUCT_HOME * /E /NFL /NDL /NJH /NJS /nc /ns /np
+Write-Output "[INFO] All the new FS artifacts has been copied!"
 
-# Expand-Archive cmdlet cannot directly extract the .war files. Since .war files are just zip files with some custom file headers and a fancy extension
-# we can just rename the war file and extract it.
-Move-Item -Path $CONSENTMGR_PATH_WAR -Destination $CONSENTMGR_PATH_ZIP -Force
-
-# Extract the consentmgr.zip
-Write-Output "[INFO] Extracting the new consentmgr..."
-Expand-Archive -LiteralPath $CONSENTMGR_PATH_ZIP -DestinationPath $CONSENTMGR_PATH -Force
-Write-Output "[INFO] New consentmgr extracted!"
-
+# Restore backed up runtime-config.js into the newly copied consentmgr directory
 if (Test-Path $CONSENTMGR_RUNTIME_JS_BACKUP_PATH -PathType Leaf) {
-    # Copy back the backed up runtime-config.js
     Write-Output "[INFO] Copying $CONSENTMGR_RUNTIME_JS_BACKUP_PATH to $CONSENTMGR_RUNTIME_JS_PATH..."
     Copy-Item $CONSENTMGR_RUNTIME_JS_BACKUP_PATH -Destination $CONSENTMGR_RUNTIME_JS_PATH -Force
     Remove-Item -LiteralPath $CONSENTMGR_RUNTIME_JS_BACKUP_PATH -Force
+    Write-Output "[INFO] Restoring backup runtime-config.js file complete!"
 }
 
-Remove-Item -LiteralPath $CONSENTMGR_PATH_ZIP -Force
+# Restore backed up configurations.properties into the newly copied consentmgr directory
+if (Test-Path $CONSENTMGR_CONFIG_BACKUP_PATH -PathType Leaf) {
+    Write-Output "[INFO] Copying $CONSENTMGR_CONFIG_BACKUP_PATH to $CONSENTMGR_CONFIG_FILE_PATH..."
+    if (-NOT(Test-Path $CONSENTMGR_CONFIG_DIR_PATH)) {
+        New-Item -ItemType Directory -Path $CONSENTMGR_CONFIG_DIR_PATH -Force | Out-Null
+    }
+    Copy-Item $CONSENTMGR_CONFIG_BACKUP_PATH -Destination $CONSENTMGR_CONFIG_FILE_PATH -Force
+    Remove-Item -LiteralPath $CONSENTMGR_CONFIG_BACKUP_PATH -Force
+    Write-Output "[INFO] Restoring backup configurations.properties file complete!"
+}
 
 Write-Output "[INFO] Completed!"
 

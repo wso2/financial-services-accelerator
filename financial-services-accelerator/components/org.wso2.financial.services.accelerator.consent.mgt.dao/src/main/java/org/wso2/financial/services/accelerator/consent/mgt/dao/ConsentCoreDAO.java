@@ -198,6 +198,16 @@ public interface ConsentCoreDAO {
             throws ConsentDataUpdationException;
 
     /**
+     * This method is used to delete the given list of authorization resources.
+     *
+     * @param connection connection object
+     * @param authorizationResourceIds a list of authorization resource IDs that should be deleted
+     * @throws ConsentDataDeletionException thrown if a database error occurs
+     */
+    boolean deleteAuthorizationResources(Connection connection, List<String> authorizationResourceIds)
+            throws ConsentDataDeletionException;
+
+    /**
      * This method is used to store the consent mapping resource in the database. The request consent mapping object
      * must contain all the data in it without the consent mapping ID. It will be generated and set to the response
      * object if the insertion is successful.
@@ -258,6 +268,16 @@ public interface ConsentCoreDAO {
      */
     public boolean updateConsentMappingResources(Connection connection, List<ConsentMappingResource>
             consentMappingResources) throws ConsentDataUpdationException;
+
+    /**
+     * This method is used to delete the given list of consent mapping resource Ids.
+     *
+     * @param connection connection object
+     * @param consentMappingResourceIds a list of consent mapping resource Ids that should be deleted
+     * @throws ConsentDataDeletionException thrown if a database error occurs
+     */
+    boolean deleteConsentMappingResources(Connection connection, List<String> consentMappingResourceIds)
+            throws ConsentDataDeletionException;
 
     /**
      * This method is used to store the consent attributes in the database. The request consent attributes object

@@ -145,35 +145,54 @@ public class FinancialServicesUtils {
     @Generated(message = "Ignoring because OAuth2Util cannot be mocked with no constructors")
     public static String resolveUsernameFromUserId(String userID) {
 
-        if (!startsWithUUID(userID)) {
-            // If the user ID is not starting with a UUID that means request has sent the username,
+        if (!containsUUID(userID)) {
+            // If the user ID doesn't have a UUID that means request has sent the username,
             // return the same user ID as the username.
             return userID;
         }
 
-        String username = null;
+        String extractedUUID = extractUUID(userID);
         try {
-            if (userID.contains(FinancialServicesConstants.TENANT_DOMAIN)) {
-                username =  OAuth2Util.resolveUsernameFromUserId(FinancialServicesConstants.TENANT_DOMAIN,
-                        userID.split("@" + FinancialServicesConstants.TENANT_DOMAIN)[0]);
-            } else {
-                username =  OAuth2Util.resolveUsernameFromUserId(FinancialServicesConstants.TENANT_DOMAIN, userID);
-            }
+            return OAuth2Util.resolveUsernameFromUserId(FinancialServicesConstants.TENANT_DOMAIN, extractedUUID);
         } catch (UserStoreException e) {
             log.debug("Returning null since user ID is not found in the database", e);
             return null;
         }
-        return username;
     }
 
     /**
-     * Method to check whether the input string starts with a UUID.
+     * Method to extract the UUID from the input string.
+     *
      * @param input Input string
-     * @return  true if the input string starts with a UUID
+     * @return Extracted UUID if found, else null
      */
-    public static boolean startsWithUUID(String input) {
-        Pattern uuidPattern = Pattern.compile("^" + FinancialServicesConstants.UUID_REGEX + ".*$");
-        return uuidPattern.matcher(input).matches();
+    public static String extractUUID(String input) {
+
+        if (input == null) {
+            return null;
+        }
+
+        // Use your existing constant or regex string
+        Pattern uuidPattern = Pattern.compile(FinancialServicesConstants.UUID_REGEX);
+        Matcher matcher = uuidPattern.matcher(input);
+
+        // 1. Search for the pattern
+        if (matcher.find()) {
+            // 2. Return the specific substring that matched
+            return matcher.group();
+        }
+
+        return null;
+    }
+
+    /**
+     * Method to check whether the input string has a UUID.
+     * @param input Input string
+     * @return  true if the input string has a UUID
+     */
+    public static boolean containsUUID(String input) {
+        Pattern uuidPattern = Pattern.compile(FinancialServicesConstants.UUID_REGEX);
+        return uuidPattern.matcher(input).find();
     }
 
     /**

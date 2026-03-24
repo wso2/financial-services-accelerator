@@ -360,6 +360,11 @@ connection_verification_timeout=1
 [financial_services.app_registration]
 application_updater = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.ApplicationUpdaterImpl"
 
+# Default: true. If true, authenticators will be set/updated automatically when an application is updated.
+# If false, authenticators will not be set/updated automatically when an app is updated. (Carbon console or DCR update).
+[financial_services.app_registration.sca.authenticator_config]
+enable_setting_authenticators_on_app_update = true
+
 #[financial_services.app_registration.sca.primaryauth]
 #name = ""
 #display = ""

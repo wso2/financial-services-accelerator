@@ -25,4 +25,7 @@ public class ConsentManageConstants {
 
     public static final String NO_CONSENT_FOR_CLIENT_ERROR = "No valid consent found for given information";
     public static final String CONSENT_TYPE_MISMATCH_ERROR = "Consent Type mismatch";
+    public static final String INTERNAL_API_REQUEST_HEADER = "x-wso2-internal-request";
+    public static final String CLIENT_ID_MISMATCH_ERROR = "Client Id in the request does not match with the client Id" +
+            " associated to the consent";
 }

@@ -64,6 +64,8 @@
     <test name="Consent Flow Types Validation Flow" parallel="tests" enabled="false" group-by-instances="true">
         <classes>
             <class name="org.wso2.financial.services.accelerator.is.test.consent.management.ConsentOperationsFlowTests.ConsentFlowTypesValidationTest"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.consent.management.ConsentOperationsFlowTests.ConsentManageEndpointValidationTest"/>
+            <class name="org.wso2.financial.services.accelerator.is.test.consent.management.ConsentOperationsFlowTests.InternalConsentManageFlowValidationTest"/>
         </classes>
     </test>
 </suite>

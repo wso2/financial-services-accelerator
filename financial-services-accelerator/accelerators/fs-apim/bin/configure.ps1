@@ -139,6 +139,15 @@ Function Set-Hostnames {
     Find-Replace $DEPLOYMENT_TOML_FILE "IS_HOSTNAME" "$( $PROPERTIES.'IS_HOSTNAME' )"
 }
 
+# A function to replace the admin credential variables in the temp deployment.toml with their actual values from configure.properties
+Function Set-AdminCredentials {
+    Find-Replace $DEPLOYMENT_TOML_FILE "IS_ADMIN_USERNAME" "$( $PROPERTIES.'IS_ADMIN_USERNAME' )"
+    Find-Replace $DEPLOYMENT_TOML_FILE "IS_ADMIN_PASSWORD" "$( $PROPERTIES.'IS_ADMIN_PASSWORD' )"
+    Find-Replace $DEPLOYMENT_TOML_FILE "AM_ADMIN_USERNAME" "$( $PROPERTIES.'AM_ADMIN_USERNAME' )"
+    Find-Replace $DEPLOYMENT_TOML_FILE "AM_ADMIN_PASSWORD" "$( $PROPERTIES.'AM_ADMIN_PASSWORD' )"
+    Find-Replace $DEPLOYMENT_TOML_FILE "AM_ADMIN_NAME" "$( $PROPERTIES.'AM_ADMIN_NAME' )"
+}
+
 # A utility function to create a database.
 Function Add-Database {
     param ([string]$DB_USER, [string]$DB_PASS, [string]$DB_HOST, [string]$DB_NAME)
@@ -207,6 +216,11 @@ Write-Output "============================================"
 Write-Output "[INFO] Configuring the hostnames..."
 Set-Hostnames
 Write-Output "[INFO] Hostnames configurations completed!"
+
+Write-Output "============================================"
+Write-Output "[INFO] Configuring the admin credentials..."
+Set-AdminCredentials
+Write-Output "[INFO] Admin credentials configurations completed!"
 
 Write-Output "============================================"
 Write-Output "[INFO] Configuring the datasources..."

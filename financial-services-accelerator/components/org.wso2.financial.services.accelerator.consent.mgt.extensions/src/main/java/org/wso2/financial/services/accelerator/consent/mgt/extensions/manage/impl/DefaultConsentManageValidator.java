@@ -18,6 +18,8 @@
 
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.Res
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.ConsentManageValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentManageData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.ConsentPayloadValidationResult;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.model.InternalConsentUpdateRequestDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.manage.utils.ConsentManageUtils;
 
 import java.util.Arrays;
@@ -69,6 +72,8 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
                 return validateCOFRequestPayload(requestPayload);
             case ConsentExtensionConstants.PAYMENTS:
                 return validatePaymentRequestPayload(requestPayload);
+            case ConsentExtensionConstants.INTERNAL_UPDATE:
+                return validateConsentUpdatePayload(requestPayload);
             default:
                 return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST, "invalid_consent_type",
                         "Invalid consent type");
@@ -474,5 +479,27 @@ public class DefaultConsentManageValidator implements ConsentManageValidator {
         }
 
         return new ConsentPayloadValidationResult(true);
+    }
+
+    /**
+     * Method to validate consent update request payload.
+     *
+     * @param request   Request payload for consent update
+     * @return ConsentPayloadValidationResult Validation response
+     */
+    public static ConsentPayloadValidationResult validateConsentUpdatePayload(JSONObject request) {
+
+        log.info("Validating consent update request payload");
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.readValue(request.toString(), InternalConsentUpdateRequestDTO.class);
+            return new ConsentPayloadValidationResult(true);
+        } catch (JsonProcessingException e) {
+            log.error(String.format("Failed to validate consent update payload: %s",
+                    e.getMessage().replaceAll("[\r\n]", "")));
+            return new ConsentPayloadValidationResult(false, ResponseStatus.BAD_REQUEST,
+                    ResponseStatus.BAD_REQUEST.getReasonPhrase(),
+                    "Invalid request payload: " + e.getMessage());
+        }
     }
 }
