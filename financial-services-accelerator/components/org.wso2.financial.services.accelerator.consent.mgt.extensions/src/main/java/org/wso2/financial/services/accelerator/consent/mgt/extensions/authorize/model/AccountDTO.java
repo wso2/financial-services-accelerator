@@ -33,6 +33,8 @@ public class AccountDTO {
     @NotEmpty(message = "Display name in Account Object cannot be empty")
     private String displayName;
     private String accountId;
+    private String title;
+    private String description;
     
     private final Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -50,6 +52,22 @@ public class AccountDTO {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @JsonAnyGetter

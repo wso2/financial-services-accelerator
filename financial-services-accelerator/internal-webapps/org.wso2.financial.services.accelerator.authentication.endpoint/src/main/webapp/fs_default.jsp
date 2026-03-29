@@ -86,6 +86,7 @@
             </div>
 
             <jsp:include page="includes/footer.jsp"/>
+            <script src="js/tooltip-functions.js"></script>
         </div>
     </body>
 </html>
