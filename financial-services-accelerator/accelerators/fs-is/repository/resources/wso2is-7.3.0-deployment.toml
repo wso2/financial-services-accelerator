@@ -136,7 +136,7 @@ pool_options.validationInterval="30000"
 pool_options.defaultAutoCommit=false
 pool_options.commitOnReturn=true
 
-[datasource.AgentIdentity]
+[[datasource]]
 id = "AgentIdentity"
 url = "jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
 username = "wso2carbon"
