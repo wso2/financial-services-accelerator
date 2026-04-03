@@ -239,7 +239,7 @@
                             org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.dao.models.*;version="${project.version}",
 
-                            org.apache.oltu.oauth2.*;version="${oltu.version}",
+                            org.apache.oltu.oauth2.*;version="${oltu.version.range}",
                             org.wso2.carbon.identity.base.*;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.identity.application.common.*;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.identity.application.mgt.*;version="${carbon.identity.framework.version.range}",

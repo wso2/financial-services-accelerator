@@ -2,15 +2,16 @@
 hostname = "IS_HOSTNAME"
 node_ip = "127.0.0.1"
 base_path = "https://$ref{server.hostname}:${carbon.management.port}"
-serverDetails = "WSO2 IS as KM 7.0.0"
+serverDetails = "WSO2 IS as KM 7.3.0"
 mode = "single"
-userAgent = "WSO2 IS as KM 7.0.0"
+userAgent = "WSO2 IS as KM 7.3.0"
 offset = 3
 
 [tenant_mgt]
 enable_email_domain = true
 
 #================configs related to user-mgt.xml=============
+
 [super_admin]
 username = "IS_ADMIN_USERNAME"
 password = "IS_ADMIN_PASSWORD"
@@ -135,15 +136,22 @@ pool_options.validationInterval="30000"
 pool_options.defaultAutoCommit=false
 pool_options.commitOnReturn=true
 
-[keystore.primary]
-file_name = "wso2carbon.jks"
+[[datasource]]
+id = "AgentIdentity"
+url = "jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
+username = "wso2carbon"
 password = "wso2carbon"
-type="JKS"
+driver = "org.h2.Driver"
+
+[keystore.primary]
+file_name = "wso2carbon.p12"
+password = "wso2carbon"
+type="PKCS12"
 
 [truststore]
-file_name="client-truststore.jks"
+file_name="client-truststore.p12"
 password="wso2carbon"
-type="JKS"
+type="PKCS12"
 
 [account_recovery.endpoint.auth]
 hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
@@ -503,7 +511,7 @@ priority = 7
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "SSAJTIValidator"
 class = "org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.validators.SSAJTIValidator"
-enable = true
+enable = false
 priority = 8
 [[financial_services.app_registration.dcr.validators.validator]]
 name = "TokenEndpointAuthSigningAlgValidator"
@@ -643,3 +651,6 @@ retry_function="EX"
 circuit_breaker_open_timeout=500
 pool_size=20
 event_notification_request_generator="org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator"
+
+#[agent_identity]
+#enabled=false

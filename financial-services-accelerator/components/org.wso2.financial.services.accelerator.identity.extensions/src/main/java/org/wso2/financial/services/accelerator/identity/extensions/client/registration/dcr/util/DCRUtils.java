@@ -126,7 +126,7 @@ public class DCRUtils {
     }
 
     /**
-     * Method to invoke the external service
+     * Method to invoke the external service.
      * .
      * @param appRequest                 Application request.
      * @param ssaParams                  SSA parameters.
