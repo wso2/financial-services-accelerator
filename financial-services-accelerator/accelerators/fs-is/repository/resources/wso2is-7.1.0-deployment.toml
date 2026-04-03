@@ -40,7 +40,7 @@ AuthorizationCacheEnabled = true
 GetAllRolesOfUserEnabled = false
 
 #================configs related to master-datasources.xml=============
-# for api manager data
+# for identity data
 [database.identity_db]
 url = "DB_IDENTITY_URL"
 username = "DB_USER"

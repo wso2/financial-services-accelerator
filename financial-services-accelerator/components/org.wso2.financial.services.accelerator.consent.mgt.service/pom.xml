@@ -233,7 +233,7 @@
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.dao.*;version="${project.version}",
                             com.google.gson;version="${google.gson.version.range}",
-                            org.apache.oltu.oauth2.*;version="${oltu.version}",
+                            org.apache.oltu.oauth2.*;version="${oltu.version.range}",
                             org.wso2.carbon.identity.application.authentication.framework.model;version="${carbon.identity.framework.version.range}",
                             org.wso2.carbon.user.core.util;version=${carbon.kernel.version}
                         </Import-Package>
