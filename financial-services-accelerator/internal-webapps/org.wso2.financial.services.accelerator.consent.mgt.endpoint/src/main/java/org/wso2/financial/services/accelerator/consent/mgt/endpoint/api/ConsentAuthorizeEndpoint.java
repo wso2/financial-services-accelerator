@@ -231,6 +231,15 @@ public class ConsentAuthorizeEndpoint {
                     ConsentConstants.ERROR_SERVER_ERROR, state);
         }
         ConsentUtils.setCommonDataToResponse(consentData, jsonObject);
+
+        // Add userId (SCIM ID) to the response JSON for OTP verification
+        if (sensitiveDataMap.containsKey(ConsentConstants.LOGGED_IN_USER)) {
+            String userId = (String) sensitiveDataMap.get(ConsentConstants.LOGGED_IN_USER);
+            if (userId != null && !userId.isEmpty()) {
+                jsonObject.put(ConsentExtensionConstants.USER_ID, userId);
+            }
+        }
+
         String consent = gson.toJson(consentData);
         Map<String, String> authorizeData = new HashMap<>();
         authorizeData.put(consentData.getSessionDataKey(), consent);
