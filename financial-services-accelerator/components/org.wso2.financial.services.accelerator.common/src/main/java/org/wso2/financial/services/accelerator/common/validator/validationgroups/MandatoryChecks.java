@@ -10,8 +10,8 @@
 package org.wso2.financial.services.accelerator.common.validator.validationgroups;
 
 /**
- * Interface for grouping the validation annotations
- * Grouping the mandatory check constraints
+ * Interface for grouping the validation annotations.
+ * Grouping the mandatory check constraints.
  */
 public interface MandatoryChecks {
 

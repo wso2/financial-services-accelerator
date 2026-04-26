@@ -12,7 +12,7 @@ package org.wso2.financial.services.accelerator.common.validator.validationgroup
 import javax.validation.GroupSequence;
 
 /**
- * Class to define the order of execution for the hibernate validation groups
+ * Class to define the order of execution for the hibernate validation groups.
  */
 @GroupSequence({MandatoryChecks.class, AttributeChecks.class, SignatureCheck.class})
 public interface ValidationOrder {

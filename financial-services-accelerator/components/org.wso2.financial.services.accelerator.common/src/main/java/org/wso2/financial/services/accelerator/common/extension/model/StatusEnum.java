@@ -19,7 +19,7 @@
 package org.wso2.financial.services.accelerator.common.extension.model;
 
 /**
- * Status enum
+ * Status enum.
  */
 public enum StatusEnum {
 

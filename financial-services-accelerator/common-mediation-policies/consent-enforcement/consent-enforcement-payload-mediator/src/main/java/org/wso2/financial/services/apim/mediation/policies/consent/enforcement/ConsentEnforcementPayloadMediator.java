@@ -80,10 +80,10 @@ public class ConsentEnforcementPayloadMediator extends AbstractMediator {
                 messageContext.getProperty(ConsentEnforcementConstants.API_ELECTED_RESOURCE));
         additionalParams.put(ConsentEnforcementConstants.RESOURCE_PARAMS_TAG,
                 ConsentEnforcementUtils.getResourceParamMap(messageContext));
-         additionalParams.put(ConsentEnforcementConstants.USER_ID_TAG,
-                 messageContext.getProperty(ConsentEnforcementConstants.USER_ID));
-         additionalParams.put(ConsentEnforcementConstants.CLIENT_ID_TAG,
-                 messageContext.getProperty(ConsentEnforcementConstants.CONSUMER_KEY));
+        additionalParams.put(ConsentEnforcementConstants.USER_ID_TAG,
+                messageContext.getProperty(ConsentEnforcementConstants.USER_ID));
+        additionalParams.put(ConsentEnforcementConstants.CLIENT_ID_TAG,
+                messageContext.getProperty(ConsentEnforcementConstants.CONSUMER_KEY));
 
         JSONObject validationRequest;
         try {

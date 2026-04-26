@@ -133,6 +133,13 @@
             {% else %}
             <JWTPayloadValidation>true</JWTPayloadValidation>
             {% endif %}
+            <ResponsePayloadSigning>
+                {% if financial_services.consent.validation.response_payload_signing.enabled is defined %}
+                <Enabled>{{financial_services.consent.validation.response_payload_signing.enabled}}</Enabled>
+                {% else %}
+                <Enabled>true</Enabled>
+                {% endif %}
+            </ResponsePayloadSigning>
         </Validation>
         {% if financial_services.consent.admin.handler is defined %}
         <AdminHandler>{{financial_services.consent.admin.handler}}</AdminHandler>

@@ -2365,6 +2365,44 @@ components:
                   selected:
                     type: boolean
                     description: Whether the account is selected by default
+        additionalData:
+          type: array
+          description: Additional data for the authorization screen
+          items:
+            $ref: '#/components/schemas/AdditionalData'
+
+    AdditionalData:
+      type: object
+      description: Additional data with title, subtitle, description and items
+      properties:
+        title:
+          type: string
+          description: Title
+        subtitle:
+          type: string
+          description: Subtitle
+        description:
+          type: string
+          description: Description
+        items:
+          type: array
+          description: List of items
+          items:
+            $ref: '#/components/schemas/AdditionalDataItem'
+
+    AdditionalDataItem:
+      type: object
+      description: Individual additional data item
+      properties:
+        item:
+          type: string
+          description: Item value
+        type:
+          type: string
+          description: Item type
+      required:
+        - item
+
     AuthorizedResources:
       type: object
       additionalProperties: true
@@ -2408,6 +2446,12 @@ components:
         displayName:
           type: string
           description: Account display name
+        title:
+          type: string
+          description: Account title
+        description:
+          type: string
+          description: Account description
       additionalProperties: true
 
     AppCreateProcessRequestBody:

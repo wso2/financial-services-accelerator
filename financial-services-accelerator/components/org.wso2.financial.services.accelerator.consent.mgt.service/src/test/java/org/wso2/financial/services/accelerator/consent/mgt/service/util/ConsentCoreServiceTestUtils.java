@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
- * Utility class for Consent Core Services tests
+ * Utility class for Consent Core Services tests.
  */
 public class ConsentCoreServiceTestUtils {
 

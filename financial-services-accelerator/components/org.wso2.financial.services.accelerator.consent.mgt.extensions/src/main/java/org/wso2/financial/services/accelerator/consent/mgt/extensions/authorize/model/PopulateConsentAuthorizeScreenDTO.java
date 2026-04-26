@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025-2026, WSO2 LLC. (https://www.wso2.com).
  * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,12 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model;
+
+import java.util.List;
 
 import javax.validation.Valid;
 
 /**
- * Wrapper for pre consent authorize flow external response data.
+ * Wrapper for pre-consent authorize flow external response data.
  */
 public class PopulateConsentAuthorizeScreenDTO {
 
@@ -30,12 +33,14 @@ public class PopulateConsentAuthorizeScreenDTO {
     @Valid
     private ConsumerDataDTO consumerData;
 
+    @Valid
+    private List<AdditionalDataDTO> additionalData;
+
     public ConsentDataDTO getConsentData() {
         return consentData;
     }
 
-    public void setConsentData(
-            ConsentDataDTO consentData) {
+    public void setConsentData(ConsentDataDTO consentData) {
         this.consentData = consentData;
     }
 
@@ -43,8 +48,15 @@ public class PopulateConsentAuthorizeScreenDTO {
         return consumerData;
     }
 
-    public void setConsumerData(
-            ConsumerDataDTO consumerData) {
+    public void setConsumerData(ConsumerDataDTO consumerData) {
         this.consumerData = consumerData;
+    }
+
+    public List<AdditionalDataDTO> getAdditionalData() {
+        return additionalData;
+    }
+
+    public void setAdditionalData(List<AdditionalDataDTO> additionalData) {
+        this.additionalData = additionalData;
     }
 }

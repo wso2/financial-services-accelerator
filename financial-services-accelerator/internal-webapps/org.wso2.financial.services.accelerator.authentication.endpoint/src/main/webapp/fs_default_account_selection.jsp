@@ -1,5 +1,5 @@
 <%--
-~ Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+~ Copyright (c) 2025-2026, WSO2 LLC. (https://www.wso2.com).
 ~
 ~ WSO2 LLC. licenses this file to you under the Apache License,
 ~ Version 2.0 (the "License"); you may not use this file except
@@ -49,6 +49,7 @@
     session.setAttribute("handleAccountSelectionSeparately", request.getAttribute("handleAccountSelectionSeparately"));
     session.setAttribute("onFollowingAccounts", request.getAttribute("onFollowingAccounts"));
     session.setAttribute("buttonConfirm", request.getAttribute("buttonConfirm"));
+    session.setAttribute("additionalData", request.getAttribute("additionalData"));
 %>
 
 <html>
@@ -84,6 +85,39 @@
                                         </div>
                                     </div>
 
+                                    <c:if test="${not empty additionalData}">
+                                        <c:forEach var="additionalDataEntry" items="${additionalData}">
+                                            <div class="form-group ui form select">
+                                                <hr class="separator">
+
+                                                <h4 class="ui body col-md-12">
+                                                    ${additionalDataEntry.title}
+                                                </h4>
+
+                                                <c:if test="${not empty additionalDataEntry.subtitle}">
+                                                    <div class="col-md-12 pb-1">
+                                                        <p class="fs-tooltip-content hide" style="text-align:left">
+                                                            ${additionalDataEntry.description}
+                                                        </p>
+
+                                                        <p>
+                                                            ${additionalDataEntry.subtitle}
+                                                            <a class="fs-tooltip-trigger"
+                                                               title="${additionalDataEntry.subtitle}"
+                                                               style="cursor: help; text-decoration: none;">&#9432;</a>
+                                                        </p>
+                                                    </div>
+                                                </c:if>
+                                                <div class="col-md-12">
+                                                    <c:forEach var="record" items="${additionalDataEntry.items}">
+                                                        <label>${record.item}</label>
+                                                        <br/>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </c:if>
+
                                     <div class="form-group ui form row">
                                         <div class="ui body col-md-12">
                                             <input type="button" class="btn btn-primary" id="next" name="next"
@@ -101,6 +135,7 @@
             </div>
 
             <jsp:include page="includes/footer.jsp"/>
+            <script src="js/tooltip-functions.js"></script>
         </div>
     </body>
 </html>

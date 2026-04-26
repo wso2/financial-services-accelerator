@@ -36,7 +36,18 @@
                 <b>${onFollowingAccounts}</b>
                 <ul class="scopes-list padding">
                     <c:forEach items="${initiatedAccountsForConsent}" var="account">
-                        <li>${account.displayName}</li>
+                        <li class="fs-tooltip-wrapper">
+                            ${account.displayName}
+                            <c:if test="${not empty account.description}">
+                                <p class="fs-tooltip-content hide" style="text-align:left">
+                                    ${account.description}
+                                </p>
+                                <a class="fs-tooltip-trigger"
+                                   title="${account.title}"
+                                   style="cursor: help; text-decoration: none;">&#9432;
+                                </a>
+                            </c:if>
+                        </li>
                     </c:forEach>
                 </ul>
             </c:when>
@@ -45,7 +56,18 @@
                 <b>${onFollowingAccounts}</b>
                 <ul class="scopes-list padding">
                     <c:forEach items="${permission.initiatedAccounts}" var="account">
-                        <li>${account.displayName}</li>
+                        <li class="fs-tooltip-wrapper">
+                            ${account.displayName}
+                            <c:if test="${not empty account.description}">
+                                <p class="fs-tooltip-content hide" style="text-align:left">
+                                    ${account.description}
+                                </p>
+                                <a class="fs-tooltip-trigger"
+                                   title="${account.title}"
+                                   style="cursor: help; text-decoration: none;">&#9432;
+                                </a>
+                            </c:if>
+                        </li>
                     </c:forEach>
                 </ul>
             </c:when>
