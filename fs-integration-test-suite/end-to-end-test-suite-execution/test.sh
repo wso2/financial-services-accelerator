@@ -198,8 +198,6 @@ MVNSTATE=$((MVNSTATE+$?))
 mkdir -p ${OUTPUT_DIR}/scenarios/gateway-tests/dcr
 find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios/gateway-tests/dcr \;
 
-sleep 1h
-
 #echo "-----------------Rebuild the Accelerator Framework to fetch configuration changes------------------"
 #cd ${TEST_FRAMEWORK_HOME}
 #mvn clean install -Dmaven.test.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
