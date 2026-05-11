@@ -262,7 +262,7 @@ class ClientRegistrationRequestBuilder {
                "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 ${redirectUri}
+                 "${redirectUri}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
@@ -735,7 +735,7 @@ class ClientRegistrationRequestBuilder {
                "software_id": "${configurationService.getAppDCRSoftwareId()}",
                "scope": "accounts payments",
                "redirect_uris": [
-                 ${redirectUri}
+                 "${redirectUri}"
                ],
                "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
                "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
