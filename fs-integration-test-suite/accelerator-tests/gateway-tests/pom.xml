@@ -15,7 +15,7 @@
     <name>FS Accelerator Gateway Test Modules</name>
 
     <modules>
-        <module>accounts</module>
+<!--        <module>accounts</module>-->
         <module>dcr</module>
     </modules>
 

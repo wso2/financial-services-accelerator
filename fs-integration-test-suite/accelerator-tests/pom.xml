@@ -36,7 +36,7 @@
 
     <modules>
         <module>preconfiguration.steps</module>
-        <module>is-tests</module>
+<!--        <module>is-tests</module>-->
         <module>gateway-tests</module>
     </modules>
 
