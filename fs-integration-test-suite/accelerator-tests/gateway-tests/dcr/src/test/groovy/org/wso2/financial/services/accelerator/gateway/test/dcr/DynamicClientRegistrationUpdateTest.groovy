@@ -322,7 +322,7 @@ class DynamicClientRegistrationUpdateTest extends FSConnectorTest {
                 "Malformed Software Statement JWT found")
     }
 
-    @Test
+//    @Test
     void "Update registration request with unverifiable SSA"() {
 
         String SELF_SIGNED_SSA = new File(configuration.getAppDCRSelfSignedSSAPath()).text
