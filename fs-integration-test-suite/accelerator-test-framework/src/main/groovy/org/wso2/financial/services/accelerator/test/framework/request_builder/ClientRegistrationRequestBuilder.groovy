@@ -1591,6 +1591,46 @@ class ClientRegistrationRequestBuilder {
          """
     }
 
+    /**
+     * Get Regular Claims for DCR Request with null redirect uri.
+     * @param ssa
+     * @param redirectUri
+     */
+    static String getRegularClaimsForGatewayWithNullRedirectURI(String ssa, String redirectUri) {
 
+        long currentTimeInMillis = System.currentTimeMillis()
+        String ssaBody = decodeRequestJWT(ssa, "body")
+        def json = new JsonSlurper().parseText(ssaBody)
 
+        return """
+             {
+               "iss": "${configurationService.getAppDCRSoftwareId()}",
+               "iat": ${Instant.now().toEpochMilli()},
+               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
+               "jti": "${currentTimeInMillis}",
+               "aud": "https://localbank.com",
+               "software_id": "${configurationService.getAppDCRSoftwareId()}",
+               "scope": "accounts payments",
+               "redirect_uris": [
+                 ${redirectUri}
+               ],
+               "token_endpoint_auth_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "token_endpoint_auth_method": "${ConnectorTestConstants.PKJWT_AUTH_METHOD}",
+               "grant_types": [
+                  "authorization_code",
+                  "client_credentials",
+                  "refresh_token"
+               ],
+               "response_types": [
+                  "code id_token"
+               ],
+               "application_type": "web",
+               "id_token_signed_response_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "id_token_encrypted_response_alg": "RSA-OAEP",
+               "id_token_encrypted_response_enc": "A256GCM",
+               "request_object_signing_alg": "${ConnectorTestConstants.ALG_PS256}",
+               "software_statement": "${ssa}"
+         }
+         """
+    }
 }

@@ -71,7 +71,7 @@ class DynamicClientRegistrationCreateTest extends FSConnectorTest {
     void "Invoke registration request with null value for redirectURI"() {
 
         String payload = jwtGenerator.getSignedRequestObject(ClientRegistrationRequestBuilder
-                .getRegularClaimsForGatewayWithInvalidRedirectURI(SSA, null))
+                .getRegularClaimsForGatewayWithNullRedirectURI(SSA, null))
 
         def registrationResponse = ClientRegistrationRequestBuilder
                 .buildGatewayRegistrationRequest()
