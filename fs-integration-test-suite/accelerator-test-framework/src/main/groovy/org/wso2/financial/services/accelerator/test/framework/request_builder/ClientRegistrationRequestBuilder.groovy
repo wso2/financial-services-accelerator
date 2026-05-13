@@ -1596,7 +1596,7 @@ class ClientRegistrationRequestBuilder {
      * @param ssa
      * @param redirectUri
      */
-    static String getRegularClaimsForGatewayWithNullRedirectURI(String ssa, String redirectUri) {
+    static String getRegularClaimsForGatewayWithNullRedirectURI(String ssa, String redirectUri = null) {
 
         long currentTimeInMillis = System.currentTimeMillis()
         String ssaBody = decodeRequestJWT(ssa, "body")
