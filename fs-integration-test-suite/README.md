@@ -1,10 +1,10 @@
-# FS Integration Test Suite – Configuration & Run Guide
+# FS Integration Test Suite – Configuration & Execution Guide
 
 ---
 
 ## Overview
 
-The `fs-integration-test-suite` is a Groovy/TestNG-based integration test suite for the WSO2 Financial Services Accelerator. It validates IS-layer and gateway-layer behaviour including DCR, token flows, consent management, and event notifications.
+The `fs-integration-test-suite` is a Groovy/REST Assured and TestNG-based integration test suite for the WSO2 Financial Services Accelerator. It validates IS-layer and gateway-layer behaviour including DCR, token flows, consent management, and event notifications.
 
 ### Repository Structure
 
@@ -29,7 +29,9 @@ fs-integration-test-suite/
 │       ├── token/
 │       ├── schema.validation/
 │       └── non.regulatory.scenarios/
+│       └── manual.client.registration/
 ├── test-artifacts/               # Keystores, SSAs, and other test artifacts
+├── end-to-end-test-suite-execution/  # Automated scripts to execute the entier test suite on TestGrid
 └── pom.xml
 ```
 
@@ -39,38 +41,22 @@ fs-integration-test-suite/
 
 Before running the suite you need:
 
-| Requirement | Notes |
-|---|---|
-| **Java 11** | `maven.compiler.source` and `maven.compiler.target` are set to `11` |
-| **Apache Maven** | Used to build and run all modules |
-| **WSO2 Identity Server 7.0.0** | Downloaded and set up by `setup.sh` |
-| **MySQL** | Required for consent DB |
-| **Firefox + GeckoDriver** | Required for browser automation steps |
+| Requirement                    | Notes                                                               |
+|--------------------------------|---------------------------------------------------------------------|
+| **Java 11**                    | `maven.compiler.source` and `maven.compiler.target` are set to `11` |
+| **Apache Maven**               | Used to build and run all modules                                   |
+| **WSO2 Identity Server x.x.x** | Download and setup accelerator deployment                           |
+| **WSO2 API Manager x.x.x**     | Download and setup accelerator deployment                           |
+| **MySQL or any DB**            | Required for consent DB                                             |
+| **Firefox + GeckoDriver**      | Required for browser automation steps                               |
 
 ---
 
-## Step 1 – Automated Environment Setup (CI/CD Path)
+## Step 1 – Setup Environment
 
-The `test-automation/setup.sh` script performs the full environment setup automatically:
-
-1. **Downloads WSO2 IS 7.0.0** and applies WSO2 Updates
-2. **Installs Firefox**
-3. **Builds the accelerator pack** via Maven from the root `pom.xml`
-4. **Unpacks the accelerator zip** (`fs-is`) into the IS home
-5. **Installs MySQL** and the MySQL Connector JAR
-6. **Generates and exports self-signed certificates**, imports them into the IS keystores (`wso2carbon.jks` / `client-truststore.jks`)
-7. **Imports OB Sandbox Root and Issuing CA certificates** into the truststore
-8. **Runs `merge.sh` and `configure.sh`** scripts from the accelerator
-9. **Applies the event-notification SQL schema** (`mysql.sql`) to `fs_consentdb`
-10. **Patches `deployment.toml`** with admin credentials, consent endpoint URL, and extension types.
-
-### Required Environment Variables for `setup.sh`
-
-| Variable | Description |
-|---|---|
-| `TEST_HOME` | Directory where IS and artifacts are installed |
-| `WSO2_USERNAME` | WSO2 account email (for updates) |
-| `WSO2_PASSWORD` | WSO2 account password |
+1. Follow the steps given in [Open Banking Accelerator Documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/prerequisites/) to set up WSO2 IS and APIM with the accelerator pack.
+2. Install Firefox or Chrome and configure the PATH variable.
+3. Download Firefox or Chrome specific web-driver according to the installed Browser. Make-sure to use the web-driver which support your Browser version and the operating system. Downloaded web-driver should be placed in the relevant folder inside fs-integration-test-suite/test-artifacts/selenium-libs.
 
 ---
 
@@ -82,14 +68,15 @@ The test framework reads all settings from `TestConfiguration.xml`, which must b
 fs-integration-test-suite/accelerator-test-framework/src/main/resources/TestConfiguration.xml
 ```
 
-Copy the example file and fill in your values:
+Take a copy of the [SampleTestConfiguration.xml](accelerator-test-framework%2Fsrc%2Fmain%2Fresources%2FSampleTestConfiguration.xml) file and place it in fs-integration-test-suite/accelerator-test-framework/src/main/resources folder with the name `TestConfiguration.xml`.
+Then fill in your values. For further reference, we have provided sample values next to each configuration in the SampleTestConfiguration.xml file. Default values are already filled; you only need to fill in the placeholders.
 
 ```bash
-cp fs-integration-test-suite/accelerator-test-framework/src/main/resources/TestConfigurationExample.xml \
+cp fs-integration-test-suite/accelerator-test-framework/src/main/resources/SampleTestConfiguration.xml \
    fs-integration-test-suite/accelerator-test-framework/src/main/resources/TestConfiguration.xml
 ```
 
-The `test.sh` script automates filling in this file using `sed` substitutions. Below is the full breakdown of every configurable section.
+The `[test.sh](end-to-end-test-suite-execution%2Ftest.sh)` script automates filling in this file using `sed` substitutions. Below is the full breakdown of every configurable section.
 
 ---
 
@@ -97,9 +84,9 @@ The `test.sh` script automates filling in this file using `sed` substitutions. B
 
 | XML Element | Description | Example Value |
 |---|---|---|
-| `<SolutionVersion>` | Accelerator version | `1.0.0` |
+| `<SolutionVersion>` | Accelerator version | `4.0.0` |
 | `<IS_Version>` | WSO2 IS version | `7.0.0` |
-| `<AccessTokenExpireTime>` | Access token expiry in seconds | `200` |
+| `<AccessTokenExpireTime>` | Access token expiry in seconds | `30` |
 | `<TenantDomain>` | WSO2 tenant domain | `carbon.super` |
 | `<SigningAlgorithm>` | JWT signing algorithm | `PS256` |
 | `<TestArtifactLocation>` | Absolute path to the `test-artifacts` directory | `/path/to/fs-integration-test-suite/test-artifacts` |
@@ -170,13 +157,14 @@ Two applications (TPP1 and TPP2) must be configured. Each `<AppConfig>` block ha
 
 ### `<Transport>` – Truststore
 
-Points to the IS `client-truststore.jks`, which must already contain the server's public certificate.
+Points to the IS or APIM `client-truststore.jks`, which must already contain the server's public certificate.
+If you are running IS tests, make sure to point to the IS client truststore; for gateway tests, point to the APIM client truststore. Alternatively, you can either use the server’s client truststore directly or copy the respective client truststore file to the test-artifacts/client-truststore folder.
 
-| XML Element | Example Value |
-|---|---|
-| `<Location>` | `<IS_HOME>/repository/resources/security/client-truststore.jks` |
-| `<Type>` | `jks` |
-| `<Password>` | `wso2carbon` |
+| XML Element | Example Value                |
+|---|------------------------------|
+| `<Location>` | `/path/to/client-truststore.jks` |
+| `<Type>` | `jks`                        |
+| `<Password>` | `wso2carbon`                 |
 
 ---
 
@@ -218,14 +206,6 @@ List one or more PSU credentials for browser automation consent flows:
 | `<BrowserPreference>` | `firefox` or `chrome` | `firefox` |
 | `<HeadlessEnabled>` | Run browser without UI | `true` |
 | `<WebDriverLocation>` | Absolute path to geckodriver or chromedriver | `/path/to/geckodriver` |
-
-The geckodriver can be installed as follows (Linux):
-
-```bash
-wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
-tar -xvzf geckodriver-v0.29.1-linux64.tar.gz
-chmod +x geckodriver
-```
 
 ---
 
@@ -273,64 +253,44 @@ cd fs-integration-test-suite/accelerator-tests/is-tests
 mvn clean install
 ```
 
-This runs the following IS test modules:
+## Step 5 – Run the Gateway Test Suite
 
-| Module | What it tests |
-|---|---|
-| `dcr` | Dynamic Client Registration (create, retrieve, update, delete) |
-| `token` | Token endpoint, mTLS enforcement, signature algorithm validation, grant types, token revocation |
-| `pre-configuration-step` | Common application creation pre-step |
-| `consent-management` | Account, payment, COF consent initiation/retrieval/authorisation/validation/revocation |
-| `event-notification` | Event creation, polling, subscription CRUD | 
+```bash
+cd fs-integration-test-suite/accelerator-tests/gateway-tests
+mvn clean install
+```
 
 ---
 
-## Step 5 – Run via `test.sh` (Full Automated Run)
+## Step 6 – Run via `test.sh` (Full Automated Run)
 
-The `test-automation/test.sh` script reads a `deployment.properties` file and performs all configuration + test execution end-to-end:
+1. Fill the [deployment.properties](end-to-end-test-suite-execution%2Fdeployment.properties) with the relevant server hostnames and versions.
+
+2. The `fs-integration-test-suite/end-to-end-test-suite-execution/test.sh` script reads a `deployment.properties` file and performs all configuration + test execution end-to-end.
+
+3. Goto `fs-integration-test-suite/end-to-end-test-suite-execution` folder. 
+
+4. Then execute the test.sh script.
 
 ```bash
-bash test-automation/test.sh -i <TEST_HOME>
+./test.sh --input-dir <path_to_end-to-end-test-suite-execution_folder> --output-dir <path_to_output_reports>
 ```
 
-It reads server URLs from `test-automation/deployment.properties`:
-
-| Property Key | XML Config Target |
-|---|---|
-| `BaseUrl` | `<Server><BaseURL>` |
-| `ISServerUrl` | `<Server><ISServerUrl>` |
-| `APIMServerUrl` | `<Server><APIMServerUrl>` | 
+!! Note: If you want to run the test suite against MCR application, make-sure to run the [test_mcr.sh](end-to-end-test-suite-execution%2Ftest_mcr.sh) script.
 
 ---
 
 ## Test Reports
 
-After execution, HTML surefire reports are generated per module:
+After execution, HTML surefire reports are generated per module under target folder.
+
+As an example: 
 
 | Report | Location |
 |---|---|
-| IS Setup (API Publish) | `is-tests/is-setup/target/surefire-reports/emailable-report.html` |
 | DCR | `is-tests/dcr/target/surefire-reports/emailable-report.html` |
-| Token | `is-tests/token/target/surefire-reports/emailable-report.html` |
-| Consent Management | `is-tests/consent-management/target/surefire-reports/emailable-report.html` |
-| Event Notification | `is-tests/event-notification/target/surefire-reports/emailable-report.html` |
 
 ---
-
-## Architecture Overview
-
-```mermaid
-graph TD
-  A["TestConfiguration.xml"] --> B["ConfigParser"]
-  B --> C["CommonConfigurationService"]
-  C --> D["ConfigurationService"]
-  D --> E["FSConnectorTest"]
-  E --> F["DCR Tests"]
-  E --> G["Token Tests"]
-  E --> H["Consent Management Tests"]
-  E --> I["Event Notification Tests"]
-  E --> J["Pre-Configuration Step"]
-``` 
 
 ---
 
@@ -338,7 +298,7 @@ graph TD
 
 - The `TestConfiguration.xml` is loaded at runtime from the classpath. The `ConfigParser` looks for it at the path defined in `ConfigConstants.OB_CONFIG_FILE_LOCATION` if no path is explicitly given; otherwise it uses the file placed in `accelerator-test-framework/src/main/resources/`. 
 
-- The `TestConfigurationExample.xml` must be copied to `TestConfiguration.xml` before running - the automated `test.sh` script does this automatically.
+- The `SampleTestConfiguration.xml` must be copied to `TestConfiguration.xml` before running - the automated `test.sh` script does this automatically.
 
 - The `is-setup` module is commented out in the IS test modules' `pom.xml` and is not run by default. It contains Groovy scripts for user creation and API authorization pre-steps.
 
@@ -346,5 +306,5 @@ graph TD
 
 - The `pre-configuration-step` module (`CommonApplicationCreation`) registers a DCR application and writes the resulting `ClientID` back into `TestConfiguration.xml`, so it must run **before** tests that depend on a pre-registered client ID.
 
-- Browser automation uses Selenium with Firefox (GeckoDriver v0.29.1) and can be run in headless mode by setting `<HeadlessEnabled>true</HeadlessEnabled>`.
+- Browser automation uses Selenium with Firefox and can be run in headless mode by setting `<HeadlessEnabled>true</HeadlessEnabled>`.
 
