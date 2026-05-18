@@ -45,7 +45,7 @@ If you want to build the Financial Services Accelerator from the source code:
 | ```Identity Server Accelerator```       | `/financial-services-accelerator/accelerators/fs-is/target`     |
 | ```API Manager Accelerator```           | `/financial-services-accelerator/accelerators/fs-apim/target`   |
 
-### Installing and Running OB Accelerators
+### Installing and Running FS Accelerators
 
 Please refer the following README files to run the products:
 
