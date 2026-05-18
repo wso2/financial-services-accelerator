@@ -60,10 +60,10 @@ import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -391,10 +391,11 @@ public class JWTUtils {
 
     /**
      * Util method to generate JWT using a payload and a private key. RS256 is the
-     * algorithm used
+     * algorithm used. Supports both software-based RSAPrivateKey and HSM-backed
+     * PKCS#11 keys (P11PrivateKey).
      *
      * @param payload    The payload body to be signed
-     * @param privateKey The private key for the JWT to be signed with
+     * @param privateKey The private key for the JWT to be signed with (RSA)
      * @return String signed JWT
      */
     @Generated(message = "Excluding from code coverage as it require external call")
@@ -405,11 +406,12 @@ public class JWTUtils {
             throw new FinancialServicesRuntimeException("Payload and key cannot be null");
         }
 
-        if (!(privateKey instanceof RSAPrivateKey)) {
-            throw new FinancialServicesRuntimeException("Private key should be an instance of RSAPrivateKey");
+        if (!(privateKey instanceof PrivateKey)) {
+            throw new FinancialServicesRuntimeException("Private key should be an instance of PrivateKey");
         }
 
-        JWSSigner signer = new RSASSASigner((RSAPrivateKey) privateKey);
+        // RSASSASigner accepts PrivateKey interface, works with both software and HSM keys
+        JWSSigner signer = new RSASSASigner((PrivateKey) privateKey);
         JWSHeader.Builder headerBuilder = new JWSHeader.Builder(JWSAlgorithm.RS256);
 
         SignedJWT signedJWT = null;
@@ -417,7 +419,7 @@ public class JWTUtils {
             signedJWT = new SignedJWT(headerBuilder.build(), JWTClaimsSet.parse(payload));
             signedJWT.sign(signer);
         } catch (ParseException | JOSEException e) {
-            throw new FinancialServicesRuntimeException("Error occurred while signing JWT");
+            throw new FinancialServicesRuntimeException("Error occurred while signing JWT", e);
         }
         return signedJWT.serialize();
     }
