@@ -19,6 +19,7 @@
 package com.wso2.openbanking.accelerator.identity.grant.type.handlers;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth.dao.OAuthAppDO;
@@ -39,15 +40,20 @@ public class OBClientCredentialsGrantHandler extends ClientCredentialsGrantHandl
     public OAuth2AccessTokenRespDTO issue(OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
 
         try {
-            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(tokReqMsgCtx.getOauth2AccessTokenReqDTO()
-                    .getClientId())) {
+            String clientId = tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId();
+            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId)) {
                 if (IdentityCommonUtil.getDCRModifyResponseConfig() && tokReqMsgCtx.getScope().length > 0 &&
                         Arrays.asList(tokReqMsgCtx.getScope()).contains(IdentityCommonUtil.getDCRScope())) {
                     long validityPeriod = 999999999;
-                    OAuthAppDO oAuthAppDO = OAuth2Util
-                            .getAppInformationByClientId(tokReqMsgCtx.getOauth2AccessTokenReqDTO().getClientId());
+                    OAuthAppDO oAuthAppDO = OAuth2Util.getAppInformationByClientId(clientId);
                     oAuthAppDO.setApplicationAccessTokenExpiryTime(validityPeriod);
                     tokReqMsgCtx.setValidityPeriod(validityPeriod);
+                }
+                // Apply application scope restrictions if enabled
+                if (IdentityCommonUtil.isAppScopeRestrictionEnabledForGrant(
+                        IdentityCommonConstants.CLIENT_CREDENTIALS)) {
+                    tokReqMsgCtx.setScope(IdentityCommonUtil.retainAllowedScopesForApplication(
+                            tokReqMsgCtx.getScope(), clientId));
                 }
                 OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO = super.issue(tokReqMsgCtx);
                 executeInitialStep(oAuth2AccessTokenRespDTO, tokReqMsgCtx);
