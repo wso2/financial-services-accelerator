@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.model.KeyManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -221,8 +222,14 @@ public class IdentityServerUtils {
         JSONObject spApplication = new JSONObject();
         spApplication.put(FSKeyManagerConstants.CLIENT_NAME, appName);
         spApplication.put(FSKeyManagerConstants.ADDITIONAL_ATTRIBUTES, attributes);
-        if (attributes.containsKey(FinancialServicesConstants.REGULATORY) &&
-                Boolean.parseBoolean(attributes.get(FinancialServicesConstants.REGULATORY).toString())) {
+
+        boolean isRegulatory = attributes.containsKey(FinancialServicesConstants.REGULATORY) &&
+                Boolean.parseBoolean(attributes.get(FinancialServicesConstants.REGULATORY).toString());
+
+        boolean isTLSClientCertBoundEnabled =
+                FinancialServicesConfigParser.getInstance().isTLSClientCertBoundAccessTokensEnabled();
+
+        if (isRegulatory && isTLSClientCertBoundEnabled) {
             spApplication.put(FSKeyManagerConstants.TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS, true);
         }
 

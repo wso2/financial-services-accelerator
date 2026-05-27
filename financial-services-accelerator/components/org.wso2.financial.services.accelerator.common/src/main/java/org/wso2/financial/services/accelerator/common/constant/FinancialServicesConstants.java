@@ -107,6 +107,8 @@ public class FinancialServicesConstants {
     public static final String CONDITIONAL_AUTH_SCRIPT_NAME = "AppRegistration.ConditionalAuthScriptFileName";
     public static final String JTI_CACHE_ACCESS_EXPIRY = "AppRegistration.DCR.JTICache.CacheAccessExpiry";
     public static final String JTI_CACHE_MODIFY_EXPIRY = "AppRegistration.DCR.JTICache.CacheModifiedExpiry";
+    public static final String DCR_TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS =
+            "Gateway.DCR.TLSClientCertBoundAccessTokens";
     public static final String KEYSTORE_LOCATION_TAG = "Security.InternalKeyStore.Location";
     public static final String KEYSTORE_PASSWORD_TAG = "Security.InternalKeyStore.Password";
     public static final String SIGNING_ALIAS_TAG = "Security.InternalKeyStore.KeyAlias";
