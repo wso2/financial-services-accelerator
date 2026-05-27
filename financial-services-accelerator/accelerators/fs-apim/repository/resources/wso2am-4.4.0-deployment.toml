@@ -408,6 +408,9 @@ PreferredCiphers = "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_1
 [apimgt.mutual_ssl]
 enable_certificate_chain_validation = true
 
+[financial_services.gateway.application_registration]
+tls_client_certificate_bound_access_tokens = true
+
 [[financial_services.keymanager.application.type.attributes]]
 name="regulatory"
 label="Regulatory Application"

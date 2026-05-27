@@ -74,6 +74,11 @@
                     <Param>{{param}}</Param>
                 {% endfor %}
             </ResponseParams>
+            {% if financial_services.gateway.application_registration.tls_client_certificate_bound_access_tokens is defined %}
+            <TLSClientCertBoundAccessTokens>{{financial_services.gateway.application_registration.tls_client_certificate_bound_access_tokens}}</TLSClientCertBoundAccessTokens>
+            {% else %}
+            <TLSClientCertBoundAccessTokens>true</TLSClientCertBoundAccessTokens>
+            {% endif %}
         </DCR>
     </Gateway>
     <KeyManager>
