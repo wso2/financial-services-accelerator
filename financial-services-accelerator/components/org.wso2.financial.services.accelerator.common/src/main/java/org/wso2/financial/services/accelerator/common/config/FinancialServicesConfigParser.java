@@ -386,6 +386,17 @@ public final class FinancialServicesConfigParser {
     }
 
     /**
+     * Returns whether TLS client certificate bound access tokens are enabled for DCR applications.
+     *
+     * @return false if tls_client_certificate_bound_access_tokens is configured as false, true by default.
+     */
+    public boolean isTLSClientCertBoundAccessTokensEnabled() {
+        Optional<String> config = getConfigurationFromKeyAsString(
+                FinancialServicesConstants.DCR_TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS);
+        return config.map(Boolean::parseBoolean).orElse(true);
+    }
+
+    /**
      * Method to build key manager additional properties.
      * These properties will be displayed on the Key Generation page of the DevPortal
      */

@@ -35,6 +35,7 @@ import org.wso2.carbon.apimgt.api.model.KeyManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.FinancialServicesException;
 import org.wso2.financial.services.accelerator.common.util.HTTPClientUtils;
 import org.wso2.financial.services.accelerator.keymanager.internal.KeyManagerDataHolder;
@@ -182,7 +183,14 @@ public class IdentityServerUtilsTest {
     @Test
     public void testUpdateDCRApplication() throws IOException, FinancialServicesException {
 
-        try (MockedStatic<HTTPClientUtils> httpClientUtilsMockedStatic = Mockito.mockStatic(HTTPClientUtils.class)) {
+        try (MockedStatic<HTTPClientUtils> httpClientUtilsMockedStatic = Mockito.mockStatic(HTTPClientUtils.class);
+             MockedStatic<FinancialServicesConfigParser> configParserMockedStatic =
+                     Mockito.mockStatic(FinancialServicesConfigParser.class)) {
+
+            FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
+            Mockito.when(configParserMock.isTLSClientCertBoundAccessTokensEnabled()).thenReturn(true);
+            configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
+
             byte[] crlBytes = KeyManagerTestConstants.APP_DATA_RESPONSE.getBytes(StandardCharsets.UTF_8);
             InputStream inStream = new ByteArrayInputStream(crlBytes);
 
