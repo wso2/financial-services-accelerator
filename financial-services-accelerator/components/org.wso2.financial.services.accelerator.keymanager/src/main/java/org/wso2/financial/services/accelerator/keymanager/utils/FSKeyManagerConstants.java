@@ -52,5 +52,8 @@ public class FSKeyManagerConstants {
     public static final String TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS = "tls_client_certificate_bound_access_tokens";
     public static final String ADDITIONAL_ATTRIBUTES = "additionalAttributes";
     public static final String ADDITIONAL_SP_PROPERTIES = "additionalSpProperties";
+    public static final String EXT_PKCE_MANDATORY = "ext_pkce_mandatory";
+    public static final String EXT_PKCE_SUPPORT_PLAIN = "ext_pkce_support_plain";
+    public static final String EXT_PUBLIC_CLIENT = "ext_public_client";
 
 }

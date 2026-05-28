@@ -233,6 +233,15 @@ public class IdentityServerUtils {
             spApplication.put(FSKeyManagerConstants.TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS, true);
         }
 
+        // IS unconditionally overwrites these boolean fields from the PUT body (Java primitive default = false),
+        // so they must always be explicitly included to prevent silent reset to false.
+        spApplication.put(FSKeyManagerConstants.EXT_PKCE_MANDATORY, Boolean.parseBoolean(
+                String.valueOf(attributes.getOrDefault(FSKeyManagerConstants.EXT_PKCE_MANDATORY, false))));
+        spApplication.put(FSKeyManagerConstants.EXT_PKCE_SUPPORT_PLAIN, Boolean.parseBoolean(
+                String.valueOf(attributes.getOrDefault(FSKeyManagerConstants.EXT_PKCE_SUPPORT_PLAIN, false))));
+        spApplication.put(FSKeyManagerConstants.EXT_PUBLIC_CLIENT, Boolean.parseBoolean(
+                String.valueOf(attributes.getOrDefault(FSKeyManagerConstants.EXT_PUBLIC_CLIENT, false))));
+
         return spApplication;
     }
 

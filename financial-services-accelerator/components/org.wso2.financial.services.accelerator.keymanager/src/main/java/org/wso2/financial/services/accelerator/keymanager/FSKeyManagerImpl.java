@@ -296,6 +296,35 @@ public class FSKeyManagerImpl extends WSO2IS7KeyManager {
             Map<String, Object> spProperties = IdentityServerUtils.constructSPPropertiesList(
                     IdentityServerUtils.getSPMetadataFromSPApp(serviceProviderAppData), additionalProperties);
 
+            // Preserve PKCE and public client settings from the original request. These boolean fields are
+            // unconditionally overwritten by IS when the DCR PUT payload omits them, resetting them to false.
+            // JSON_ADDITIONAL_PROPERTIES may be a HashMap (when oAuthApplicationInfo comes from a parent create/update
+            // response) or a JSON string (when it comes directly from the DevPortal request), so handle both.
+            Object additionalPropsObj = oAuthApplicationInfo.getParameter(APIConstants.JSON_ADDITIONAL_PROPERTIES);
+            if (additionalPropsObj instanceof Map) {
+                Map<?, ?> additionalPropsMap = (Map<?, ?>) additionalPropsObj;
+                for (String pkceKey : new String[]{FSKeyManagerConstants.EXT_PKCE_MANDATORY,
+                        FSKeyManagerConstants.EXT_PKCE_SUPPORT_PLAIN, FSKeyManagerConstants.EXT_PUBLIC_CLIENT}) {
+                    if (additionalPropsMap.containsKey(pkceKey)) {
+                        spProperties.put(pkceKey,
+                                Boolean.parseBoolean(String.valueOf(additionalPropsMap.get(pkceKey))));
+                    }
+                }
+            } else if (additionalPropsObj != null) {
+                try {
+                    JSONObject additionalPropsJson = new JSONObject(additionalPropsObj.toString());
+                    for (String pkceKey : new String[]{FSKeyManagerConstants.EXT_PKCE_MANDATORY,
+                            FSKeyManagerConstants.EXT_PKCE_SUPPORT_PLAIN, FSKeyManagerConstants.EXT_PUBLIC_CLIENT}) {
+                        if (additionalPropsJson.has(pkceKey)) {
+                            spProperties.put(pkceKey,
+                                    Boolean.parseBoolean(additionalPropsJson.get(pkceKey).toString()));
+                        }
+                    }
+                } catch (JSONException e) {
+                    log.warn("Could not extract PKCE properties from additional properties", e);
+                }
+            }
+
             // Update the DCR application
             IdentityServerUtils.updateDCRApplication(super.getKeyManagerConfiguration(),
                     serviceProviderAppData.getString(FSKeyManagerConstants.CLIENT_ID), spAppName, spProperties);
