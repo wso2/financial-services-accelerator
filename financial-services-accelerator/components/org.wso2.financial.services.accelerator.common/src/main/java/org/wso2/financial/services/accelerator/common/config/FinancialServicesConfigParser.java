@@ -388,7 +388,7 @@ public final class FinancialServicesConfigParser {
     /**
      * Returns whether TLS client certificate bound access tokens are enabled for DCR applications.
      *
-     * @return true if tls_client_certificate_bound_access_tokens is configured as true, true by default.
+     * @return false if tls_client_certificate_bound_access_tokens is configured as false, true by default.
      */
     public boolean isTLSClientCertBoundAccessTokensEnabled() {
         Optional<String> config = getConfigurationFromKeyAsString(

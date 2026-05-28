@@ -188,7 +188,7 @@ public class IdentityServerUtilsTest {
                      Mockito.mockStatic(FinancialServicesConfigParser.class)) {
 
             FinancialServicesConfigParser configParserMock = mock(FinancialServicesConfigParser.class);
-            Mockito.when(configParserMock.isTLSClientCertBoundAccessTokensEnabled()).thenReturn(false);
+            Mockito.when(configParserMock.isTLSClientCertBoundAccessTokensEnabled()).thenReturn(true);
             configParserMockedStatic.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
             byte[] crlBytes = KeyManagerTestConstants.APP_DATA_RESPONSE.getBytes(StandardCharsets.UTF_8);

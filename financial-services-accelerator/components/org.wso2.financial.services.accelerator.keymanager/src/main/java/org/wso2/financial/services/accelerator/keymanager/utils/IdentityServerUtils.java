@@ -223,8 +223,8 @@ public class IdentityServerUtils {
         spApplication.put(FSKeyManagerConstants.CLIENT_NAME, appName);
         spApplication.put(FSKeyManagerConstants.ADDITIONAL_ATTRIBUTES, attributes);
 
-        boolean isRegulatory = attributes.containsKey(FinancialServicesConstants.REGULATORY) &&
-                Boolean.parseBoolean(attributes.get(FinancialServicesConstants.REGULATORY).toString());
+        boolean isRegulatory = Boolean.parseBoolean(
+                String.valueOf(attributes.get(FinancialServicesConstants.REGULATORY)));
 
         boolean isTLSClientCertBoundEnabled =
                 FinancialServicesConfigParser.getInstance().isTLSClientCertBoundAccessTokensEnabled();
