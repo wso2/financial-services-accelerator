@@ -31,7 +31,6 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpHeaders;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -57,8 +56,9 @@ public class UserPermissionValidationExecutor implements OpenBankingGatewayExecu
                 return;
             }
 
-            String authToken = obapiRequestContext.getMsgInfo().getHeaders().get(HttpHeaders.AUTHORIZATION);
-            JSONObject tokenBody = JWTUtils.decodeRequestJWT(authToken.replace("Bearer ", ""), "body");
+            String authToken = GatewayUtils.getHeaderCaseInsensitive(obapiRequestContext.getMsgInfo().getHeaders(),
+                    GatewayConstants.AUTH_HEADER);
+            JSONObject tokenBody = JWTUtils.decodeRequestJWT(authToken.replaceAll("(?i)Bearer ", ""), "body");
             String tokenScopes = tokenBody.getAsString("scope");
 
             if (!isCustomerCareOfficer(tokenScopes)) {
