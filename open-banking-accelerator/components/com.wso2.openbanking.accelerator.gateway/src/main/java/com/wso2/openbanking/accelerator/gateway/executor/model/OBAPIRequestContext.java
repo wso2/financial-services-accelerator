@@ -68,9 +68,10 @@ public class OBAPIRequestContext extends RequestContextDTO {
         this.analyticsData = analyticsData;
 
         Map<String, String> headers = requestContextDTO.getMsgInfo().getHeaders();
-        String authHeader = headers.get(GatewayConstants.AUTH_HEADER);
+        String authHeader = GatewayUtils.getHeaderCaseInsensitive(headers, GatewayConstants.AUTH_HEADER);
         if (authHeader != null && !authHeader.isEmpty() &&
-                GatewayUtils.isValidJWTToken(authHeader.replace(GatewayConstants.BEARER_TAG, ""))) {
+                GatewayUtils.isValidJWTToken(authHeader.replaceAll("(?i)" + GatewayConstants.BEARER_TAG, ""))) {
+            log.debug("Processing authorization header for consent ID extraction");
             this.consentId = extractConsentID(authHeader);
         }
 
@@ -224,8 +225,8 @@ public class OBAPIRequestContext extends RequestContextDTO {
 
         String consentIdClaim = null;
         try {
-            if (!jwtToken.contains(GatewayConstants.BASIC_TAG)) {
-                jwtToken = jwtToken.replace(GatewayConstants.BEARER_TAG, "");
+            if (!jwtToken.toLowerCase().contains(GatewayConstants.BASIC_TAG.toLowerCase())) {
+                jwtToken = jwtToken.replaceAll("(?i)" + GatewayConstants.BEARER_TAG, "");
                 JSONObject jwtClaims = GatewayUtils.decodeBase64(GatewayUtils.getPayloadFromJWT(jwtToken));
                 String consentIdClaimName =
                         GatewayDataHolder.getInstance().getOpenBankingConfigurationService().getConfigurations()

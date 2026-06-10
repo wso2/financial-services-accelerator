@@ -187,6 +187,22 @@ public class GatewayUtils {
     }
 
     /**
+     * Retrieves a header value from the given map using a case-insensitive key match.
+     *
+     * @param headers    map of HTTP headers
+     * @param headerName header name to look up
+     * @return header value, or null if not found
+     */
+    public static String getHeaderCaseInsensitive(Map<String, String> headers, String headerName) {
+
+        return headers.entrySet().stream()
+                .filter(e -> e.getKey().equalsIgnoreCase(headerName))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
      * Method to obtain swagger definition from publisher API.
      *
      * @param apiId ID of the API
