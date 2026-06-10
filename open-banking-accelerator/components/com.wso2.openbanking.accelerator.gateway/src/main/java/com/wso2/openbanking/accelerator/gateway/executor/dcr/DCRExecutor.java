@@ -229,6 +229,7 @@ public class DCRExecutor implements OpenBankingGatewayExecutor {
         if (obapiRequestContext.getMsgInfo().getHeaders() != null &&
                 GatewayUtils.getHeaderCaseInsensitive(obapiRequestContext.getMsgInfo().getHeaders(),
                         GatewayConstants.AUTH_HEADER) != null) {
+            log.debug("Extracting bearer token from authorization header for DCR request");
             bearerAccessToken = GatewayUtils.getHeaderCaseInsensitive(obapiRequestContext.getMsgInfo().getHeaders(),
                     GatewayConstants.AUTH_HEADER).replaceAll("(?i)" + GatewayConstants.BEARER_TAG, "").trim();
         }

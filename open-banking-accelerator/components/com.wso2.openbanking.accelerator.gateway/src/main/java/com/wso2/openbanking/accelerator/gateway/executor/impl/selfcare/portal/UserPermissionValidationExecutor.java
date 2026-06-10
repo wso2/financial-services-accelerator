@@ -58,6 +58,7 @@ public class UserPermissionValidationExecutor implements OpenBankingGatewayExecu
 
             String authToken = GatewayUtils.getHeaderCaseInsensitive(obapiRequestContext.getMsgInfo().getHeaders(),
                     GatewayConstants.AUTH_HEADER);
+            LOG.debug("Processing authorization token for user permission validation");
             JSONObject tokenBody = JWTUtils.decodeRequestJWT(authToken.replaceAll("(?i)Bearer ", ""), "body");
             String tokenScopes = tokenBody.getAsString("scope");
 

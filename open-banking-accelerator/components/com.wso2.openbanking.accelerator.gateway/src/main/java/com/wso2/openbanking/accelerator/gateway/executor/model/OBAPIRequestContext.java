@@ -71,6 +71,7 @@ public class OBAPIRequestContext extends RequestContextDTO {
         String authHeader = GatewayUtils.getHeaderCaseInsensitive(headers, GatewayConstants.AUTH_HEADER);
         if (authHeader != null && !authHeader.isEmpty() &&
                 GatewayUtils.isValidJWTToken(authHeader.replaceAll("(?i)" + GatewayConstants.BEARER_TAG, ""))) {
+            log.debug("Processing authorization header for consent ID extraction");
             this.consentId = extractConsentID(authHeader);
         }
 
