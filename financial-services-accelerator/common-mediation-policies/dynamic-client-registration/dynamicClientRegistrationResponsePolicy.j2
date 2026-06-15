@@ -21,8 +21,18 @@
 <filter source="$ctx:HttpStatus" regex="^(200|201)$">
     <then>
         <enrich>
-            <source clone="true" xpath="json-eval($.token_type_extension,$.client_name,$.require_signed_request_object,$.tls_client_certificate_bound_access_tokens,$.jwks_uri,$.ext_application_display_name,$.token_endpoint_allow_reuse_pvt_key_jwt)"/>
+            <source clone="true" xpath="json-eval($.token_type_extension,$.client_name,$.require_signed_request_object,$.tls_client_certificate_bound_access_tokens,$.jwks_uri,$.ext_application_display_name)"/>
             <target type="body" action="remove"/>
         </enrich>
+        <property name="rawPayload" expression="json-eval($)" type="STRING"/>
+        <filter source="boolean(fn:contains($ctx:rawPayload, 'token_endpoint_allow_reuse_pvt_key_jwt'))" regex="true">
+            <then>
+                <enrich>
+                    <source clone="true"
+                        xpath="json-eval($.token_endpoint_allow_reuse_pvt_key_jwt)"/>
+                    <target type="body" action="remove"/>
+                </enrich>
+            </then>
+       </filter>
     </then>
 </filter>

@@ -46,7 +46,7 @@
                                 <div class="login-form">
                                     <div class="form-group ui form">
                                         <div class="col-md-12 ui box">
-                                        
+
                                             <%--Display consent page header--%>
                                             <h3 class="ui header">
                                                 ${appRequestsDetails}
@@ -60,9 +60,9 @@
                                             <jsp:include page="includes/basic-consent-data.jsp"/>
 
                                             <c:choose>
-                                                <c:when test="${handleAccountSelectionSeparately}">
-                                                    <%-- If account selection is handled separately --%>
-                                                    <jsp:include page="includes/selected-accounts.jsp"/>
+                                                <c:when test="${not empty permissions and handleAccountSelectionSeparately}">
+                                                    <%-- If permissions are specified --%>
+                                                    <jsp:include page="includes/permissions.jsp"/>
                                                 </c:when>
                                                 <c:when test="${not empty permissions}">
                                                     <%-- If permissions are specified --%>
@@ -73,6 +73,10 @@
                                                     <jsp:include page="includes/accounts.jsp"/>
                                                 </c:when>
                                             </c:choose>
+
+                                            <c:if test="${handleAccountSelectionSeparately}">
+                                                 <jsp:include page="includes/selected-accounts.jsp"/>
+                                            </c:if>
                                         </div>
                                     </div>
 
