@@ -159,7 +159,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @throws DCRMClientException    DCRM Client Exception
      */
     private Map<String, Object> handleGatewayDCRRegisterRequest(ApplicationRegistrationRequest appRegistrationRequest,
-                                       Map<String, Object> ssaParams) throws DCRMClientException {
+                                                                Map<String, Object> ssaParams) throws DCRMClientException {
         // Executing configured DCR validators.
         for (DynamicClientRegistrationValidator validator : DCRUtils.getEnabledDcrValidators()) {
             try {
@@ -173,7 +173,12 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
         DCRUtils.validateRequireRequestObject(appRegistrationRequest.isRequireSignedRequestObject());
 
         Map<String, Object> requestMap = objectMapper.convertValue(appRegistrationRequest, Map.class);
-        Map<String, Object> filteredAttributes = new HashMap<>(ssaParams);
+        Map<String, Object> filteredAttributes;
+        if (ssaParams != null) {
+            filteredAttributes = new HashMap<>(ssaParams);
+        } else {
+            filteredAttributes = new HashMap<>();
+        }
         Map<String, Object> additionalAttributes = appRegistrationRequest.getAdditionalAttributes();
         // Adding fields from the configuration to be stored as SP metadata
         if (appRegistrationRequest.getSoftwareStatement() != null) {
@@ -217,8 +222,8 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @throws DCRMClientException      DCRM Client Exception
      */
     private Map<String, Object> handleGatewayDCRUpdateRequest(ApplicationUpdateRequest applicationUpdateRequest,
-                                                       Map<String, Object> ssaParams,
-                                                       ServiceProviderProperty[] serviceProviderProperties)
+                                                              Map<String, Object> ssaParams,
+                                                              ServiceProviderProperty[] serviceProviderProperties)
             throws DCRMClientException {
 
         // Executing configured DCR validators.
