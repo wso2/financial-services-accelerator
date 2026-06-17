@@ -151,15 +151,15 @@ public class OBDefaultResponseTypeHandlerImpl implements OBResponseTypeHandler {
     String iterateClaims(List<RequestedClaim> requestedClaims) {
 
         String consentID = StringUtils.EMPTY;
+        if (requestedClaims == null) {
+            return consentID;
+        }
         for (RequestedClaim claim : requestedClaims) {
-            if (log.isDebugEnabled()) {
-                log.debug("Claim: " + claim.getName() + ", value: " + claim.getValue());
-            }
-
             if (OPENBANKING_INTENT_ID.equals(claim.getName())) {
                 consentID = claim.getValue();
                 if (log.isDebugEnabled()) {
-                    log.debug("Consent-ID retrieved: " + consentID);
+                    log.debug("Consent-ID retrieved: " + (consentID != null ?
+                            consentID.replaceAll("[\r\n]", "") : ""));
                 }
                 break;
             }
