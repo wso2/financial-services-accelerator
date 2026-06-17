@@ -178,12 +178,10 @@ public class OBExtensionListenerImpl implements ExtensionListener {
             extensionResponseDTO.setPayload(new ByteArrayInputStream(modifiedPayload.getBytes(StandardCharsets.UTF_8)));
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
-        if (addedHeaders.size() != 0) {
-            TreeMap<String, String> headers = new TreeMap<>();
+        if (!addedHeaders.isEmpty()) {
+            TreeMap<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             headers.putAll(obapiRequestContext.getMsgInfo().getHeaders());
-            for (Map.Entry<String, String> headerEntry : addedHeaders.entrySet()) {
-                headers.put(headerEntry.getKey(), headerEntry.getValue());
-            }
+            headers.putAll(addedHeaders);
             extensionResponseDTO.setHeaders(headers);
         }
         return extensionResponseDTO;
@@ -218,12 +216,10 @@ public class OBExtensionListenerImpl implements ExtensionListener {
             extensionResponseDTO.setPayload(new ByteArrayInputStream(modifiedPayload.getBytes(StandardCharsets.UTF_8)));
         }
         Map<String, String> addedHeaders = obapiResponseContext.getAddedHeaders();
-        if (addedHeaders.size() != 0) {
-            HashMap<String, String> headers = new HashMap<>();
+        if (!addedHeaders.isEmpty()) {
+            TreeMap<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             headers.putAll(obapiResponseContext.getMsgInfo().getHeaders());
-            for (Map.Entry<String, String> headerEntry : addedHeaders.entrySet()) {
-                headers.put(headerEntry.getKey(), headerEntry.getValue());
-            }
+            headers.putAll(addedHeaders);
             extensionResponseDTO.setHeaders(headers);
         }
         return extensionResponseDTO;
