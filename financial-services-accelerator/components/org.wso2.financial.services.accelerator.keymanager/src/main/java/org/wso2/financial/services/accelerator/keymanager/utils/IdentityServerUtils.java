@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
+ * Copyright (c) 2025 - 2026, WSO2 LLC. (https://www.wso2.com).
  * <p>
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -232,6 +232,15 @@ public class IdentityServerUtils {
         if (isRegulatory && isTLSClientCertBoundEnabled) {
             spApplication.put(FSKeyManagerConstants.TLS_CLIENT_CERT_BOUND_ACCESS_TOKENS, true);
         }
+
+        // IS unconditionally overwrites these boolean fields from the PUT body (Java primitive default = false),
+        // so they must always be explicitly included to prevent silent reset to false.
+        spApplication.put(FSKeyManagerConstants.EXT_PKCE_MANDATORY, Boolean.parseBoolean(
+                String.valueOf(attributes.getOrDefault(FSKeyManagerConstants.EXT_PKCE_MANDATORY, false))));
+        spApplication.put(FSKeyManagerConstants.EXT_PKCE_SUPPORT_PLAIN, Boolean.parseBoolean(
+                String.valueOf(attributes.getOrDefault(FSKeyManagerConstants.EXT_PKCE_SUPPORT_PLAIN, false))));
+        spApplication.put(FSKeyManagerConstants.EXT_PUBLIC_CLIENT, Boolean.parseBoolean(
+                String.valueOf(attributes.getOrDefault(FSKeyManagerConstants.EXT_PUBLIC_CLIENT, false))));
 
         return spApplication;
     }
