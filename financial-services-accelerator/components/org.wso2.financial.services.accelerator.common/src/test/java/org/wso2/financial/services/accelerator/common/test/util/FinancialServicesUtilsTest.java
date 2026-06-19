@@ -196,4 +196,48 @@ public class FinancialServicesUtilsTest {
         };
     }
 
+    @Test
+    public void equalsIgnoreCaseShouldReturnTrueForIdenticalStrings() {
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase("Bearer", "Bearer"));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnTrueForDifferentCase() {
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase("bearer", "BEARER"));
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase("ES256", "es256"));
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase("DPoP", "dpop"));
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase("GET", "get"));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnFalseForDifferentStrings() {
+        Assert.assertFalse(FinancialServicesUtils.equalsIgnoreCase("Bearer", "DPoP"));
+        Assert.assertFalse(FinancialServicesUtils.equalsIgnoreCase("ES256", "PS256"));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnTrueForBothNull() {
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase(null, null));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnFalseWhenFirstArgumentIsNull() {
+        Assert.assertFalse(FinancialServicesUtils.equalsIgnoreCase(null, "Bearer"));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnFalseWhenSecondArgumentIsNull() {
+        Assert.assertFalse(FinancialServicesUtils.equalsIgnoreCase("Bearer", null));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnTrueForEmptyStrings() {
+        Assert.assertTrue(FinancialServicesUtils.equalsIgnoreCase("", ""));
+    }
+
+    @Test
+    public void equalsIgnoreCaseShouldReturnFalseForEmptyAndNonEmpty() {
+        Assert.assertFalse(FinancialServicesUtils.equalsIgnoreCase("", "Bearer"));
+        Assert.assertFalse(FinancialServicesUtils.equalsIgnoreCase("Bearer", ""));
+    }
 }

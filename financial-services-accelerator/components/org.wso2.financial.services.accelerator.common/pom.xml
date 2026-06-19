@@ -159,6 +159,7 @@
                         <exclude>**/*Request.class</exclude>
                         <exclude>**/*Response.class</exclude>
                         <exclude>**/*Enum.class</exclude>
+                        <exclude>**/*Log.class</exclude>
                         <!-- Excluded since involves datasource initialization -->
                         <exclude>**/DatabaseUtils.class</exclude>
                         <exclude>**/JDBCPersistenceManager.class</exclude>
