@@ -159,7 +159,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
      * @throws DCRMClientException    DCRM Client Exception
      */
     private Map<String, Object> handleGatewayDCRRegisterRequest(ApplicationRegistrationRequest appRegistrationRequest,
-                                                                Map<String, Object> ssaParams) throws DCRMClientException {
+            Map<String, Object> ssaParams) throws DCRMClientException {
         // Executing configured DCR validators.
         for (DynamicClientRegistrationValidator validator : DCRUtils.getEnabledDcrValidators()) {
             try {
