@@ -104,12 +104,12 @@ public class OBConsentConfirmServlet extends HttpServlet {
         String redirectURL = persistConsentData(
                 consentData, request.getParameter("sessionDataKeyConsent"), getServletContext());
 
-        // Invoke authorize flow
+        // Invalidate session before redirect to remove user data.
+        session.invalidate();
+        // Redirect to TPP
         if (redirectURL != null) {
             response.sendRedirect(redirectURL);
-
         } else {
-            session.invalidate();
             response.sendRedirect("retry.do?status=Error&statusMsg=Error while persisting consent");
         }
 
