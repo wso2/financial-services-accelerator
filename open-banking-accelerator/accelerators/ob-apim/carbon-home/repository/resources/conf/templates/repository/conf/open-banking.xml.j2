@@ -213,6 +213,39 @@
             	</AllowedScopes>
 
             </TPPManagement>
+
+            <DPoP>
+                {% if open_banking.gateway.dpop.accepted_algorithms is defined %}
+                <AcceptedAlgorithms>{{open_banking.gateway.dpop.accepted_algorithms}}</AcceptedAlgorithms>
+                {% endif %}
+                {% if open_banking.gateway.dpop.iat_skew_seconds is defined %}
+                <IatSkewSeconds>{{open_banking.gateway.dpop.iat_skew_seconds}}</IatSkewSeconds>
+                {% endif %}
+                {% if open_banking.gateway.dpop.jti_cache_ttl_seconds is defined %}
+                <JtiCacheTtlSeconds>{{open_banking.gateway.dpop.jti_cache_ttl_seconds}}</JtiCacheTtlSeconds>
+                {% endif %}
+                {% if open_banking.gateway.dpop.nonce_strategy is defined %}
+                <NonceStrategy>{{open_banking.gateway.dpop.nonce_strategy}}</NonceStrategy>
+                {% endif %}
+                {% if open_banking.gateway.dpop.nonce_ttl_seconds is defined %}
+                <NonceTtlSeconds>{{open_banking.gateway.dpop.nonce_ttl_seconds}}</NonceTtlSeconds>
+                {% endif %}
+                {% if open_banking.gateway.dpop.nonce_rotate_after_uses is defined %}
+                <NonceRotateAfterUses>{{open_banking.gateway.dpop.nonce_rotate_after_uses}}</NonceRotateAfterUses>
+                {% endif %}
+                {% if open_banking.gateway.dpop.https_required is defined %}
+                <HttpsRequired>{{open_banking.gateway.dpop.https_required}}</HttpsRequired>
+                {% endif %}
+                {% if open_banking.gateway.dpop.strip_dpop_header is defined %}
+                <StripDpopHeader>{{open_banking.gateway.dpop.strip_dpop_header}}</StripDpopHeader>
+                {% endif %}
+                {% if open_banking.gateway.dpop.introspection_cache_ttl_seconds is defined %}
+                <IntrospectionCacheTtlSeconds>{{open_banking.gateway.dpop.introspection_cache_ttl_seconds}}</IntrospectionCacheTtlSeconds>
+                {% endif %}
+                {% if open_banking.gateway.dpop.cache_provider_class is defined %}
+                <CacheProviderClass>{{open_banking.gateway.dpop.cache_provider_class}}</CacheProviderClass>
+                {% endif %}
+            </DPoP>
     </Gateway>
     <DCR>
         <APIMRESTEndPoints>
