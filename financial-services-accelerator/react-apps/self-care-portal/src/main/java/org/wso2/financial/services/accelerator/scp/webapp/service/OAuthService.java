@@ -76,8 +76,7 @@ public class OAuthService {
         URI authUri = new URIBuilder(iamBaseUrl)
                 .setPath(Constants.PATH_AUTHORIZE)
                 .addParameter(Constants.RESPONSE_TYPE, "code")
-                .addParameter(Constants.OAUTH_SCOPE, "consentmgt openid consents:read_all consents:read_self " +
-                        "ob-internal-api-access")
+                .addParameter(Constants.OAUTH_SCOPE, "consentmgt openid consents:read_all consents:read_self")
                 .addParameter(Constants.CLIENT_ID, clientId)
                 .addParameter(Constants.REDIRECT_URI, iamBaseUrl + Constants.PATH_CALLBACK)
                 .build();
