@@ -30,22 +30,22 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RotatingNonceStrategy implements NonceStrategy {
 
-    private static final int MAX_TRACKED_CLIENTS = 10_000;
-
     private final int rotateAfterUses;
-    // Access-ordered LRU map — evicts the least-recently-seen client identity once the
-    // cap is reached, preventing unbounded growth for long-running gateway instances.
-    private final Map<String, AtomicLong> useCounts = Collections.synchronizedMap(
-            new LinkedHashMap<String, AtomicLong>(MAX_TRACKED_CLIENTS, 0.75f, true) {
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<String, AtomicLong> eldest) {
-                    return size() > MAX_TRACKED_CLIENTS;
-                }
-            });
+    private final int maxTrackedClients;
+    // Access-ordered LRU map — evicts the least-recently-seen client identity once the cap is reached.
+    private final Map<String, AtomicLong> useCounts;
 
-    public RotatingNonceStrategy(int rotateAfterUses) {
+    public RotatingNonceStrategy(int rotateAfterUses, int maxTrackedClients) {
 
         this.rotateAfterUses = Math.max(1, rotateAfterUses);
+        this.maxTrackedClients = Math.max(1, maxTrackedClients);
+        this.useCounts = Collections.synchronizedMap(
+                new LinkedHashMap<String, AtomicLong>(this.maxTrackedClients, 0.75f, true) {
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<String, AtomicLong> eldest) {
+                        return size() > RotatingNonceStrategy.this.maxTrackedClients;
+                    }
+                });
     }
 
     /**

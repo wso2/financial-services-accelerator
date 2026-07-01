@@ -233,6 +233,9 @@
                 {% if open_banking.gateway.dpop.nonce_rotate_after_uses is defined %}
                 <NonceRotateAfterUses>{{open_banking.gateway.dpop.nonce_rotate_after_uses}}</NonceRotateAfterUses>
                 {% endif %}
+                {% if open_banking.gateway.dpop.nonce_max_tracked_clients is defined %}
+                <NonceMaxTrackedClients>{{open_banking.gateway.dpop.nonce_max_tracked_clients}}</NonceMaxTrackedClients>
+                {% endif %}
                 {% if open_banking.gateway.dpop.https_required is defined %}
                 <HttpsRequired>{{open_banking.gateway.dpop.https_required}}</HttpsRequired>
                 {% endif %}

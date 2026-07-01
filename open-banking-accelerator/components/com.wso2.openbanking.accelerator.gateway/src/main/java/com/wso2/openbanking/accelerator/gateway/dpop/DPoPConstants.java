@@ -79,6 +79,7 @@ public final class DPoPConstants {
         public static final String NONCE_STRATEGY = GATEWAY_DPOP_PREFIX + "NonceStrategy";
         public static final String NONCE_TTL_SECONDS = GATEWAY_DPOP_PREFIX + "NonceTtlSeconds";
         public static final String NONCE_ROTATE_AFTER_USES = GATEWAY_DPOP_PREFIX + "NonceRotateAfterUses";
+        public static final String NONCE_MAX_TRACKED_CLIENTS = GATEWAY_DPOP_PREFIX + "NonceMaxTrackedClients";
         public static final String HTTPS_REQUIRED = GATEWAY_DPOP_PREFIX + "HttpsRequired";
         public static final String STRIP_DPOP_HEADER = GATEWAY_DPOP_PREFIX + "StripDpopHeader";
         public static final String INTROSPECTION_CACHE_TTL_SECONDS =
@@ -100,6 +101,7 @@ public final class DPoPConstants {
         public static final String NONCE_STRATEGY = "never";
         public static final long NONCE_TTL_SECONDS = 300L;
         public static final int NONCE_ROTATE_AFTER_USES = 10;
+        public static final int NONCE_MAX_TRACKED_CLIENTS = 10_000;
         public static final boolean HTTPS_REQUIRED = true;
         public static final boolean STRIP_DPOP_HEADER = false;
         public static final long INTROSPECTION_CACHE_TTL_SECONDS = 60L;

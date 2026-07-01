@@ -113,11 +113,14 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
                 DPoPConstants.Defaults.NONCE_STRATEGY);
         int nonceRotateAfterUses = (int) DPoPUtils.parseLong(cfg.get(DPoPConstants.ConfigKeys.NONCE_ROTATE_AFTER_USES),
                 DPoPConstants.Defaults.NONCE_ROTATE_AFTER_USES);
+        int nonceMaxTrackedClients = (int) DPoPUtils.parseLong(
+                cfg.get(DPoPConstants.ConfigKeys.NONCE_MAX_TRACKED_CLIENTS),
+                DPoPConstants.Defaults.NONCE_MAX_TRACKED_CLIENTS);
         long introspectionTtl = DPoPUtils.parseLong(cfg.get(DPoPConstants.ConfigKeys.INTROSPECTION_CACHE_TTL_SECONDS),
                 DPoPConstants.Defaults.INTROSPECTION_CACHE_TTL_SECONDS);
 
         this.proofValidator = new DPoPProofValidator(algorithms, iatSkewSeconds);
-        this.nonceStrategy = buildNonceStrategy(nonceStrategyName, nonceRotateAfterUses);
+        this.nonceStrategy = buildNonceStrategy(nonceStrategyName, nonceRotateAfterUses, nonceMaxTrackedClients);
         this.accessTokenBinder = new AccessTokenBinder(new IntrospectionClient(introspectionTtl));
         this.challenge = new Challenge(String.join(" ", algorithms));
 
@@ -369,12 +372,16 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
      * {@link IllegalArgumentException} for unrecognised names to fail fast on misconfiguration
      * rather than silently falling back to no-nonce enforcement.
      */
-    private NonceStrategy buildNonceStrategy(String name, int rotateAfterUses) {
+    private NonceStrategy buildNonceStrategy(String name, int rotateAfterUses, int maxTrackedClients) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Building nonce strategy: name=%s, rotateAfterUses=%s, maxTrackedClients=%s",
+                    name, rotateAfterUses, maxTrackedClients));
+        }
         if (equalsIgnoreCase("always", name)) {
             return new AlwaysNonceStrategy();
         }
         if (equalsIgnoreCase("rotating", name)) {
-            return new RotatingNonceStrategy(rotateAfterUses);
+            return new RotatingNonceStrategy(rotateAfterUses, maxTrackedClients);
         }
         if (equalsIgnoreCase("never", name)) {
             return new NeverNonceStrategy();

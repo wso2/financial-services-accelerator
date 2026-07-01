@@ -63,7 +63,7 @@ public class NonceStrategyTest {
     @Test
     public void rotatingStrategyShouldAlwaysRequireNonce() {
         // requiresNonce is pure/side-effect-free — always true regardless of call count.
-        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3);
+        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3, 10_000);
         String client = "client-x";
         assertTrue(strategy.requiresNonce(client));
         assertTrue(strategy.requiresNonce(client));
@@ -74,7 +74,7 @@ public class NonceStrategyTest {
 
     @Test
     public void rotatingStrategyShouldRotateAtModuloIntervals() {
-        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3);
+        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3, 10_000);
         String client = "client-y";
 
         assertFalse(strategy.shouldRotate(client)); // count=1
@@ -88,7 +88,7 @@ public class NonceStrategyTest {
     @Test
     public void rotatingStrategyShouldFloorRotateAfterUsesAtOne() {
         // A misconfiguration of 0 or negative must not cause a div-by-zero in the strategy.
-        RotatingNonceStrategy strategy = new RotatingNonceStrategy(0);
+        RotatingNonceStrategy strategy = new RotatingNonceStrategy(0, 10_000);
         // rotateAfterUses is floored to 1 — every validated proof triggers rotation
         assertTrue(strategy.shouldRotate("c")); // count=1 → 1%1==0
         assertTrue(strategy.shouldRotate("c")); // count=2 → 2%1==0
