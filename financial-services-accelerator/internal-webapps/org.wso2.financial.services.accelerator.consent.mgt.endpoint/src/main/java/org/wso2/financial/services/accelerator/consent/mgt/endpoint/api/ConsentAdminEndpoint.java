@@ -230,7 +230,8 @@ public class ConsentAdminEndpoint {
     private void validateUserPermission(ConsentAdminData consentAdminData, String userIdParamName) {
         try {
             String authToken = consentAdminData.getHeaders().get(ConsentConstants.AUTHORIZATION);
-            // Basic Auth users are granted full admin access — skip JWT validation
+            // These endpoints are not exposed to the public and are only accessible from the internal network.
+            // Hence, Basic authentication is allowed without validating the user permission.
             if (authToken != null && authToken.startsWith("Basic ")) {
                 return;
             }
