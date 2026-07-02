@@ -55,6 +55,7 @@ Before running the suite you need:
 ## Environment Setup
 
 1. Follow the steps given in [Open Banking Accelerator Documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/prerequisites/) to set up WSO2 IS and APIM with the accelerator pack. 
+Install Firefox or Chrome and configure the PATH variable.
 3. Download Firefox or Chrome specific web-driver according to the installed Browser. Make-sure to use the web-driver which support your Browser version and the operating system. Downloaded web-driver should be placed in the relevant folder inside fs-integration-test-suite/test-artifacts/selenium-libs.
 
 ---
