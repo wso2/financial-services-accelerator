@@ -23,10 +23,8 @@ import com.wso2.openbanking.accelerator.gateway.dpop.binding.AccessTokenBinder;
 import com.wso2.openbanking.accelerator.gateway.dpop.binding.IntrospectionClient;
 import com.wso2.openbanking.accelerator.gateway.dpop.cache.DPoPCacheProvider;
 import com.wso2.openbanking.accelerator.gateway.dpop.cache.LocalDPoPCacheProvider;
-import com.wso2.openbanking.accelerator.gateway.dpop.nonce.AlwaysNonceStrategy;
-import com.wso2.openbanking.accelerator.gateway.dpop.nonce.NeverNonceStrategy;
 import com.wso2.openbanking.accelerator.gateway.dpop.nonce.NonceStrategy;
-import com.wso2.openbanking.accelerator.gateway.dpop.nonce.RotatingNonceStrategy;
+import com.wso2.openbanking.accelerator.gateway.dpop.nonce.NonceStrategyType;
 import com.wso2.openbanking.accelerator.gateway.dpop.proof.DPoPProofException;
 import com.wso2.openbanking.accelerator.gateway.dpop.proof.DPoPProofValidator;
 import com.wso2.openbanking.accelerator.gateway.dpop.util.Challenge;
@@ -56,7 +54,6 @@ import static com.wso2.openbanking.accelerator.gateway.dpop.DPoPConstants.DPOP_S
 import static com.wso2.openbanking.accelerator.gateway.dpop.util.DPoPUtils.parseBool;
 import static com.wso2.openbanking.accelerator.gateway.util.GatewayConstants.AUTH_HEADER;
 import static com.wso2.openbanking.accelerator.gateway.util.GatewayConstants.BEARER_TAG;
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 
 /**
@@ -120,7 +117,7 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
                 DPoPConstants.Defaults.INTROSPECTION_CACHE_TTL_SECONDS);
 
         this.proofValidator = new DPoPProofValidator(algorithms, iatSkewSeconds);
-        this.nonceStrategy = buildNonceStrategy(nonceStrategyName, nonceRotateAfterUses, nonceMaxTrackedClients);
+        this.nonceStrategy = this.buildNonceStrategy(nonceStrategyName, nonceRotateAfterUses, nonceMaxTrackedClients);
         this.accessTokenBinder = new AccessTokenBinder(new IntrospectionClient(introspectionTtl));
         this.challenge = new Challenge(String.join(" ", algorithms));
 
@@ -368,25 +365,20 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
     }
 
     /**
-     * Maps the configured nonce strategy name to its implementation. Throws
-     * {@link IllegalArgumentException} for unrecognised names to fail fast on misconfiguration
-     * rather than silently falling back to no-nonce enforcement.
+     * Maps the configured nonce strategy name to its implementation.
+     * Falls back to {@code never} for unrecognised names.
      */
     private NonceStrategy buildNonceStrategy(String name, int rotateAfterUses, int maxTrackedClients) {
+
         if (log.isDebugEnabled()) {
             log.debug(String.format("Building nonce strategy: name=%s, rotateAfterUses=%s, maxTrackedClients=%s",
                     name, rotateAfterUses, maxTrackedClients));
         }
-        if (equalsIgnoreCase("always", name)) {
-            return new AlwaysNonceStrategy();
-        }
-        if (equalsIgnoreCase("rotating", name)) {
-            return new RotatingNonceStrategy(rotateAfterUses, maxTrackedClients);
-        }
-        if (equalsIgnoreCase("never", name)) {
-            return new NeverNonceStrategy();
-        }
-        throw new IllegalArgumentException("Unsupported DPoP nonce strategy: " + name);
+        return NonceStrategyType.fromName(name)
+                .orElseGet(() -> {
+                    log.warn("Unsupported DPoP nonce strategy '" + name + "' - falling back to 'never'.");
+                    return NonceStrategyType.NEVER;
+                }).create(rotateAfterUses, maxTrackedClients);
     }
 
     /**
