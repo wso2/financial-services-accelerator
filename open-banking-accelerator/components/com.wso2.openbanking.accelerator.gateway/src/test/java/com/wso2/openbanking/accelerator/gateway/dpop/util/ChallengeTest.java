@@ -27,6 +27,7 @@ import org.apache.synapse.transport.passthru.util.RelayUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeMethod;
@@ -45,6 +46,7 @@ import static org.testng.Assert.assertTrue;
  * {@link Axis2Sender} entry points to avoid real HTTP I/O.
  */
 @PrepareForTest({RelayUtils.class, Axis2Sender.class})
+@PowerMockIgnore({"jdk.internal.reflect.*", "javax.management.*"})
 public class ChallengeTest extends PowerMockTestCase {
 
     private static final String ACCEPTED_ALGS = "ES256 PS256";

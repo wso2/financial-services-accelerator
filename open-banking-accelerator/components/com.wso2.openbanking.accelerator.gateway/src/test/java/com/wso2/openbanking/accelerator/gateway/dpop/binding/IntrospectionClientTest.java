@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.gateway.dpop.binding;
 import com.wso2.openbanking.accelerator.gateway.dpop.DPoPConstants;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
@@ -46,6 +47,7 @@ import static org.testng.Assert.fail;
  * and {@link KeyManagerHolder} entry points so the tests run without a Carbon runtime.
  */
 @PrepareForTest({PrivilegedCarbonContext.class, KeyManagerHolder.class})
+@PowerMockIgnore({"jdk.internal.reflect.*", "javax.management.*"})
 public class IntrospectionClientTest extends PowerMockTestCase {
 
     private static final String TENANT = "carbon.super";

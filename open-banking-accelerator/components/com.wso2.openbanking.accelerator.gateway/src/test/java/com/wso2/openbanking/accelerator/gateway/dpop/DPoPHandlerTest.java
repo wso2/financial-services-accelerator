@@ -34,6 +34,7 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
@@ -57,7 +58,8 @@ import static org.testng.Assert.assertTrue;
  * (singleton accessor), and {@link LocalDPoPCacheProvider} (calls {@code new} on the
  * cache classes during init).
  */
-@PrepareForTest({DPoPUtils.class, GatewayDataHolder.class, LocalDPoPCacheProvider.class})
+@PrepareForTest({DPoPUtils.class, GatewayDataHolder.class, LocalDPoPCacheProvider.class, DPoPProofValidator.class})
+@PowerMockIgnore({"jdk.internal.reflect.*", "javax.management.*"})
 public class DPoPHandlerTest extends PowerMockTestCase {
 
     private static final String AUTH_HEADER = "Authorization";

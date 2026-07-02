@@ -21,6 +21,7 @@ package com.wso2.openbanking.accelerator.gateway.dpop.cache;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeMethod;
@@ -47,6 +48,7 @@ import static org.testng.Assert.assertTrue;
  * calls inside {@code initialize()} (PowerMock instruments the calling class).
  */
 @PrepareForTest({LocalDPoPCacheProvider.class})
+@PowerMockIgnore({"jdk.internal.reflect.*", "javax.management.*"})
 public class LocalDPoPCacheProviderTest extends PowerMockTestCase {
 
     private static final String KEY_ID = "test-proof-key-id";
