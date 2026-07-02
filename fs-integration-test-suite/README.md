@@ -54,8 +54,7 @@ Before running the suite you need:
 
 ## Environment Setup
 
-1. Follow the steps given in [Open Banking Accelerator Documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/prerequisites/) to set up WSO2 IS and APIM with the accelerator pack. Make sure to update the APIM certificate alias in the IS deployment.toml file. Replace the default alias (wso2carbon) with the alias used when importing the APIM certificate into the IS truststore (for example, wso2obam).
-2. Install Firefox or Chrome and configure the PATH variable.
+1. Follow the steps given in [Open Banking Accelerator Documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/prerequisites/) to set up WSO2 IS and APIM with the accelerator pack. 
 3. Download Firefox or Chrome specific web-driver according to the installed Browser. Make-sure to use the web-driver which support your Browser version and the operating system. Downloaded web-driver should be placed in the relevant folder inside fs-integration-test-suite/test-artifacts/selenium-libs.
 
 > **Note:** If Selenium cannot automatically locate the Firefox binary in the browser automation, update the `getFireFoxWebDriver()` method in `financial-services-accelerator/fs-integration-test-suite/bfsi-test-framework/src/main/groovy/org/wso2/bfsi/test/framework/automation/BrowserAutomation.groovy` to explicitly specify the Firefox binary path.
@@ -276,7 +275,7 @@ mvn clean install
 
 1. Fill the [deployment.properties](end-to-end-test-suite-execution%2Fdeployment.properties) with the relevant server hostnames and versions.
 
-2. Copy the client truststore files (Both IS and APIM) to the `test-artifacts/client-truststore` directory.
+2. Copy the APIM client truststore files to the `test-artifacts/client-truststore` directory.
 
 3. The `fs-integration-test-suite/end-to-end-test-suite-execution/test.sh` script reads a `deployment.properties` file and performs all configuration + test execution end-to-end.
 
