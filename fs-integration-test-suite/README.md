@@ -267,7 +267,7 @@ mvn clean install
 
 ## Method 2 – Full Automated Run
 
-1. Fill the [deployment.properties](end-to-end-test-suite-execution%2Fdeployment.properties) with the relevant server hostnames and versions.
+1. Fill the [deployment.properties](end-to-end-test-suite-execution%2Fdeployment.properties) with the relevant server hostnames, versions and OS.
 
 2. Copy the APIM client truststore files to the `test-artifacts/client-truststore` directory.
 
