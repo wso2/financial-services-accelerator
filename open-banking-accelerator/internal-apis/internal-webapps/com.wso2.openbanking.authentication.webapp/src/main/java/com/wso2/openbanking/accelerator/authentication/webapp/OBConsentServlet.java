@@ -20,6 +20,7 @@ package com.wso2.openbanking.accelerator.authentication.webapp;
 
 import com.wso2.openbanking.accelerator.authentication.webapp.util.Constants;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.ConsentMgrAuthServletImpl;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.impl.ISDefaultAuthServletImpl;
@@ -86,8 +87,18 @@ public class OBConsentServlet extends HttpServlet {
 
         // get consent data
         String sessionDataKey = request.getParameter("sessionDataKeyConsent");
-        HttpResponse consentDataResponse = getConsentDataWithKey(sessionDataKey, getServletContext());
         JSONObject dataSet = new JSONObject();
+        HttpResponse consentDataResponse;
+        try {
+            consentDataResponse = getConsentDataWithKey(sessionDataKey, getServletContext());
+        } catch (OpenBankingRuntimeException e) {
+            log.error("Unable to retrieve consent data due to a server configuration error: " +
+                    e.getErrorCode(), e);
+            request.getSession().invalidate();
+            response.sendRedirect("retry.do?status=Error&statusMsg=Consent retrieval failed due to a server " +
+                    "configuration error. Please contact the administrator.");
+            return;
+        }
         log.debug("HTTP response for consent retrieval" + consentDataResponse.toString());
         try {
             if (consentDataResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_MOVED_TEMP &&
@@ -283,6 +294,11 @@ public class OBConsentServlet extends HttpServlet {
                     .get(Constants.USERNAME_IN_OB_CONFIGS);
             password = (String) OpenBankingConfigParser.getInstance().getConfiguration()
                     .get(Constants.PASSWORD_IN_OB_CONFIGS);
+        }
+
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+            log.error("Username or Password is missing for <ConsentAPICredentials> configuration.");
+            throw new OpenBankingRuntimeException("Consent API credentials are not configured on the server.");
         }
         return Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
     }

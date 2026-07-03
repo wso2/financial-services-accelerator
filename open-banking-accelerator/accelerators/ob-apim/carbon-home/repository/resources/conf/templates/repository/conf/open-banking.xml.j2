@@ -374,14 +374,10 @@
         <!-- Administrator username to login to the SI server for data publishing. -->
     {% if open_banking.data_publishing.username is defined %}
         <Username>{{open_banking.data_publishing.username}}</Username>
-    {% else %}
-        <Username>admin@wso2.com@carbon.super</Username>
     {% endif %}
         <!-- Administrator password to login to the SI server for data publishing. -->
     {% if open_banking.data_publishing.password is defined %}
         <Password>{{open_banking.data_publishing.password}}</Password>
-    {% else %}
-        <Password>wso2123</Password>
     {% endif %}
         <!-- Server URL of the remote SI server used to collect statistics. Must
         be specified in {protocol://hostname:port/} format. -->
