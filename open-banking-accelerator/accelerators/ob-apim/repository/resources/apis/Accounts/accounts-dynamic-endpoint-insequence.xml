@@ -22,7 +22,7 @@
     <!--Appending Basic Auth for Consent Management APIs -->
     <property name="Authorization" scope="transport" action="remove"/>
     <class name="com.wso2.openbanking.accelerator.gateway.mediator.BasicAuthMediator"/>
-    <header name="Authorization" expression="$ctx:basicAuthentication" scope="transport"/>
+    <property name="Authorization" expression="$ctx:basicAuthentication" scope="transport"/>
     
     <filter regex=".*\/account-access-consents.*" source="$ctx:endpointURI">
         <then>
