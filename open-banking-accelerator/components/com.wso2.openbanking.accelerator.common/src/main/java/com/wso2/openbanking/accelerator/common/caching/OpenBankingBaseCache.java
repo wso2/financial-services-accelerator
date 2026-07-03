@@ -194,6 +194,44 @@ public abstract class OpenBankingBaseCache<K extends OpenBankingBaseCacheKey, V>
 
     }
 
+    /**
+     * Add to cache only if the key is not already present. The check and insert are
+     * performed as a single atomic operation by the underlying JSR-107 provider.
+     * Returns {@code true} if the value was stored, {@code false} if the key already existed.
+     *
+     * @param key   cache key.
+     * @param value cache value.
+     * @return true if the entry was inserted, false if it already existed.
+     */
+    public boolean addToCacheIfAbsent(K key, V value) {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Attempting addIfAbsent for `%s` in cache %s",
+                    key.toString().replaceAll("[\r\n]", ""), cacheName.replaceAll("[\r\n]", "")));
+        }
+
+        return getBaseCache().putIfAbsent(key, value);
+    }
+
+    /**
+     * Remove from cache only if the entry is currently mapped to the expected value.
+     * The check and removal are performed as a single atomic operation by the underlying
+     * JSR-107 provider. Returns {@code true} if the entry was removed, {@code false} if
+     * the key was absent or mapped to a different value.
+     *
+     * @param key           cache key.
+     * @param expectedValue the value that must be present for the removal to proceed.
+     * @return true if the entry was removed, false otherwise.
+     */
+    public boolean removeFromCacheIfMatch(K key, V expectedValue) {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Attempting conditional remove for `%s` in cache %s",
+                    key.toString().replaceAll("[\r\n]", ""), cacheName.replaceAll("[\r\n]", "")));
+        }
+
+        return getBaseCache().remove(key, expectedValue);
+    }
 
     /**
      * Get Cache expiry time upon access in minutes.
