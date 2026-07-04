@@ -19,7 +19,8 @@
     <property name="endpointURI" expression="get-property('To')"/>
     <!-- Appending Basic Auth for Consent Management APIs -->
     <property name="Authorization" scope="transport" action="remove"/>
-    <header name="Authorization" value="Basic YWRtaW5Ad3NvMi5jb206d3NvMjEyMw==" scope="transport"/>
+    <class name="com.wso2.openbanking.accelerator.gateway.mediator.BasicAuthMediator"/>
+    <header name="Authorization" expression="$ctx:basicAuthentication" scope="transport"/>
     <filter regex=".*\/domestic-vrp-consents.*" source="$ctx:endpointURI">
         <then>
             <header name="To" value="https://localhost:9446/api/openbanking/consent/manage"/>
