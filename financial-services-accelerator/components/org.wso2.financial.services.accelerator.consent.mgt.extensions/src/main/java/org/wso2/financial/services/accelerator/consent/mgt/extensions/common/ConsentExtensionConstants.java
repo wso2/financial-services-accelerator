@@ -86,6 +86,7 @@ public class ConsentExtensionConstants {
     public static final String AMOUNT = "Amount";
     public static final String AMOUNT_TITLE = "Amount";
     public static final String COMMON_AUTH_ID = "commonAuthId";
+    public static final String FILE = "file";
     public static final String FILE_UPLOAD_CREATED_TIME = "FileUploadCreatedTime";
     public static final String IDEMPOTENCY_KEY = "IdempotencyKey";
     public static final String FILE_UPLOAD_IDEMPOTENCY_KEY = "FileUploadIdempotencyKey";

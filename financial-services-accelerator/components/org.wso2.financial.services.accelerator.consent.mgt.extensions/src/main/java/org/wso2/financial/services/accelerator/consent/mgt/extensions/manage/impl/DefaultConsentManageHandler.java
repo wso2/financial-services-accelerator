@@ -297,9 +297,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             validationResponse.getErrorMessage());
                 }
 
+                String consentStatus = ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS;
+                if (consentManageData.getRequestPath().contains(ConsentExtensionConstants.FILE)) {
+                    consentStatus = ConsentExtensionConstants.AWAIT_UPLOAD_STATUS;
+                }
                 ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
-                        consentManageData.getPayload().toString(), consentType,
-                        ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
+                        consentManageData.getPayload().toString(), consentType, consentStatus);
                 requestedConsent.setValidityPeriod(ConsentManageUtils.getValidityTime(consentManageData.getPayload(),
                         consentType));
 

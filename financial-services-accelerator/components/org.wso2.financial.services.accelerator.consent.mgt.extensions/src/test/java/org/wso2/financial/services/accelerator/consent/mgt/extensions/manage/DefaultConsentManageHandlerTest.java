@@ -271,7 +271,7 @@ public class DefaultConsentManageHandlerTest {
         defaultConsentManageHandler.handlePost(consentManageDataMock);
 
 
-        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getRequestPath();
         Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
         Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
     }
@@ -323,7 +323,7 @@ public class DefaultConsentManageHandlerTest {
 
         defaultConsentManageHandler.handlePost(consentManageDataMock);
 
-        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getRequestPath();
         Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
         Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
     }
@@ -342,7 +342,7 @@ public class DefaultConsentManageHandlerTest {
 
         defaultConsentManageHandler.handlePost(consentManageDataMock);
 
-        Mockito.verify(consentManageDataMock, Mockito.times(2)).getRequestPath();
+        Mockito.verify(consentManageDataMock, Mockito.times(3)).getRequestPath();
         Mockito.verify(consentManageDataMock, Mockito.times(3)).getClientId();
         Mockito.verify(consentManageDataMock).setResponseStatus(ResponseStatus.CREATED);
     }
