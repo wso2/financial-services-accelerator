@@ -21,6 +21,7 @@ package org.wso2.financial.services.accelerator.common.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -360,5 +362,22 @@ public class FinancialServicesUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Case-insensitive string comparison for ASCII values.
+     *
+     * @param a first string
+     * @param b second string
+     * @return {@code true} if both strings are equal ignoring case, or both are {@code null}
+     */
+    @SuppressFBWarnings(value = "IMPROPER_UNICODE",
+            justification = "Compares ASCII-only values; Unicode edge cases do not apply.")
+    public static boolean equalsIgnoreCase(String a, String b) {
+
+        if (a == null || b == null) {
+            return Objects.equals(a, b);
+        }
+        return a.equalsIgnoreCase(b);
     }
 }

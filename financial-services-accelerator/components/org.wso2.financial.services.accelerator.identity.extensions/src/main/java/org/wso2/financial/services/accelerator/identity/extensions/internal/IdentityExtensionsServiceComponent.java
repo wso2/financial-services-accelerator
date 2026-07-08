@@ -36,12 +36,14 @@ import org.wso2.carbon.identity.oauth.OAuthAdminServiceImpl;
 import org.wso2.carbon.identity.oauth.dcr.handler.AdditionalAttributeFilter;
 import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.OAuth2Service;
+import org.wso2.carbon.identity.oauth2.token.handlers.claims.JWTAccessTokenClaimProvider;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.FSClaimProvider;
+import org.wso2.financial.services.accelerator.identity.extensions.claims.FSJWTAccessTokenClaimProvider;
 import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleClaimProviderImpl;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.FSApplicationManagementListener;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter.FSAdditionalAttributeFilter;
@@ -68,6 +70,8 @@ public class IdentityExtensionsServiceComponent {
         bundleContext.registerService(IntrospectionDataProvider.class.getName(),
                 new FSIntrospectionDataProvider(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new RoleClaimProviderImpl(), null);
+        bundleContext.registerService(JWTAccessTokenClaimProvider.class.getName(),
+                new FSJWTAccessTokenClaimProvider(), null);
 
         AdditionalAttributeFilter attributeFilter = new FSAdditionalAttributeFilter();
         bundleContext.registerService(AdditionalAttributeFilter.class.getName(), attributeFilter, null);

@@ -296,7 +296,6 @@ return_null_fields_in_response=false
 
 [oauth.oidc]
 id_token.signature_algorithm="PS256"
-enable_claims_separation_for_access_tokens = false
 enable_hybrid_flow_app_level_validation = false
 
 [oauth.oidc.token_endpoint]
