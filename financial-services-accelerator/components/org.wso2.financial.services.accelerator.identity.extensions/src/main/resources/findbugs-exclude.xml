@@ -18,4 +18,16 @@
  -->
 
 <FindBugsFilter>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SelfCarePortalTokenFilter"/>
+        <Bug pattern="COOKIE_USAGE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SelfCarePortalTokenFilter"/>
+        <Bug pattern="SERVLET_HEADER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SelfCarePortalTokenFilter$TokenReplacedRequest"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
 </FindBugsFilter>

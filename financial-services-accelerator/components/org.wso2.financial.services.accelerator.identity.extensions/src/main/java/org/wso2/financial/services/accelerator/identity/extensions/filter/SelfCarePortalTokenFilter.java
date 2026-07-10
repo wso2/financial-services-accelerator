@@ -78,17 +78,18 @@ public class SelfCarePortalTokenFilter implements Filter {
             return;
         }
 
+        String safeURI = requestURI.replaceAll("[\r\n]", "");
         String fullToken = reconstructAccessToken(httpRequest);
 
         if (fullToken == null) {
             // token reconstruction failed — pass through; IS AuthenticationValve will reject
-            LOG.debug("SelfCarePortalTokenFilter: could not reconstruct access token for " + requestURI +
+            LOG.debug("SelfCarePortalTokenFilter: could not reconstruct access token for " + safeURI +
                     ". Passing through for IS to handle.");
             chain.doFilter(request, response);
             return;
         }
 
-        LOG.debug("SelfCarePortalTokenFilter: reconstructed full access token for " + requestURI);
+        LOG.debug("SelfCarePortalTokenFilter: reconstructed full access token for " + safeURI);
         chain.doFilter(new TokenReplacedRequest(httpRequest, BEARER_PREFIX + fullToken), response);
     }
 
