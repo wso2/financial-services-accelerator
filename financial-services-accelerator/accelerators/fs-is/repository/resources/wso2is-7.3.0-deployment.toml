@@ -244,6 +244,16 @@ permissions = ["/permission/admin"]
 secure = "true"
 scopes = ["ob-internal-api-access"]
 
+# SCP BFF API paths require a valid token. The SelfCarePortalTokenFilter (registered below
+# as a [[tomcat.filter]]) reassembles the split access token before this valve runs.
+# This rule must appear BEFORE the broader consentmgr rule (IS uses first-match).
+[[resource.access_control]]
+context = "(.*)/consentmgr/scp/(.*)"
+secure = "true"
+http_method = "GET, DELETE"
+
+# Static assets, the OAuth callback, and the authorization redirect do not carry a token
+# and must remain unsecured so the initial login flow can complete.
 [[resource.access_control]]
 context = "(.*)/consentmgr/(.*)"
 secure="false"
@@ -657,3 +667,7 @@ event_notification_request_generator="org.wso2.financial.services.accelerator.ev
 
 #[agent_identity]
 #enabled=false
+
+[[tomcat.filter]]
+name = "SelfCarePortalTokenFilter"
+class = "org.wso2.financial.services.accelerator.identity.extensions.filter.SelfCarePortalTokenFilter"
