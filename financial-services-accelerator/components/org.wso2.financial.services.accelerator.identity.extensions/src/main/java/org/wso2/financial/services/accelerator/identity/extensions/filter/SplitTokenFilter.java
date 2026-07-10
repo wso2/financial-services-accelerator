@@ -36,32 +36,47 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 
 /**
- * Tomcat-level filter registered via [[tomcat.filter]] in deployment.toml.
+ * Generic Tomcat filter that reconstructs a Bearer token split across two cookies.
  *
- * The SCP splits the access token across two cookies (OB_SCP_AT_P1, OB_SCP_AT_P2) and
- * sends only P1 in the Authorization header. This filter reassembles the full token and
- * rewrites the Authorization header on the request before IS's AuthenticationValve
- * validates it, allowing [[resource.access_control]] secure="true" to work correctly
- * for /consentmgr/scp/* paths.
+ * Configured via [[tomcat.filter]] init_params in deployment.toml:
+ *   tokenPart1CookieName — name of the cookie carrying part 1 (also sent in Authorization header)
+ *   tokenPart2CookieName — name of the HttpOnly cookie carrying part 2
  *
- * Requests to paths outside /consentmgr/scp/ are passed through unchanged.
+ * On each request the filter checks for a Bearer Authorization header whose value matches the
+ * part-1 cookie (CSRF guard). If both cookies are present and the check passes, the full token
+ * (P1 + P2) is placed back in the Authorization header before the request continues down the
+ * filter chain. If any piece is missing the request is passed through unchanged — downstream
+ * authentication will reject it if a valid token was required.
+ *
+ * URL patterns to protect are declared via [[tomcat.filter_mapping]] in deployment.toml;
+ * no path logic lives inside this filter.
  */
-public class SelfCarePortalTokenFilter implements Filter {
+public class SplitTokenFilter implements Filter {
 
-    private static final Log LOG = LogFactory.getLog(SelfCarePortalTokenFilter.class);
+    private static final Log LOG = LogFactory.getLog(SplitTokenFilter.class);
 
-    private static final String SCP_API_PATH = "/consentmgr/scp/";
-    private static final String AT_P1_COOKIE = "OB_SCP_AT_P1";
-    private static final String AT_P2_COOKIE = "OB_SCP_AT_P2";
+    static final String INIT_PARAM_PART1_COOKIE = "tokenPart1CookieName";
+    static final String INIT_PARAM_PART2_COOKIE = "tokenPart2CookieName";
+
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
+    private String part1CookieName;
+    private String part2CookieName;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        LOG.info("SelfCarePortalTokenFilter initialized.");
+        part1CookieName = filterConfig.getInitParameter(INIT_PARAM_PART1_COOKIE);
+        part2CookieName = filterConfig.getInitParameter(INIT_PARAM_PART2_COOKIE);
+
+        if (part1CookieName == null || part2CookieName == null) {
+            throw new ServletException("SplitTokenFilter requires init-params '" + INIT_PARAM_PART1_COOKIE
+                    + "' and '" + INIT_PARAM_PART2_COOKIE + "'");
+        }
+        LOG.info("SplitTokenFilter initialized. P1 cookie: " + part1CookieName.replaceAll("[\r\n]", "")
+                + ", P2 cookie: " + part2CookieName.replaceAll("[\r\n]", ""));
     }
 
     @Override
@@ -69,27 +84,17 @@ public class SelfCarePortalTokenFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-        String requestURI = httpRequest.getRequestURI();
-
-        if (requestURI == null || !requestURI.contains(SCP_API_PATH)) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        String safeURI = requestURI.replaceAll("[\r\n]", "");
-        String fullToken = reconstructAccessToken(httpRequest);
+        String fullToken = reconstructToken(httpRequest);
 
         if (fullToken == null) {
-            // token reconstruction failed — pass through; IS AuthenticationValve will reject
-            LOG.debug("SelfCarePortalTokenFilter: could not reconstruct access token for " + safeURI +
-                    ". Passing through for IS to handle.");
+            LOG.debug("SplitTokenFilter: token parts not present or CSRF check failed for "
+                    + httpRequest.getRequestURI().replaceAll("[\r\n]", "") + ". Passing through.");
             chain.doFilter(request, response);
             return;
         }
 
-        LOG.debug("SelfCarePortalTokenFilter: reconstructed full access token for " + safeURI);
+        LOG.debug("SplitTokenFilter: reconstructed full token for "
+                + httpRequest.getRequestURI().replaceAll("[\r\n]", ""));
         chain.doFilter(new TokenReplacedRequest(httpRequest, BEARER_PREFIX + fullToken), response);
     }
 
@@ -98,12 +103,12 @@ public class SelfCarePortalTokenFilter implements Filter {
     }
 
     /**
-     * Reads OB_SCP_AT_P1 from the Authorization header and OB_SCP_AT_P2 from cookies.
-     * Validates that the P1 in the header matches the P1 cookie (CSRF guard) before joining.
+     * Reads the part-1 value from the Authorization header and both parts from cookies.
+     * Validates header P1 == cookie P1 as a CSRF guard before joining.
      *
-     * @return full access token string, or null if reconstruction is not possible
+     * @return full token string, or null if any piece is missing or the CSRF check fails
      */
-    private String reconstructAccessToken(HttpServletRequest request) {
+    private String reconstructToken(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             return null;
@@ -122,9 +127,9 @@ public class SelfCarePortalTokenFilter implements Filter {
         String cookieP1 = null;
         String cookieP2 = null;
         for (Cookie cookie : cookies) {
-            if (AT_P1_COOKIE.equals(cookie.getName())) {
+            if (part1CookieName.equals(cookie.getName())) {
                 cookieP1 = cookie.getValue();
-            } else if (AT_P2_COOKIE.equals(cookie.getName())) {
+            } else if (part2CookieName.equals(cookie.getName())) {
                 cookieP2 = cookie.getValue();
             }
         }
@@ -133,10 +138,9 @@ public class SelfCarePortalTokenFilter implements Filter {
             return null;
         }
 
-        // Validate header P1 matches cookie P1 to prevent token substitution attacks
         if (!cookieP1.equals(headerP1)) {
-            LOG.warn("SelfCarePortalTokenFilter: Authorization header P1 does not match OB_SCP_AT_P1 cookie. " +
-                    "Possible token substitution attempt.");
+            LOG.warn("SplitTokenFilter: Authorization header P1 does not match "
+                    + part1CookieName.replaceAll("[\r\n]", "") + " cookie. Possible token substitution attempt.");
             return null;
         }
 
