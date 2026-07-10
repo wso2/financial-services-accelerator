@@ -176,7 +176,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
      *
      * @return true if permitted, false if a 401/403 error response has already been written
      */
-    private boolean validateUserPermissions(HttpServletRequest req, String accessToken, HttpServletResponse resp) {
+    boolean validateUserPermissions(HttpServletRequest req, String accessToken, HttpServletResponse resp) {
         try {
             String tokenBody = JWTUtils.decodeRequestJWT(accessToken, "body");
             JSONObject tokenBodyObj = new JSONObject(tokenBody);
@@ -222,18 +222,18 @@ public class ResourceInterceptorServlet extends HttpServlet {
         }
     }
 
-    private boolean isCustomerCareOfficer(String scopes) {
+    boolean isCustomerCareOfficer(String scopes) {
         return StringUtils.isNotEmpty(scopes) && scopes.contains(CCO_SCOPE);
     }
 
-    private String getUserNameWithTenantDomain(String userName) {
+    String getUserNameWithTenantDomain(String userName) {
         if (userName.endsWith(SUPER_TENANT_DOMAIN)) {
             return userName;
         }
         return userName + "@" + SUPER_TENANT_DOMAIN;
     }
 
-    private String getAdminBasicAuth() {
+    String getAdminBasicAuth() {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         String auth = configParser.getAdminUsername() + ":" + configParser.getAdminPassword();
         return Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
