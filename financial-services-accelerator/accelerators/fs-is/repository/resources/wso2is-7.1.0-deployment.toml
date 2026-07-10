@@ -206,10 +206,14 @@ TokenExpiryTime = 60
 [identity_data_source]
 skip_db_schema_creation = true
 
-[[resource.access_control]]
-context = "(.*)/api/fs/consent/admin/(.*)"
-http_method = "all"
-secure = "true"
+# The admin-specific rule below is intentionally omitted. The broader consent rule that follows
+# restricts all /api/fs/consent/* paths (including /admin/*) to BasicAuthentication only,
+# enforcing /permission/admin. This blocks end-user Bearer tokens from reaching admin endpoints.
+# To allow other auth mechanisms for admin endpoints, uncomment the block below.
+#[[resource.access_control]]
+#context = "(.*)/api/fs/consent/admin/(.*)"
+#http_method = "all"
+#secure = "true"
 
 [[resource.access_control]]
 allowed_auth_handlers = ["BasicAuthentication"]

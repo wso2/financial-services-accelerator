@@ -19,13 +19,8 @@
 package org.wso2.financial.services.accelerator.consent.mgt.endpoint.api;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.financial.services.accelerator.common.util.JWTUtils;
-import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.endpoint.utils.ConsentUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.ConsentAdminHandler;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.builder.ConsentAdminBuilder;
@@ -33,9 +28,6 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.mode
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionExporter;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
-
-import java.text.ParseException;
-import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -100,7 +92,6 @@ public class ConsentAdminEndpoint {
 
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 uriInfo.getQueryParameters(), uriInfo.getAbsolutePath().getPath(), request, response);
-        validateUserPermission(consentAdminData, "userIds");
         consentAdminHandler.handleSearch(consentAdminData);
         return sendResponse(consentAdminData);
     }
@@ -166,7 +157,6 @@ public class ConsentAdminEndpoint {
         ConsentAdminData consentAdminData = new ConsentAdminData(ConsentUtils.getHeaders(request),
                 ConsentUtils.getJSONObjectPayload(request), uriInfo.getQueryParameters(),
                 uriInfo.getAbsolutePath().getPath(), request, response);
-        validateUserPermission(consentAdminData, "userId");
         consentAdminHandler.handleRevoke(consentAdminData);
         return sendResponse(consentAdminData);
     }
@@ -222,81 +212,4 @@ public class ConsentAdminEndpoint {
         }
     }
 
-    /**
-     * Method to validate the user permission. Validates access token scopes against users.
-     *
-     * @param consentAdminData consent admin data
-     */
-    private void validateUserPermission(ConsentAdminData consentAdminData, String userIdParamName) {
-        try {
-            String authToken = consentAdminData.getHeaders().get(ConsentConstants.AUTHORIZATION);
-            // These endpoints are not exposed to the public and are only accessible from the internal network.
-            // Hence, Basic authentication is allowed without validating the user permission.
-            if (authToken != null && authToken.startsWith("Basic ")) {
-                return;
-            }
-            String tokenBody = JWTUtils.decodeRequestJWT(authToken.replace("Bearer ", ""), "body");
-            JSONObject tokenBodyObj = new JSONObject(tokenBody);
-            String tokenScopes = tokenBodyObj.getString("scope");
-            if (!isCustomerCareOfficer(tokenScopes)) {
-                // user is not a customer care officer
-                ArrayList optUserIds = (ArrayList) consentAdminData.getQueryParams().get(userIdParamName);
-                String optUserId = !optUserIds.isEmpty() ? getUserNameWithTenantDomain(optUserIds.get(0).toString())
-                        : "";
-                String tokenSubject = getUserNameWithTenantDomain(tokenBodyObj.getString("sub"));
-                if (StringUtils.isEmpty(optUserId) || !isUserIdMatchesTokenSub(optUserId, tokenSubject)) {
-                    // token subject and user id do not match, invalid request
-                    final String errorMsg = "Invalid self care portal request received. " +
-                            "UserId and token subject do not match.";
-                    log.error(errorMsg);
-                    throw new ConsentException(ResponseStatus.UNAUTHORIZED, errorMsg);
-                }
-            }
-        } catch (ParseException e) {
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
-    /**
-     * Method to match customer care officer scopes.
-     *
-     * @param scopes scopes received from access token
-     * @return if customer care officer scope found return true else false
-     */
-    protected boolean isCustomerCareOfficer(String scopes) {
-        if (StringUtils.isNotEmpty(scopes)) {
-            return scopes.contains(ConsentConstants.CUSTOMER_CARE_OFFICER_SCOPE);
-        }
-        return false;
-    }
-
-    /**
-     * Method to get the userName with tenant domain.
-     *
-     * @param userName username
-     * @return username with tenant domain
-     */
-    public static String getUserNameWithTenantDomain(String userName) {
-
-        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        if (userName.endsWith(tenantDomain)) {
-            return userName;
-        } else {
-            return userName + "@" + tenantDomain;
-        }
-    }
-
-    /**
-     * Method to match user id and token subject.
-     *
-     * @param userId   received from query parameter
-     * @param tokenSub received from access token body
-     * @return if user id matches with token subject return true else false
-     */
-    protected boolean isUserIdMatchesTokenSub(String userId, String tokenSub) {
-        if (StringUtils.isNotEmpty(tokenSub)) {
-            return tokenSub.equals(userId);
-        }
-        return false;
-    }
 }
