@@ -78,9 +78,11 @@ public class ResourceInterceptorServlet extends HttpServlet {
     // Suppressed warning count - 2
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
+            String queryString = req.getQueryString() != null
+                    ? req.getQueryString().replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "") : "";
             LOG.debug(String.format("New request received: %s ? %s",
                     req.getRequestURI().replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, ""),
-                    req.getQueryString().replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "")));
+                    queryString));
             if (resourceInterceptorService.isAccessTokenExpired(req)) {
                 // access token is expired, refreshing access token
                 Optional<String> optRefreshToken = resourceInterceptorService.constructRefreshTokenFromCookies(req);
