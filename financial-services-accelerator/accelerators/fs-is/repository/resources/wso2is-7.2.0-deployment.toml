@@ -236,8 +236,8 @@ permissions = ["/permission/admin"]
 secure = "true"
 scopes = ["ob-internal-api-access"]
 
-# SCP BFF API paths require a valid token. The SplitTokenFilter (registered below
-# as a [[tomcat.filter]]) reassembles the split access token before this valve runs.
+# SCP BFF API paths require a valid token. SplitTokenValve (registered via
+# TomcatValveContainer) reassembles the split access token before this valve runs.
 # This rule must appear BEFORE the broader consentmgr rule (IS uses first-match).
 [[resource.access_control]]
 context = "(.*)/consentmgr/scp/(.*)"
@@ -660,12 +660,3 @@ event_notification_request_generator="org.wso2.financial.services.accelerator.ev
 [agent_identity]
 enabled=false
 
-[[tomcat.filter]]
-name = "SplitTokenFilter"
-class = "org.wso2.financial.services.accelerator.identity.extensions.filter.SplitTokenFilter"
-init_params.tokenPart1CookieName = "OB_SCP_AT_P1"
-init_params.tokenPart2CookieName = "OB_SCP_AT_P2"
-
-[[tomcat.filter_mapping]]
-name = "SplitTokenFilter"
-url_pattern = "/consentmgr/scp/*"

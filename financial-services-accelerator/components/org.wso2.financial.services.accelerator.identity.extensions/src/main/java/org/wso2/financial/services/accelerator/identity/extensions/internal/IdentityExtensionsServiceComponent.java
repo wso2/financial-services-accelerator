@@ -39,6 +39,7 @@ import org.wso2.carbon.identity.oauth2.OAuth2Service;
 import org.wso2.carbon.identity.oauth2.token.handlers.claims.JWTAccessTokenClaimProvider;
 import org.wso2.carbon.identity.openidconnect.ClaimProvider;
 import org.wso2.carbon.identity.openidconnect.RequestObjectService;
+import org.wso2.carbon.tomcat.ext.valves.TomcatValveContainer;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigurationService;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
@@ -48,6 +49,9 @@ import org.wso2.financial.services.accelerator.identity.extensions.claims.RoleCl
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.application.listener.FSApplicationManagementListener;
 import org.wso2.financial.services.accelerator.identity.extensions.client.registration.dcr.attribute.filter.FSAdditionalAttributeFilter;
 import org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSIntrospectionDataProvider;
+import org.wso2.financial.services.accelerator.identity.extensions.valve.SplitTokenValve;
+
+import java.util.Collections;
 
 /**
  * Identity common data holder.
@@ -64,6 +68,7 @@ public class IdentityExtensionsServiceComponent {
     protected void activate(ComponentContext context) {
 
         log.debug("Identity Extensions component activated.");
+        TomcatValveContainer.addValves(Collections.singletonList(new SplitTokenValve()));
         BundleContext bundleContext = context.getBundleContext();
         bundleContext.registerService(ApplicationMgtListener.class, new FSApplicationManagementListener(), null);
         bundleContext.registerService(ClaimProvider.class.getName(), new FSClaimProvider(), null);

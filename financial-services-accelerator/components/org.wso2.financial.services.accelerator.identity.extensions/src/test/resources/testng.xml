@@ -30,7 +30,7 @@
             <class name="org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonUtilsTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.util.IdentityServiceExtensionUtilsTest" />
             <class name="org.wso2.financial.services.accelerator.identity.extensions.interceptor.FSIntrospectionDataProviderTest" />
-            <class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SplitTokenFilterTest" />
+            <class name="org.wso2.financial.services.accelerator.identity.extensions.valve.SplitTokenValveTest" />
         </classes>
     </test>
 </suite>

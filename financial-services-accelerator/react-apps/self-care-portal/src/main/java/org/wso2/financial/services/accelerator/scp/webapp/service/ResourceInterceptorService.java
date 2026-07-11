@@ -28,7 +28,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
 import org.wso2.carbon.databridge.commons.exception.SessionTimeoutException;
-import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.scp.webapp.exception.TokenGenerationException;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Constants;
 import org.wso2.financial.services.accelerator.scp.webapp.util.Utils;
@@ -54,37 +53,18 @@ public class ResourceInterceptorService implements Serializable {
     private static final long serialVersionUID = -1968486857447834419L;
     private static final Log LOG = LogFactory.getLog(ResourceInterceptorService.class);
 
-    @SuppressFBWarnings({"COOKIE_USAGE", "SERVLET_HEADER"})
-    // Suppressed content - cookieAccessTokenPart1.get().getValue().equals(reqAccessTokenPart1)
+    @SuppressFBWarnings("SERVLET_HEADER")
     // Suppressed content - req.getHeader(HttpHeaders.AUTHORIZATION)
-    // Suppression reason - False Positive : The cookie values are only read and here. No sensitive info is added to
-    //                      the cookie in this step.
-    // Suppressed warning count - 2
+    // Suppression reason - False Positive: header is read-only; full token was already reconstructed
+    //                      and validated by SplitTokenValve before reaching this servlet.
+    // Suppressed warning count - 1
     public Optional<String> constructAccessTokenFromCookies(HttpServletRequest req) {
-        Optional<Cookie> cookieAccessTokenPart2 = Utils
-                .getCookieFromRequest(req, Constants.ACCESS_TOKEN_COOKIE_NAME + "_P2");
-
-        if (cookieAccessTokenPart2.isPresent()) {
-            // access token part 2 is present as a cookie
-            final String accessTokenPart1 = req.getHeader(HttpHeaders.AUTHORIZATION)
-                    .replaceAll(FinancialServicesConstants.SANITIZING_CHARACTERS, "");
-            LOG.debug("Access token part 1 extracted from Authorization header.");
-
-            if (StringUtils.isNotEmpty(accessTokenPart1)) {
-                // access token part 1 is present in the request
-                String reqAccessTokenPart1 = accessTokenPart1.replace("Bearer ", "");
-
-                Optional<Cookie> cookieAccessTokenPart1 = Utils
-                        .getCookieFromRequest(req, Constants.ACCESS_TOKEN_COOKIE_NAME + "_P1");
-
-                if (cookieAccessTokenPart1.isPresent()
-                        && cookieAccessTokenPart1.get().getValue().equals(reqAccessTokenPart1)) {
-                    // access token part 1 is present in the cookie and its equal to request access token part 1
-                    return Optional.of(reqAccessTokenPart1 + cookieAccessTokenPart2.get().getValue());
-                }
-            }
+        String authHeader = req.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.isEmpty(authHeader)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        LOG.debug("Access token extracted from Authorization header.");
+        return Optional.of(authHeader.replace("Bearer ", ""));
     }
 
     @SuppressFBWarnings("COOKIE_USAGE")
