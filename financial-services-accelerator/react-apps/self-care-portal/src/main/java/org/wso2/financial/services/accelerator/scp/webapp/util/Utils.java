@@ -132,8 +132,9 @@ public class Utils {
     public static HttpUriRequest getHttpUriRequest(String isBaseUrl, String requestMethod, String requestURI,
                                                    String queryParams) {
 
-        final String uri = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER,
-                Constants.PREFIX_OB_CONSENT) + "?" + queryParams;
+        String base = isBaseUrl + requestURI.replaceFirst(Constants.PREFIX_CONSENT_MANAGER,
+                Constants.PREFIX_OB_CONSENT);
+        final String uri = (queryParams != null && !queryParams.isEmpty()) ? base + "?" + queryParams : base;
 
         switch (requestMethod) {
             case HttpDelete.METHOD_NAME:

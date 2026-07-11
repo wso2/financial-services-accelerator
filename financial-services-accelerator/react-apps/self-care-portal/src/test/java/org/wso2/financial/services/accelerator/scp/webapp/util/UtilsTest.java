@@ -201,6 +201,20 @@ public class UtilsTest {
     }
 
     @Test
+    public void testGetHttpUriRequestWithNullQueryString() {
+        HttpGet request = (HttpGet) Utils.getHttpUriRequest(REQUEST_URL, "GET",
+                "/consentmgr/scp/admin/search", null);
+        Assert.assertFalse(request.getURI().toString().contains("?"));
+    }
+
+    @Test
+    public void testGetHttpUriRequestWithEmptyQueryString() {
+        HttpGet request = (HttpGet) Utils.getHttpUriRequest(REQUEST_URL, "GET",
+                "/consentmgr/scp/admin/search", "");
+        Assert.assertFalse(request.getURI().toString().contains("?"));
+    }
+
+    @Test
     public void testGetCookieFromRequest() {
         // mock
         HttpServletRequest requestMock = Mockito.mock(HttpServletRequest.class);
