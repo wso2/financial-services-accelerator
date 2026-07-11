@@ -246,6 +246,8 @@
                             com.fasterxml.jackson.databind.*;version="${jackson.databinding.version}",
                             javax.servlet.http; version="${imp.pkg.version.javax.servlet}",
                             org.apache.catalina.connector; version="[9.0, 10)",
+                            org.apache.coyote; version="[9.0, 10)",
+                            org.apache.tomcat.util.buf; version="[9.0, 10)",
                             org.apache.tomcat.util.http; version="[9.0, 10)",
                             org.wso2.carbon.tomcat.ext.valves; version="[4.9, 5)",
 
