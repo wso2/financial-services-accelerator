@@ -58,7 +58,7 @@ public class ResourceInterceptorService implements Serializable {
     // Suppression reason - False Positive: header is read-only; full token was already reconstructed
     //                      and validated by SplitTokenValve before reaching this servlet.
     // Suppressed warning count - 1
-    public Optional<String> constructAccessTokenFromCookies(HttpServletRequest req) {
+    public Optional<String> extractAccessToken(HttpServletRequest req) {
         String authHeader = req.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.isEmpty(authHeader)) {
             return Optional.empty();

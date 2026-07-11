@@ -124,7 +124,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
                 }
             } else {
                 // access token is not expired yet
-                Optional<String> optAccessToken = resourceInterceptorService.constructAccessTokenFromCookies(req);
+                Optional<String> optAccessToken = resourceInterceptorService.extractAccessToken(req);
 
                 if (optAccessToken.isPresent()) {
                     String accessToken = optAccessToken.get();

@@ -55,21 +55,21 @@ public class ResourceInterceptorServiceTest {
     }
 
     @Test(description = "when Authorization header present, then return token without Bearer prefix")
-    public void testConstructAccessTokenFromCookiesWithValidReq() {
+    public void testExtractAccessTokenWithValidReq() {
         HttpServletRequest reqMock = Mockito.mock(HttpServletRequest.class);
         Mockito.when(reqMock.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer full-token-value");
 
-        Optional<String> optAccessToken = uut.constructAccessTokenFromCookies(reqMock);
+        Optional<String> optAccessToken = uut.extractAccessToken(reqMock);
         Assert.assertTrue(optAccessToken.isPresent());
         Assert.assertEquals(optAccessToken.get(), "full-token-value");
     }
 
     @Test(description = "when Authorization header absent, then return empty")
-    public void testConstructAccessTokenFromCookiesWithInvalidReq() {
+    public void testExtractAccessTokenWithInvalidReq() {
         HttpServletRequest reqMock = Mockito.mock(HttpServletRequest.class);
         Mockito.when(reqMock.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
 
-        Optional<String> optAccessToken = uut.constructAccessTokenFromCookies(reqMock);
+        Optional<String> optAccessToken = uut.extractAccessToken(reqMock);
         Assert.assertFalse(optAccessToken.isPresent());
     }
 
@@ -99,7 +99,7 @@ public class ResourceInterceptorServiceTest {
         Mockito.when(reqMock.getCookies()).thenReturn(new Cookie[]{});
 
         // assert
-        Optional<String> optAccessToken = uut.constructAccessTokenFromCookies(reqMock);
+        Optional<String> optAccessToken = uut.extractAccessToken(reqMock);
         Assert.assertFalse(optAccessToken.isPresent());
     }
 
