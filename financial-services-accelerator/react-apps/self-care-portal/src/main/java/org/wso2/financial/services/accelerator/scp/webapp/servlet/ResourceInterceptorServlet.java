@@ -182,10 +182,19 @@ public class ResourceInterceptorServlet extends HttpServlet {
         try {
             String tokenBody = JWTUtils.decodeRequestJWT(accessToken, "body");
             JSONObject tokenBodyObj = new JSONObject(tokenBody);
-            String tokenScopes = tokenBodyObj.getString("scope");
+            String tokenScopes = tokenBodyObj.optString("scope", "");
 
             if (isCustomerCareOfficer(tokenScopes)) {
                 return true;
+            }
+
+            String rawSub = tokenBodyObj.optString("sub", "");
+            if (rawSub.isEmpty()) {
+                LOG.error("Access token missing 'sub' claim. Rejecting request.");
+                SelfCarePortalError error = new SelfCarePortalError("Authentication Error!",
+                        "Failed to validate user permissions.");
+                Utils.returnResponse(resp, HttpStatus.SC_UNAUTHORIZED, new JSONObject(error));
+                return false;
             }
 
             // Non-CCO users: only /search and /revoke are allowed, with userId self-match
@@ -193,7 +202,14 @@ public class ResourceInterceptorServlet extends HttpServlet {
             String userId = null;
             if ("/search".equals(pathInfo)) {
                 String[] userIds = req.getParameterValues("userIds");
-                userId = (userIds != null && userIds.length > 0) ? userIds[0] : null;
+                if (userIds == null || userIds.length != 1) {
+                    LOG.error("Non-CCO user must provide exactly one userId for /search.");
+                    SelfCarePortalError error = new SelfCarePortalError("Unauthorized!",
+                            "UserId and token subject do not match.");
+                    Utils.returnResponse(resp, HttpStatus.SC_UNAUTHORIZED, new JSONObject(error));
+                    return false;
+                }
+                userId = userIds[0];
             } else if ("/revoke".equals(pathInfo)) {
                 userId = req.getParameter("userId");
             } else {
@@ -205,7 +221,7 @@ public class ResourceInterceptorServlet extends HttpServlet {
                 return false;
             }
 
-            String tokenSub = getUserNameWithTenantDomain(tokenBodyObj.getString("sub"));
+            String tokenSub = getUserNameWithTenantDomain(rawSub);
             String normalizedUserId = StringUtils.isEmpty(userId) ? "" : getUserNameWithTenantDomain(userId);
             if (StringUtils.isEmpty(normalizedUserId) || !normalizedUserId.equals(tokenSub)) {
                 LOG.error("UserId and token subject do not match for non-CCO user.");

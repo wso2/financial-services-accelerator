@@ -158,6 +158,41 @@ public class ResourceInterceptorServletTest {
         Assert.assertFalse(result);
     }
 
+    @Test(description = "Token missing scope claim should be treated as non-CCO, own userId still permitted")
+    public void testValidateUserPermissions_missingScopeClaim_treatedAsNonCCO() throws ParseException {
+        jwtUtilsMock.when(() -> JWTUtils.decodeRequestJWT(DUMMY_ACCESS_TOKEN, "body"))
+                .thenReturn("{\"sub\":\"alice@carbon.super\"}");
+        Mockito.when(mockReq.getPathInfo()).thenReturn("/search");
+        Mockito.when(mockReq.getParameterValues("userIds")).thenReturn(new String[]{"alice@carbon.super"});
+
+        boolean result = servlet.validateUserPermissions(mockReq, DUMMY_ACCESS_TOKEN, mockResp);
+
+        Assert.assertTrue(result);
+    }
+
+    @Test(description = "Token missing sub claim should be denied")
+    public void testValidateUserPermissions_missingSubClaim_denied() throws ParseException {
+        jwtUtilsMock.when(() -> JWTUtils.decodeRequestJWT(DUMMY_ACCESS_TOKEN, "body"))
+                .thenReturn("{\"scope\":\"openid accounts\"}");
+
+        boolean result = servlet.validateUserPermissions(mockReq, DUMMY_ACCESS_TOKEN, mockResp);
+
+        Assert.assertFalse(result);
+    }
+
+    @Test(description = "Non-CCO on /search with multiple userIds should be denied")
+    public void testValidateUserPermissions_nonCCO_search_multipleUserIds_denied() throws ParseException {
+        jwtUtilsMock.when(() -> JWTUtils.decodeRequestJWT(DUMMY_ACCESS_TOKEN, "body"))
+                .thenReturn(USER_TOKEN_BODY);
+        Mockito.when(mockReq.getPathInfo()).thenReturn("/search");
+        Mockito.when(mockReq.getParameterValues("userIds"))
+                .thenReturn(new String[]{"alice@carbon.super", "bob@carbon.super"});
+
+        boolean result = servlet.validateUserPermissions(mockReq, DUMMY_ACCESS_TOKEN, mockResp);
+
+        Assert.assertFalse(result);
+    }
+
     // --- isCustomerCareOfficer ---
 
     @Test
