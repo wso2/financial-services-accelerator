@@ -18,16 +18,5 @@
  -->
 
 <FindBugsFilter>
-    <Match>
-        <Class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SplitTokenFilter"/>
-        <Bug pattern="COOKIE_USAGE"/>
-    </Match>
-    <Match>
-        <Class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SplitTokenFilter"/>
-        <Bug pattern="SERVLET_HEADER"/>
-    </Match>
-    <Match>
-        <Class name="org.wso2.financial.services.accelerator.identity.extensions.filter.SplitTokenFilter$TokenReplacedRequest"/>
-        <Bug pattern="IMPROPER_UNICODE"/>
-    </Match>
+
 </FindBugsFilter>

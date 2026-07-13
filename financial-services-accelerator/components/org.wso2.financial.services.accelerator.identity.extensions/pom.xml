@@ -88,7 +88,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.tomcat.ext</artifactId>
-            <version>4.9.10</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -245,11 +244,11 @@
                             net.minidev.json.*;version="${json-smart.version}",
                             com.fasterxml.jackson.databind.*;version="${jackson.databinding.version}",
                             javax.servlet.http; version="${imp.pkg.version.javax.servlet}",
-                            org.apache.catalina.connector; version="[9.0, 10)",
-                            org.apache.coyote; version="[9.0, 10)",
-                            org.apache.tomcat.util.buf; version="[9.0, 10)",
-                            org.apache.tomcat.util.http; version="[9.0, 10)",
-                            org.wso2.carbon.tomcat.ext.valves; version="[4.9, 5)",
+                            org.apache.catalina.connector; version="${apache.tomcat.osgi.version.range}",
+                            org.apache.coyote; version="${apache.tomcat.osgi.version.range}",
+                            org.apache.tomcat.util.buf; version="${apache.tomcat.osgi.version.range}",
+                            org.apache.tomcat.util.http; version="${apache.tomcat.osgi.version.range}",
+                            org.wso2.carbon.tomcat.ext.valves; version="${carbon.tomcat.ext.osgi.version.range}",
 
                             org.wso2.financial.services.accelerator.common.*;version="${project.version}",
                             org.wso2.financial.services.accelerator.consent.mgt.service.*;version="${project.version}",

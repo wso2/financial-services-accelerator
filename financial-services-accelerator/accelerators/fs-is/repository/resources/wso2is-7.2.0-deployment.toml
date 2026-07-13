@@ -241,6 +241,7 @@ scopes = ["ob-internal-api-access"]
 # This rule must appear BEFORE the broader consentmgr rule (IS uses first-match).
 [[resource.access_control]]
 context = "(.*)/consentmgr/scp/(.*)"
+allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "GET, DELETE"
 
