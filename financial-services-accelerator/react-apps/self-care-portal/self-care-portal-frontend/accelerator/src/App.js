@@ -17,11 +17,27 @@
  */
 
 import React from "react";
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/App.css";
 import { Login } from "./login/login.js";
 import { ResponseError } from "./errorPage/index.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { CONFIG } from "./config";
+
+// Redirect to the authorization endpoint on any 401 so the user gets a clean
+// re-login instead of a broken error state. IS clears the session; the OAuth
+// callback will overwrite stale SCP cookies with fresh ones.
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      window.location.href = CONFIG.AUTHORIZE_ENDPOINT;
+      return new Promise(() => {});
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const App = () => {
   return (

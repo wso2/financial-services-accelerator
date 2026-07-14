@@ -141,7 +141,11 @@ public class OAuthService {
         addCookiesToResponse(req, resp, Constants.REFRESH_TOKEN_COOKIE_NAME, refreshToken,
                 Constants.DEFAULT_COOKIE_PATH, 86400);
 
-        LocalDateTime accessTokenExpiry = LocalDateTime.now().plusSeconds(tokenExpiry);
+        // Subtract a buffer so the BFF refreshes the token while the JWT is still valid for IS
+        // transport-level validation (AuthenticationValve). Without this buffer, the BFF would
+        // attempt to refresh using an already-expired JWT that IS would reject before the servlet runs.
+        long adjustedExpiry = tokenExpiry - Constants.TOKEN_VALIDITY_BUFFER_SECONDS;
+        LocalDateTime accessTokenExpiry = LocalDateTime.now().plusSeconds(adjustedExpiry);
         addCookieToResponse(req, resp, Constants.TOKEN_VALIDITY_COOKIE_NAME,
                 Utils.formatDateToEncodedString(accessTokenExpiry), Constants.DEFAULT_COOKIE_PATH, 86400);
     }

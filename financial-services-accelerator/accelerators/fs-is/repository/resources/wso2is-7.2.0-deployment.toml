@@ -206,10 +206,14 @@ TokenExpiryTime = 60
 [identity_data_source]
 skip_db_schema_creation = true
 
-[[resource.access_control]]
-context = "(.*)/api/fs/consent/admin/(.*)"
-http_method = "all"
-secure = "true"
+# The admin-specific rule below is intentionally omitted. The broader consent rule that follows
+# restricts all /api/fs/consent/* paths (including /admin/*) to BasicAuthentication only,
+# enforcing /permission/admin. This blocks end-user Bearer tokens from reaching admin endpoints.
+# To allow other auth mechanisms for admin endpoints, uncomment the block below.
+#[[resource.access_control]]
+#context = "(.*)/api/fs/consent/admin/(.*)"
+#http_method = "all"
+#secure = "true"
 
 [[resource.access_control]]
 allowed_auth_handlers = ["BasicAuthentication"]
@@ -232,6 +236,17 @@ permissions = ["/permission/admin"]
 secure = "true"
 scopes = ["ob-internal-api-access"]
 
+# SCP BFF API paths require a valid token. SplitTokenValve (registered via
+# TomcatValveContainer) reassembles the split access token before this valve runs.
+# This rule must appear BEFORE the broader consentmgr rule (IS uses first-match).
+[[resource.access_control]]
+context = "(.*)/consentmgr/scp/(.*)"
+allowed_auth_handlers = ["OAuthAuthentication"]
+secure = "true"
+http_method = "GET, DELETE"
+
+# Static assets, the OAuth callback, and the authorization redirect do not carry a token
+# and must remain unsecured so the initial login flow can complete.
 [[resource.access_control]]
 context = "(.*)/consentmgr/(.*)"
 secure="false"
@@ -645,3 +660,4 @@ event_notification_request_generator="org.wso2.financial.services.accelerator.ev
 
 [agent_identity]
 enabled=false
+

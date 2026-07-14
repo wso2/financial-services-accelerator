@@ -54,34 +54,22 @@ public class ResourceInterceptorServiceTest {
         this.uut = new ResourceInterceptorService();
     }
 
-    @Test(description = "when valid req, then return access token")
-    public void testConstructAccessTokenFromCookiesWithValidReq() {
-        // mock
+    @Test(description = "when Authorization header present, then return token without Bearer prefix")
+    public void testExtractAccessTokenWithValidReq() {
         HttpServletRequest reqMock = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(reqMock.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer full-token-value");
 
-        // when
-        Cookie cookie1 = new Cookie(Constants.ACCESS_TOKEN_COOKIE_NAME + "_P1", "dummy-cookie-p1");
-        Cookie cookie2 = new Cookie(Constants.ACCESS_TOKEN_COOKIE_NAME + "_P2", "dummy-cookie-p2");
-
-        Mockito.when(reqMock.getCookies()).thenReturn(new Cookie[]{cookie1, cookie2});
-        Mockito.when(reqMock.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("dummy-cookie-p1");
-
-        // assert
-        Optional<String> optAccessToken = uut.constructAccessTokenFromCookies(reqMock);
+        Optional<String> optAccessToken = uut.extractAccessToken(reqMock);
         Assert.assertTrue(optAccessToken.isPresent());
-        Assert.assertEquals(optAccessToken.get(), "dummy-cookie-p1dummy-cookie-p2");
+        Assert.assertEquals(optAccessToken.get(), "full-token-value");
     }
 
-    @Test(description = "when invalid req, then return empty string")
-    public void testConstructAccessTokenFromCookiesWithInvalidReq() {
-        // mock
+    @Test(description = "when Authorization header absent, then return empty")
+    public void testExtractAccessTokenWithInvalidReq() {
         HttpServletRequest reqMock = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(reqMock.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(null);
 
-        // when
-        Mockito.when(reqMock.getCookies()).thenReturn(new Cookie[]{});
-
-        // assert
-        Optional<String> optAccessToken = uut.constructAccessTokenFromCookies(reqMock);
+        Optional<String> optAccessToken = uut.extractAccessToken(reqMock);
         Assert.assertFalse(optAccessToken.isPresent());
     }
 
@@ -111,7 +99,7 @@ public class ResourceInterceptorServiceTest {
         Mockito.when(reqMock.getCookies()).thenReturn(new Cookie[]{});
 
         // assert
-        Optional<String> optAccessToken = uut.constructAccessTokenFromCookies(reqMock);
+        Optional<String> optAccessToken = uut.extractAccessToken(reqMock);
         Assert.assertFalse(optAccessToken.isPresent());
     }
 

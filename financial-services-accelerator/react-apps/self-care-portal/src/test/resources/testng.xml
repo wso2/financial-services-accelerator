@@ -24,6 +24,7 @@
             <class name="org.wso2.financial.services.accelerator.scp.webapp.service.ResourceInterceptorServiceTest"/>
             <class name="org.wso2.financial.services.accelerator.scp.webapp.service.OAuthServiceTest"/>
             <class name="org.wso2.financial.services.accelerator.scp.webapp.util.UtilsTest"/>
+            <class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.ResourceInterceptorServletTest"/>
         </classes>
     </test>
 </suite>
