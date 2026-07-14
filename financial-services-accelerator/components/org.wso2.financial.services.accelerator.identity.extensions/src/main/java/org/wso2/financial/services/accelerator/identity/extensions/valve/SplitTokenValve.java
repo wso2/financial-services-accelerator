@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.tomcat.ext.valves.CarbonTomcatValve;
 import org.wso2.carbon.tomcat.ext.valves.CompositeValve;
+import org.wso2.financial.services.accelerator.common.util.Generated;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ public class SplitTokenValve extends CarbonTomcatValve {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
+    @Generated(message = "invoke() wires Catalina internals; covered by reconstructToken() unit tests")
     @Override
     public void invoke(Request request, Response response, CompositeValve compositeValve) {
 
