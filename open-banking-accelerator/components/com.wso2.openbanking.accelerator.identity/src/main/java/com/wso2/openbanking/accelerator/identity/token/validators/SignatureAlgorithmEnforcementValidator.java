@@ -28,6 +28,7 @@ import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 
 import java.text.ParseException;
 
@@ -36,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Filter validator to check if the client assertion is signed with the registered algorithm.
+ * Filter validator to check if the client assertion is signed with the registered algorithm
  */
 public class SignatureAlgorithmEnforcementValidator implements OBIdentityFilterValidator {
 
@@ -66,7 +67,8 @@ public class SignatureAlgorithmEnforcementValidator implements OBIdentityFilterV
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Validating request algorithm %s against registered algorithm %s.",
-                    requestSigningAlgorithm, registeredSigningAlgorithm));
+                    requestSigningAlgorithm.replaceAll("[\r\n]" , ""),
+                    registeredSigningAlgorithm.replaceAll("[\r\n]" , "")));
         }
         if (registeredSigningAlgorithm.equals(IdentityCommonConstants.NOT_APPLICABLE)) {
             return;
@@ -89,6 +91,13 @@ public class SignatureAlgorithmEnforcementValidator implements OBIdentityFilterV
                         IdentityCommonConstants.TOKEN_ENDPOINT_AUTH_SIGNING_ALG);
             }
         } catch (OpenBankingException e) {
+            if (e.getCause() instanceof InvalidOAuthClientException) {
+                // The client_id does not correspond to an existing OAuth application (e.g. it was deleted) -
+                // surface the standard OAuth2 invalid_client error instead of a signing-algorithm-specific one.
+                throw new TokenFilterException(HttpServletResponse.SC_UNAUTHORIZED, IdentityCommonConstants
+                        .OAUTH2_INVALID_CLIENT_MESSAGE, "A valid OAuth client could not be found for client_id: "
+                        + clientId, e);
+            }
             throw new TokenFilterException(HttpServletResponse.SC_UNAUTHORIZED, IdentityCommonConstants
                     .OAUTH2_INVALID_REQUEST_MESSAGE, "Token signing algorithm not registered", e);
         }
