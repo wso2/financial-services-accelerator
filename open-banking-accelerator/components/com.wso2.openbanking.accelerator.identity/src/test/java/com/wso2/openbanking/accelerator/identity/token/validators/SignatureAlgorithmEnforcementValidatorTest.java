@@ -18,12 +18,15 @@
 
 package com.wso2.openbanking.accelerator.identity.token.validators;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
 import com.wso2.openbanking.accelerator.identity.token.DefaultTokenFilter;
 import com.wso2.openbanking.accelerator.identity.token.TokenFilter;
 import com.wso2.openbanking.accelerator.identity.token.util.TestConstants;
 import com.wso2.openbanking.accelerator.identity.token.util.TestUtil;
+import com.wso2.openbanking.accelerator.identity.token.util.TokenFilterException;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.http.HttpStatus;
 import org.mockito.Mockito;
@@ -33,8 +36,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 
 import java.util.ArrayList;
@@ -47,11 +52,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.testng.Assert.assertEquals;
 
-/**
- * Test for signature algorithm enforcement validator.
- */
-@PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({IdentityCommonUtil.class, OAuthServerConfiguration.class})
+@PrepareForTest({IdentityCommonUtil.class, OAuthServerConfiguration.class,
+        SignatureAlgorithmEnforcementValidator.class})
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class SignatureAlgorithmEnforcementValidatorTest extends PowerMockTestCase {
 
     MockHttpServletResponse response;
@@ -211,5 +214,66 @@ public class SignatureAlgorithmEnforcementValidatorTest extends PowerMockTestCas
         assertEquals(responseMap.get(IdentityCommonConstants.OAUTH_ERROR), "invalid_request");
         assertEquals(responseMap.get(IdentityCommonConstants.OAUTH_ERROR_DESCRIPTION),
                 "Unable to find client id in the request");
+    }
+
+    @Test(description = "Test that a token request for a deleted/non-existent client_id maps to invalid_client " +
+            "at the TokenFilter's regulatory-check level, instead of a generic metadata-retrieval error")
+    public void deletedClientRegulatoryCheckMapsToInvalidClientTest() throws Exception {
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(IdentityCommonConstants.CLIENT_CERTIFICATE_ENCODE, false);
+        IdentityExtensionsDataHolder.getInstance().setConfigurationMap(configMap);
+
+        PowerMockito.mockStatic(IdentityCommonUtil.class);
+        request.setParameter(IdentityCommonConstants.OAUTH_JWT_ASSERTION, TestConstants.CLIENT_ASSERTION);
+        request.setAttribute(IdentityCommonConstants.JAVAX_SERVLET_REQUEST_CERTIFICATE,
+                TestUtil.getCertificate(TestConstants.CERTIFICATE_CONTENT));
+
+        List<OBIdentityFilterValidator> validators = new ArrayList<>();
+
+        TokenFilter filter = Mockito.spy(TokenFilter.class);
+        Mockito.doReturn(new DefaultTokenFilter()).when(filter).getDefaultTokenFilter();
+        Mockito.doReturn(validators).when(filter).getValidators();
+
+        OpenBankingException clientNotFoundException = new OpenBankingException(
+                "Error retrieving service provider tenant domain for client_id: iYpRm64b2vmvmKDhdL6KZD9z6fca",
+                new InvalidOAuthClientException("A valid OAuth client could not be found"));
+        PowerMockito.when(IdentityCommonUtil.getRegulatoryFromSPMetaData("iYpRm64b2vmvmKDhdL6KZD9z6fca"))
+                .thenThrow(clientNotFoundException);
+
+        filter.doFilter(request, response, filterChain);
+
+        Map<String, String> responseMap = TestUtil.getResponse(response.getOutputStream());
+        assertEquals(response.getStatus(), HttpStatus.SC_UNAUTHORIZED);
+        assertEquals(responseMap.get(IdentityCommonConstants.OAUTH_ERROR),
+                IdentityCommonConstants.OAUTH2_INVALID_CLIENT_MESSAGE);
+        assertEquals(responseMap.get(IdentityCommonConstants.OAUTH_ERROR_DESCRIPTION),
+                "A valid OAuth client could not be found for client_id: iYpRm64b2vmvmKDhdL6KZD9z6fca");
+    }
+
+    @Test(description = "Test that SignatureAlgorithmEnforcementValidator maps a deleted/non-existent client_id " +
+            "to invalid_client instead of the misleading 'Token signing algorithm not registered' error")
+    public void deletedClientSigningAlgorithmLookupMapsToInvalidClientTest() throws Exception {
+
+        String clientId = "deletedClientId";
+        OpenBankingException clientNotFoundException = new OpenBankingException(
+                "Error retrieving service provider tenant domain for client_id: " + clientId,
+                new InvalidOAuthClientException("A valid OAuth client could not be found"));
+
+        IdentityCommonHelper mockedHelper = Mockito.mock(IdentityCommonHelper.class);
+        Mockito.when(mockedHelper.getCertificateContent(clientId)).thenThrow(clientNotFoundException);
+        PowerMockito.whenNew(IdentityCommonHelper.class).withNoArguments().thenReturn(mockedHelper);
+
+        SignatureAlgorithmEnforcementValidator validator = new SignatureAlgorithmEnforcementValidator();
+
+        try {
+            validator.getRegisteredSigningAlgorithm(clientId);
+            Assert.fail("Expected a TokenFilterException to be thrown for a non-existent client_id");
+        } catch (TokenFilterException e) {
+            assertEquals(e.getMessage(), IdentityCommonConstants.OAUTH2_INVALID_CLIENT_MESSAGE);
+            assertEquals(e.getErrorDescription(),
+                    "A valid OAuth client could not be found for client_id: " + clientId);
+            assertEquals(e.getErrorCode(), HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 }
