@@ -89,6 +89,7 @@
         <module>financial-services-accelerator</module>
         <module>fs-integration-test-suite/bfsi-test-framework</module>
         <module>fs-integration-test-suite/accelerator-test-framework</module>
+        <module>fs-integration-test-suite/accelerator-tests/gateway-tests/encryption</module>
     </modules>
 
     <repositories>
