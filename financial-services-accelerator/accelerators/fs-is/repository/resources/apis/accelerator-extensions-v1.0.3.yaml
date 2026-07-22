@@ -1773,12 +1773,15 @@ components:
         - $ref: '#/components/schemas/FailedResponseInConsentAuthorize'
     SuccessResponseConsentRevocationData:
       type: object
+      required:
+        - revocationStatusName
+        - requireTokenRevocation
       properties:
         revocationStatusName:
           type: string
           description: Name for the revoked status
         requireTokenRevocation:
-          type: string
+          type: boolean
           description: Require access token to be revoked
     SuccessResponseForResponseAlternationData:
       type: object
@@ -1797,11 +1800,16 @@ components:
           description: Enriched search result
     SuccessResponseWithDetailedConsentData:
       type: object
+      required:
+        - consentResource
       properties:
         consentResource:
           $ref: '#/components/schemas/DetailedConsentResourceData'
     SuccessResponsePreProcessFileUploadData:
       type: object
+      required:
+        - consentStatus
+        - userId
       properties:
         consentStatus:
           type: string
@@ -1822,6 +1830,11 @@ components:
           $ref: '#/components/schemas/PersistAuthorizedConsent'
     PersistAuthorizedConsent:
       type: object
+      required:
+        - consentId
+        - isApproved
+        - consentResource
+        - userGrantedData
       properties:
         consentId:
           type: string
@@ -1833,6 +1846,8 @@ components:
           $ref: '#/components/schemas/StoredDetailedConsentResourceData'
     UserGrantedData:
       type: object
+      required:
+        - userId
       properties:
         requestParameters:
           type: object
@@ -1868,6 +1883,14 @@ components:
           $ref: '#/components/schemas/DetailedConsentResourceDataWithAmendments'
     DetailedConsentResourceData:
       type: object
+      required:
+        - type
+        - status
+        - receipt
+        - recurringIndicator
+        - frequency
+        - validityTime
+        - authorizations
       properties:
         type:
           type: string
@@ -1890,6 +1913,10 @@ components:
             $ref: '#/components/schemas/Authorization'
     DetailedConsentResourceDataWithAmendments:
       type: object
+      required:
+        - type
+        - status
+        - receipt
       properties:
         type:
           type: string
@@ -1916,6 +1943,12 @@ components:
             $ref: '#/components/schemas/AmendedAuthorization'
     StoredBasicConsentResourceData:
       type: object
+      required:
+        - id
+        - receipt
+        - clientId
+        - type
+        - status
       properties:
         id:
           type: string
@@ -1978,6 +2011,10 @@ components:
           type: string
     Authorization:
       type: object
+      required:
+        - type
+        - status
+        - userId
       properties:
         userId:
           type: string
@@ -1991,6 +2028,10 @@ components:
             $ref: '#/components/schemas/Resource'
     AmendedAuthorization:
       type: object
+      required:
+        - id
+        - type
+        - status
       properties:
         id:
           type: string
@@ -2008,6 +2049,10 @@ components:
             $ref: '#/components/schemas/AmendedResource'
     StoredAuthorization:
       type: object
+      required:
+        - id
+        - type
+        - status
       properties:
         id:
           type: string
@@ -2023,6 +2068,10 @@ components:
             $ref: '#/components/schemas/StoredResource'
     Resource:
       type: object
+      required:
+        - accountId
+        - status
+        - permission
       properties:
         accountId:
           type: string
@@ -2032,6 +2081,9 @@ components:
           type: string
     AmendedResource:
       type: object
+      required:
+        - id
+        - status
       properties:
         id:
           type: string
@@ -2041,6 +2093,10 @@ components:
           type: string
     StoredResource:
       type: object
+      required:
+        - id
+        - accountId
+        - status
       properties:
         id:
           type: string
