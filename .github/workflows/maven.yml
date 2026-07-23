@@ -102,28 +102,28 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Remove stale trigger-integration-tests label
+      - name: Remove stale Action/trigger-integration-tests label
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/trigger-integration-tests" \
-            -X DELETE || true
+          set +e
+          error_output=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/Action%2Ftrigger-integration-tests" \
+            -X DELETE 2>&1)
+          exit_code=$?
+          set -e
+          if [ $exit_code -ne 0 ] && ! echo "$error_output" | grep -qi "404\|not found"; then
+            echo "$error_output" >&2
+            exit $exit_code
+          fi
 
   Integration-test-suite:
     if: >
       github.event_name == 'pull_request_target' &&
       github.event.action == 'labeled' &&
-      github.event.label.name == 'trigger-integration-tests'
+      github.event.label.name == 'Action/trigger-integration-tests'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
-      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      WSO2_U2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_U2_PASSWORD }}
-      WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
-      STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      TEST_HOME: /home/runner/work/financial-services/financial-services
 
     steps:
       - uses: actions/checkout@v5
@@ -189,6 +189,13 @@ jobs:
           export MAVEN_OPTS="-Xmx4g"
           mvn -B install --file pom.xml
       - name: Running the integration test suite
+        env:
+          WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
+          WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+          WSO2_U2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_U2_PASSWORD }}
+          WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
+          STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+          TEST_HOME: /home/runner/work/financial-services/financial-services
         run: |
           echo "Starting tests..."
           export MAVEN_OPTS="-Xmx4g"
