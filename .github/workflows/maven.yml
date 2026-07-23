@@ -33,14 +33,16 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Set up Adopt JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v5
         with:
           java-version: 11.0.25+9
           distribution: 'temurin'
       - name: Set up Node 16
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v5
         with:
           node-version: 16
       - name: Cache local Maven repository
@@ -83,7 +85,7 @@ jobs:
           mvn -B install --file pom.xml
 
       - name: Set up Adopt JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "adopt"
@@ -92,10 +94,26 @@ jobs:
           export MAVEN_OPTS="-Xmx4g"
           mvn -B install --file pom.xml
 
+  Reset-integration-label-on-push:
+    if: >
+      github.event_name == 'pull_request_target' &&
+      (github.event.action == 'synchronize' || github.event.action == 'reopened')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Remove stale trigger-integration-tests label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/trigger-integration-tests" \
+            -X DELETE || true
+
   Integration-test-suite:
     if: >
       github.event_name == 'pull_request_target' &&
-      contains(github.event.pull_request.labels.*.name, 'trigger-integration-tests')
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'trigger-integration-tests'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -108,17 +126,18 @@ jobs:
       TEST_HOME: /home/runner/work/financial-services/financial-services
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           allow-unsafe-pr-checkout: true
+          persist-credentials: false
       - name: Set up Adopt JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v5
         with:
           java-version: 11.0.25+9
           distribution: 'temurin'
       - name: Set up Node 16
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v5
         with:
           node-version: 16
       - name: Cache local Maven repository
@@ -161,7 +180,7 @@ jobs:
           mvn -B install --file pom.xml
 
       - name: Set up Adopt JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "adopt"
