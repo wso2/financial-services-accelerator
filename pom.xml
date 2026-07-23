@@ -21,7 +21,7 @@
     <groupId>com.wso2.openbanking.accelerator</groupId>
     <artifactId>open-banking</artifactId>
     <packaging>pom</packaging>
-    <version>3.3.43-SNAPSHOT</version>
+    <version>3.3.50-SNAPSHOT</version>
 
     <parent>
         <groupId>org.wso2</groupId>
@@ -663,6 +663,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.common.gateway</artifactId>
+                <version>${org.wso2.carbon.apimgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.apimgt</groupId>
+                <artifactId>org.wso2.carbon.apimgt.gateway</artifactId>
                 <version>${org.wso2.carbon.apimgt.version}</version>
             </dependency>
             <dependency>

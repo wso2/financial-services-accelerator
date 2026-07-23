@@ -19,6 +19,7 @@
 package com.wso2.openbanking.accelerator.authentication.webapp;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -136,6 +137,10 @@ public class OBConsentConfirmServlet extends HttpServlet {
             }
         } catch (IOException e) {
             log.error("Exception while calling persistence endpoint", e);
+            return null;
+        } catch (OpenBankingRuntimeException e) {
+            log.error("Unable to persist consent data due to a server configuration error: " +
+                    e.getErrorCode(), e);
             return null;
         }
     }

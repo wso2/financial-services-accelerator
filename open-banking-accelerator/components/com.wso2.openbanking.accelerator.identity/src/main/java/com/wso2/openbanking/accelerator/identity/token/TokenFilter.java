@@ -32,6 +32,7 @@ import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -115,7 +116,13 @@ public class TokenFilter implements Filter {
         } catch (CertificateEncodingException e) {
             throw new ServletException("Certificate not valid", e);
         } catch (OpenBankingException e) {
-            if (e.getMessage().contains("Error occurred while retrieving OAuth2 application data")) {
+            if (e.getCause() instanceof InvalidOAuthClientException) {
+                // The client_id does not correspond to an existing OAuth application (e.g. it was deleted) -
+                // surface the standard OAuth2 invalid_client error instead of a generic metadata-retrieval one.
+                getDefaultTokenFilter().handleValidationFailure((HttpServletResponse) response,
+                        HttpServletResponse.SC_UNAUTHORIZED, IdentityCommonConstants.OAUTH2_INVALID_CLIENT_MESSAGE,
+                        "A valid OAuth client could not be found for client_id: " + clientId);
+            } else if (e.getMessage().contains("Error occurred while retrieving OAuth2 application data")) {
                 getDefaultTokenFilter().handleValidationFailure((HttpServletResponse) response,
                         HttpServletResponse.SC_INTERNAL_SERVER_ERROR, IdentityCommonConstants
                                 .OAUTH2_INTERNAL_SERVER_ERROR, "OAuth2 application data retrieval failed."
