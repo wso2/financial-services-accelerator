@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.gateway.dpop;
 
 import org.apache.axis2.Constants;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -32,10 +33,8 @@ import org.wso2.financial.services.accelerator.gateway.dpop.binding.AccessTokenB
 import org.wso2.financial.services.accelerator.gateway.dpop.binding.IntrospectionClient;
 import org.wso2.financial.services.accelerator.gateway.dpop.cache.DPoPCacheProvider;
 import org.wso2.financial.services.accelerator.gateway.dpop.cache.LocalDPoPCacheProvider;
-import org.wso2.financial.services.accelerator.gateway.dpop.nonce.AlwaysNonceStrategy;
-import org.wso2.financial.services.accelerator.gateway.dpop.nonce.NeverNonceStrategy;
 import org.wso2.financial.services.accelerator.gateway.dpop.nonce.NonceStrategy;
-import org.wso2.financial.services.accelerator.gateway.dpop.nonce.RotatingNonceStrategy;
+import org.wso2.financial.services.accelerator.gateway.dpop.nonce.NonceStrategyType;
 import org.wso2.financial.services.accelerator.gateway.dpop.proof.DPoPProofException;
 import org.wso2.financial.services.accelerator.gateway.dpop.proof.DPoPProofValidator;
 import org.wso2.financial.services.accelerator.gateway.dpop.util.Challenge;
@@ -49,10 +48,12 @@ import java.util.Set;
 
 import static org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants.AUTH_HEADER;
 import static org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants.BEARER_TAG;
-import static org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils.equalsIgnoreCase;
 import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.BEARER_SCHEME_LEN;
+import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.CACHE_CONTROL_NO_STORE;
 import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_BOUND_PROPERTY;
 import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_HEADER;
+import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_NONCE_HEADER;
+import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_RESPONSE_NONCE_PROPERTY;
 import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_SCHEME;
 import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_SCHEME_LEN;
 
@@ -61,9 +62,8 @@ import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants
  * <p>
  * Must be positioned BEFORE the built-in {@code APIAuthenticationHandler} in
  * {@code velocity_template.xml}. All tuning is read from {@code financial-services.xml}
- * under {@code <Gateway><DPoP>...</DPoP></Gateway>}; the only Synapse property
- * the handler accepts is {@code apiDPoPEnabled}, which lets an API owner opt a single
- * API out of DPoP enforcement without touching the global config.
+ * under {@code <Gateway><DPoP>...</DPoP></Gateway>}. DPoP enforcement is opt-in per API:
+ * set {@code apiDPoPEnabled=true} on each handler element that requires it.
  *
  * <pre>
  * &lt;handler class="org.wso2.financial.services.accelerator.gateway.dpop.DPoPHandler"&gt;
@@ -75,11 +75,10 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
 
     private static final Log log = LogFactory.getLog(DPoPHandler.class);
 
-    // Per-API DPoP enforcement flag — overrides the global setting for a single API
-    private boolean apiDPoPEnabled = true;
+    // DPoP enforcement is opt-in per API; set value="true" on the handler element to enable.
+    private boolean apiDPoPEnabled = false;
 
     // Resolved at init() from financial-services.xml
-    private boolean globalDPoPEnabled;
     private long iatSkewSeconds;
     private long jtiCacheTtlSeconds;
     private boolean stripDpopHeader;
@@ -97,8 +96,6 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
 
         Map<String, Object> cfg = this.readDPopConfig();
 
-        this.globalDPoPEnabled = DPoPUtils.parseBool(cfg.get(DPoPConstants.ConfigKeys.ENABLED),
-                DPoPConstants.Defaults.ENABLED);
         this.iatSkewSeconds = DPoPUtils.parseLong(cfg.get(DPoPConstants.ConfigKeys.IAT_SKEW_SECONDS),
                 DPoPConstants.Defaults.IAT_SKEW_SECONDS);
         this.jtiCacheTtlSeconds = DPoPUtils.parseLong(cfg.get(DPoPConstants.ConfigKeys.JTI_CACHE_TTL_SECONDS),
@@ -114,18 +111,20 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
                 DPoPConstants.Defaults.NONCE_STRATEGY);
         int nonceRotateAfterUses = (int) DPoPUtils.parseLong(cfg.get(DPoPConstants.ConfigKeys.NONCE_ROTATE_AFTER_USES),
                 DPoPConstants.Defaults.NONCE_ROTATE_AFTER_USES);
+        int nonceMaxTrackedClients = (int) DPoPUtils.parseLong(
+                cfg.get(DPoPConstants.ConfigKeys.NONCE_MAX_TRACKED_CLIENTS),
+                DPoPConstants.Defaults.NONCE_MAX_TRACKED_CLIENTS);
         long introspectionTtl = DPoPUtils.parseLong(cfg.get(DPoPConstants.ConfigKeys.INTROSPECTION_CACHE_TTL_SECONDS),
                 DPoPConstants.Defaults.INTROSPECTION_CACHE_TTL_SECONDS);
 
         this.proofValidator = new DPoPProofValidator(algorithms, iatSkewSeconds);
-        this.nonceStrategy = buildNonceStrategy(nonceStrategyName, nonceRotateAfterUses);
+        this.nonceStrategy = this.buildNonceStrategy(nonceStrategyName, nonceRotateAfterUses, nonceMaxTrackedClients);
         this.accessTokenBinder = new AccessTokenBinder(new IntrospectionClient(introspectionTtl));
         this.challenge = new Challenge(String.join(" ", algorithms));
 
         this.cacheProvider = buildCacheProvider(cfg);
 
-        log.info("DPoP handler initialized. globalDPoPEnabled=" + globalDPoPEnabled
-                + ", algorithms=" + algorithms
+        log.info("DPoP handler initialized. algorithms=" + algorithms
                 + ", nonceStrategy=" + nonceStrategy.getName()
                 + ", cacheProvider=" + cacheProvider.getClass().getName());
     }
@@ -139,10 +138,9 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
     public boolean handleRequest(MessageContext synCtx) {
 
         if (log.isDebugEnabled()) {
-            log.debug("Handling request in DPoPHandler. " +
-                    "apiDPoPEnabled=" + apiDPoPEnabled + ", globalDPoPEnabled=" + globalDPoPEnabled);
+            log.debug("Handling request in DPoPHandler. apiDPoPEnabled=" + apiDPoPEnabled);
         }
-        if (!apiDPoPEnabled || !globalDPoPEnabled) {
+        if (!apiDPoPEnabled) {
             return true;
         }
 
@@ -216,6 +214,16 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
     @Override
     public boolean handleResponse(MessageContext synCtx) {
 
+        final boolean isDPoPBound = DPoPUtils.parseBool(synCtx.getProperty(DPOP_BOUND_PROPERTY), false);
+        final String rotatedNonce = (String) synCtx.getProperty(DPOP_RESPONSE_NONCE_PROPERTY);
+        if (isDPoPBound && rotatedNonce != null) {
+            Map<String, String> headers = DPoPUtils.getTransportHeaders(synCtx);
+            headers.put(DPOP_NONCE_HEADER, rotatedNonce);
+            // RFC 9449 §8.2: responses that carry a nonce must not be cached.
+            headers.put(HttpHeaders.CACHE_CONTROL, CACHE_CONTROL_NO_STORE);
+            ((Axis2MessageContext) synCtx).getAxis2MessageContext()
+                    .setProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS, headers);
+        }
         return true;
     }
 
@@ -244,20 +252,22 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
         log.debug(() -> "Validating DPoP proof: method=" + httpMethod + ", htu=" + htu
                 + ", kid=" + parsedProof.getKid() + ", proofKeyId=" + proofJwkThumbprint);
 
-        // 1. Nonce check — if nonce is required but absent or expired, reject immediately.
-        //    The catch block in handleRequest issues the nonce and includes it in the 401
-        //    response for both the "no active nonce" and "nonce mismatch" cases, so no
-        //    issueNonce call is made here.
-        String expectedNonce = null;
-        if (proofJwkThumbprint != null && nonceStrategy.requiresNonce(proofJwkThumbprint)) {
-            expectedNonce = cacheProvider.getActiveNonce(proofJwkThumbprint);
-            if (expectedNonce == null) {
+        // 1. Nonce check — RFC 9449 §11.3: must reject proofs without nonce whenever one
+        //    has been issued to this client, even between strategy rotation points.
+        boolean strategyRequiresNonce = proofJwkThumbprint != null
+                && nonceStrategy.requiresNonce(proofJwkThumbprint);
+        String activeNonce = proofJwkThumbprint != null
+                ? cacheProvider.getActiveNonce(proofJwkThumbprint) : null;
 
+        String expectedNonce = null;
+        if (strategyRequiresNonce || activeNonce != null) {
+            if (activeNonce == null) {
                 log.debug(() -> "No active nonce for proofKeyId=" + proofJwkThumbprint + "; challenging client");
                 throw new DPoPProofException(DPoPProofException.ErrorCode.USE_DPOP_NONCE,
                         "DPoP-Nonce required; retry with the issued nonce");
             }
-            log.debug(() -> "Nonce check: active nonce found for proofKeyId=" + proofJwkThumbprint);
+            expectedNonce = activeNonce;
+            log.debug(() -> "Nonce check required for proofKeyId=" + proofJwkThumbprint);
         }
 
         // 2. Validate proof JWT (signature, header, claims, ath)
@@ -277,9 +287,11 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
         // 4. Token binding — use the resolved tokenJkt
         accessTokenBinder.verifyBinding(tokenJkt, proofJkt);
 
-        // 5. Consume the nonce (if used)
-        if (expectedNonce != null) {
-            cacheProvider.isNonceValidAndConsumed(proofJwkThumbprint, expectedNonce);
+        // 5. Rotation — if strategy says rotate, issue fresh nonce and deliver on 200 response (RFC 9449 §8.2).
+        if (proofJwkThumbprint != null && nonceStrategy.shouldRotate(proofJwkThumbprint)) {
+            String rotatedNonce = cacheProvider.issueNonce(proofJwkThumbprint);
+            synCtx.setProperty(DPOP_RESPONSE_NONCE_PROPERTY, rotatedNonce);
+            log.debug(() -> "Nonce rotated for proofKeyId=" + proofJwkThumbprint);
         }
 
         // 6. Rewrite Authorization: DPoP <token> → Authorization: Bearer <token>
@@ -342,19 +354,26 @@ public class DPoPHandler extends AbstractHandler implements ManagedLifecycle {
         return sub;
     }
 
-    private NonceStrategy buildNonceStrategy(String name, int rotateAfterUses) {
-        if (equalsIgnoreCase("always", name)) {
-            return new AlwaysNonceStrategy();
-        } else if (equalsIgnoreCase("rotating", name)) {
-            return new RotatingNonceStrategy(rotateAfterUses);
+    /**
+     * Maps the configured nonce strategy name to its implementation.
+     * Falls back to {@code never} for unrecognised names.
+     */
+    private NonceStrategy buildNonceStrategy(String name, int rotateAfterUses, int maxTrackedClients) {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Building nonce strategy: name=%s, rotateAfterUses=%s, maxTrackedClients=%s",
+                    name, rotateAfterUses, maxTrackedClients));
         }
-        return new NeverNonceStrategy();
+        return NonceStrategyType.fromName(name)
+                .orElseGet(() -> {
+                    log.warn("Unsupported DPoP nonce strategy '" + name + "' - falling back to 'never'.");
+                    return NonceStrategyType.NEVER;
+                }).create(rotateAfterUses, maxTrackedClients);
     }
 
     /**
      * Synapse property setter for the per-API DPoP enforcement toggle.
-     * Set {@code value="false"} on the handler element to opt a single API out of
-     * DPoP enforcement without touching the global configuration.
+     * Set {@code value="true"} on the handler element to enable DPoP enforcement for an API.
      */
     public void setApiDPoPEnabled(String apiDPoPEnabled) {
         this.apiDPoPEnabled = Boolean.parseBoolean(apiDPoPEnabled);

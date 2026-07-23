@@ -19,15 +19,23 @@
 package org.wso2.financial.services.accelerator.gateway.dpop.nonce;
 
 /**
- * Strategy interface deciding whether a DPoP-Nonce is required for a given client.
- * Client identity is normally the JWK thumbprint of the proof's public key.
+ * Strategy interface deciding whether a DPoP-Nonce is required for a given client
+ * and when to rotate it. Client identity is normally the JWK thumbprint of the proof's public key.
  */
 public interface NonceStrategy {
 
     /**
-     * Returns {@code true} if the handler must demand a nonce from this client.
+     * Pure policy check — returns {@code true} if this strategy requires nonces at all.
+     * Must be side-effect-free; the handler calls it on every request.
      */
     boolean requiresNonce(String clientIdentity);
+
+    /**
+     * Called once after each successful proof validation. Returns {@code true} when the
+     * strategy decides the current nonce should be rotated (i.e. a fresh nonce should be
+     * issued and delivered in the {@code 200} response per RFC 9449 §8.2).
+     */
+    boolean shouldRotate(String clientIdentity);
 
     /**
      * Returns the strategy name used in {@code financial-services.xml}.

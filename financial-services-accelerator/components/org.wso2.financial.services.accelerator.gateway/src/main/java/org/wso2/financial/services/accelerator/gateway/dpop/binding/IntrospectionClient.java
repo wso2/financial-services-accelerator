@@ -67,53 +67,59 @@ public class IntrospectionClient {
         if (cached != null && !cached.isExpired()) {
             return cached.jkt;
         }
+        if (cached != null) {
+            // Remove the stale entry so putIfAbsent below can store the fresh result.
+            // Using the value-matched overload is safe under concurrent updates: if another
+            // thread already replaced this entry, remove() is a no-op.
+            introspectionCache.remove(cacheKey, cached);
+        }
         final String jkt = introspect(accessToken);
         if (StringUtils.isNotBlank(jkt)) {
-            // putIfAbsent ensures that if two threads both see a cache miss and both call
-            // introspect(), only the first result is stored. The second thread's result is
-            // discarded silently — both return the same jkt since introspection is deterministic.
+            // putIfAbsent: if two threads race here, the first writer wins and the second
+            // result is silently discarded — both return the same jkt (introspection is deterministic).
             introspectionCache.putIfAbsent(cacheKey,
                     new CachedEntry(jkt, System.currentTimeMillis() + cacheTtlMs));
         }
         return jkt;
     }
 
+    /**
+     * Iterates over all Key Managers configured for the current tenant and returns
+     * the first {@code cnf.jkt} found for the given token.
+     *
+     * @param accessToken raw opaque access token
+     * @return the {@code cnf.jkt} JWK thumbprint, or {@code null} if the token has no DPoP binding
+     * @throws IntrospectionException if all Key Managers fail or none are configured
+     */
     private String introspect(String accessToken) throws IntrospectionException {
-        try {
-            final String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                    .getTenantDomain(true);
-            Map<String, KeyManagerDto> keyManagerDtoMap = KeyManagerHolder.getTenantKeyManagers(tenantDomain);
-            if (keyManagerDtoMap == null || keyManagerDtoMap.isEmpty()) {
-                throw new IntrospectionException("No key manager configured for tenant: " + tenantDomain);
+        final String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain(true);
+        Map<String, KeyManagerDto> keyManagerDtoMap = KeyManagerHolder.getTenantKeyManagers(tenantDomain);
+        if (keyManagerDtoMap == null || keyManagerDtoMap.isEmpty()) {
+            throw new IntrospectionException("No key manager configured for tenant: " + tenantDomain);
+        }
+        for (Map.Entry<String, KeyManagerDto> entry : keyManagerDtoMap.entrySet()) {
+            KeyManager keyManager = entry.getValue().getKeyManager();
+            if (keyManager == null) {
+                continue;
             }
-            for (Map.Entry<String, KeyManagerDto> entry : keyManagerDtoMap.entrySet()) {
-                KeyManager keyManager = entry.getValue().getKeyManager();
-                if (keyManager == null) {
+            try {
+                AccessTokenInfo tokenInfo = keyManager.getTokenMetaData(accessToken);
+                if (tokenInfo == null || !tokenInfo.isTokenValid()) {
                     continue;
                 }
-                try {
-                    AccessTokenInfo tokenInfo = keyManager.getTokenMetaData(accessToken);
-                    if (tokenInfo == null || !tokenInfo.isTokenValid()) {
-                        continue;
-                    }
-                    Object cnf = tokenInfo.getParameter(DPoPConstants.Claims.CNF_CLAIM);
-                    if (cnf instanceof Map) {
-                        @SuppressWarnings("unchecked")
-                        Object jkt = ((Map<String, Object>) cnf).get(DPoPConstants.Claims.JKT_CLAIM);
-                        return jkt != null ? jkt.toString() : null;
-                    }
-                    return null;
-                } catch (APIManagementException e) {
-                    log.debug("Key manager " + entry.getKey()
-                            + " failed to introspect token, trying next: " + e.getMessage());
+                Object cnf = tokenInfo.getParameter(DPoPConstants.Claims.CNF_CLAIM);
+                if (cnf instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Object jkt = ((Map<String, Object>) cnf).get(DPoPConstants.Claims.JKT_CLAIM);
+                    return jkt != null ? jkt.toString() : null;
                 }
+                return null;
+            } catch (APIManagementException e) {
+                log.error("Key manager " + entry.getKey()
+                        + " failed to introspect token, trying next: " + e.getMessage(), e);
             }
-            throw new IntrospectionException("Token introspection failed for all configured key managers");
-        } catch (IntrospectionException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IntrospectionException("Unexpected error during token introspection: " + e.getMessage(), e);
         }
+        throw new IntrospectionException("Token introspection failed for all configured key managers");
     }
 
     private String hashToken(String token) {

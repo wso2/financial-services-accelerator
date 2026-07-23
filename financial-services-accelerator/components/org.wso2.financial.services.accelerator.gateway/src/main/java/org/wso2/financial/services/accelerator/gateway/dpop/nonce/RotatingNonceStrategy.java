@@ -24,44 +24,54 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Rotates nonces after a configurable number of uses per client identity. Requires
- * a nonce on the first request from a client, then every {@code rotateAfterUses}
- * subsequent successful proof validations.
+ * Rotates the nonce every {@code rotateAfterUses} successful proof validations per client.
+ * The nonce is reused between rotations; a fresh nonce is delivered proactively in the
+ * {@code 200} response (RFC 9449 §8.2) so the client never pays an extra round-trip.
  */
 public class RotatingNonceStrategy implements NonceStrategy {
 
-    private static final int MAX_TRACKED_CLIENTS = 10_000;
-
     private final int rotateAfterUses;
-    // Access-ordered LRU map — evicts the least-recently-seen client identity once the
-    // cap is reached, preventing unbounded growth for long-running gateway instances.
-    private final Map<String, AtomicLong> useCounts = Collections.synchronizedMap(
-            new LinkedHashMap<String, AtomicLong>(MAX_TRACKED_CLIENTS, 0.75f, true) {
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<String, AtomicLong> eldest) {
-                    return size() > MAX_TRACKED_CLIENTS;
-                }
-            });
+    private final int maxTrackedClients;
+    // Access-ordered LRU map — evicts the least-recently-seen client identity once the cap is reached.
+    private final Map<String, AtomicLong> useCounts;
 
-    public RotatingNonceStrategy(int rotateAfterUses) {
+    public RotatingNonceStrategy(int rotateAfterUses, int maxTrackedClients) {
 
         this.rotateAfterUses = Math.max(1, rotateAfterUses);
+        this.maxTrackedClients = Math.max(1, maxTrackedClients);
+        this.useCounts = Collections.synchronizedMap(
+                new LinkedHashMap<String, AtomicLong>(this.maxTrackedClients, 0.75f, true) {
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<String, AtomicLong> eldest) {
+                        return size() > RotatingNonceStrategy.this.maxTrackedClients;
+                    }
+                });
     }
 
     /**
-     * Returns {@code true} on the first call for a given identity and on every
-     * {@code rotateAfterUses}-th subsequent call. Increments the use counter on each
-     * invocation — must not be called more than once per request.
+     * Pure policy check — always returns {@code true} because once a nonce is issued to a
+     * client it must be required on every subsequent request (RFC 9449 §11.3). First-issue
+     * is handled by the {@code activeNonce == null} path in the handler, not here.
      */
     @Override
     public boolean requiresNonce(String clientIdentity) {
+
+        return true;
+    }
+
+    /**
+     * Increments the per-client use counter and returns {@code true} every
+     * {@code rotateAfterUses}-th call, triggering proactive nonce rotation.
+     */
+    @Override
+    public boolean shouldRotate(String clientIdentity) {
 
         AtomicLong counter;
         synchronized (useCounts) {
             counter = useCounts.computeIfAbsent(clientIdentity, k -> new AtomicLong(0));
         }
         long count = counter.incrementAndGet();
-        return count == 1 || (count % rotateAfterUses == 0);
+        return count % rotateAfterUses == 0;
     }
 
     @Override

@@ -32,8 +32,8 @@ import java.util.Map;
  * routed to a different node would not be detected.
  * <p>
  * Implementations must be safe for concurrent use by multiple gateway worker threads.
- * Both {@link #isJtiFirstUse} and {@link #isNonceValidAndConsumed} must be atomic;
- * a partial overlap between the read and write is not acceptable.
+ * {@link #isJtiFirstUse} must be atomic; a partial overlap between the read and write
+ * is not acceptable.
  */
 public interface DPoPCacheProvider {
 
@@ -72,15 +72,4 @@ public interface DPoPCacheProvider {
      * @param proofKeyId the nonce cache key, typically the JWK thumbprint of the proof's public key
      */
     String getActiveNonce(String proofKeyId);
-
-    /**
-     * Atomically verifies that {@code submittedNonce} matches the active nonce for
-     * {@code proofKeyId} and removes it if so (single-use). Returns {@code true} only if
-     * the nonce matched and was successfully consumed. Returns {@code false} if the nonce
-     * was absent, already consumed, or did not match — all of which must be treated as
-     * an invalid request.
-     *
-     * @param proofKeyId the nonce cache key, typically the JWK thumbprint of the proof's public key
-     */
-    boolean isNonceValidAndConsumed(String proofKeyId, String submittedNonce);
 }

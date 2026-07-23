@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -82,9 +82,6 @@
         </DCR>
         <!-- RFC 9449 DPoP-bound access-token validation. Read by DPoPHandler at init(). -->
         <DPoP>
-            {% if financial_services.gateway.dpop.enabled is defined %}
-            <Enabled>{{financial_services.gateway.dpop.enabled}}</Enabled>
-            {% endif %}
             {% if financial_services.gateway.dpop.accepted_algorithms is defined %}
             <AcceptedAlgorithms>{{financial_services.gateway.dpop.accepted_algorithms}}</AcceptedAlgorithms>
             {% endif %}
@@ -102,6 +99,9 @@
             {% endif %}
             {% if financial_services.gateway.dpop.nonce_rotate_after_uses is defined %}
             <NonceRotateAfterUses>{{financial_services.gateway.dpop.nonce_rotate_after_uses}}</NonceRotateAfterUses>
+            {% endif %}
+            {% if financial_services.gateway.dpop.nonce_max_tracked_clients is defined %}
+            <NonceMaxTrackedClients>{{financial_services.gateway.dpop.nonce_max_tracked_clients}}</NonceMaxTrackedClients>
             {% endif %}
             {% if financial_services.gateway.dpop.https_required is defined %}
             <HttpsRequired>{{financial_services.gateway.dpop.https_required}}</HttpsRequired>

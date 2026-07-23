@@ -22,7 +22,7 @@ import static org.wso2.financial.services.accelerator.common.constant.FinancialS
 
 /**
  * RFC 9449 claim names and {@code financial-services.xml} configuration keys
- * consumed by the DPoP handler.
+ * consumed by the DPoP module.
  */
 public final class DPoPConstants {
 
@@ -40,6 +40,9 @@ public final class DPoPConstants {
     public static final int BEARER_SCHEME_LEN = BEARER_TAG.trim().length() + 1;
 
     public static final String DPOP_BOUND_PROPERTY = "dpop.bound";
+    /** Synapse message property used to pass a rotated nonce from request to response handling. */
+    public static final String DPOP_RESPONSE_NONCE_PROPERTY = "dpop.response.nonce";
+    public static final String CACHE_CONTROL_NO_STORE = "no-store";
 
     /**
      * RFC 9449 §4.2 claim names.
@@ -69,13 +72,13 @@ public final class DPoPConstants {
         }
 
         public static final String GATEWAY_DPOP_PREFIX = "Gateway.DPoP.";
-        public static final String ENABLED = GATEWAY_DPOP_PREFIX + "Enabled";
         public static final String ACCEPTED_ALGORITHMS = GATEWAY_DPOP_PREFIX + "AcceptedAlgorithms";
         public static final String IAT_SKEW_SECONDS = GATEWAY_DPOP_PREFIX + "IatSkewSeconds";
         public static final String JTI_CACHE_TTL_SECONDS = GATEWAY_DPOP_PREFIX + "JtiCacheTtlSeconds";
         public static final String NONCE_STRATEGY = GATEWAY_DPOP_PREFIX + "NonceStrategy";
         public static final String NONCE_TTL_SECONDS = GATEWAY_DPOP_PREFIX + "NonceTtlSeconds";
         public static final String NONCE_ROTATE_AFTER_USES = GATEWAY_DPOP_PREFIX + "NonceRotateAfterUses";
+        public static final String NONCE_MAX_TRACKED_CLIENTS = GATEWAY_DPOP_PREFIX + "NonceMaxTrackedClients";
         public static final String HTTPS_REQUIRED = GATEWAY_DPOP_PREFIX + "HttpsRequired";
         public static final String STRIP_DPOP_HEADER = GATEWAY_DPOP_PREFIX + "StripDpopHeader";
         public static final String INTROSPECTION_CACHE_TTL_SECONDS =
@@ -91,13 +94,13 @@ public final class DPoPConstants {
         private Defaults() {
         }
 
-        public static final boolean ENABLED = false;
         public static final String ACCEPTED_ALGORITHMS = "ES256,ES384,ES512,PS256,PS384,PS512";
         public static final long IAT_SKEW_SECONDS = 60L;
         public static final long JTI_CACHE_TTL_SECONDS = 120L;
         public static final String NONCE_STRATEGY = "never";
         public static final long NONCE_TTL_SECONDS = 300L;
         public static final int NONCE_ROTATE_AFTER_USES = 10;
+        public static final int NONCE_MAX_TRACKED_CLIENTS = 10_000;
         public static final boolean HTTPS_REQUIRED = true;
         public static final boolean STRIP_DPOP_HEADER = false;
         public static final long INTROSPECTION_CACHE_TTL_SECONDS = 60L;

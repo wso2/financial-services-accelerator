@@ -207,9 +207,18 @@ public class DPoPProofValidator {
         return new ValidationResult(computeJwkThumbprint(jwk), claims.getJWTID());
     }
 
+    /**
+     * Validates the DPoP proof JOSE header per RFC 9449 §4.3 rules 4–7:
+     * {@code typ} must be {@code dpop+jwt}, {@code alg} must be asymmetric and in the
+     * accepted list, {@code jwk} must be present and must not contain private key material.
+     *
+     * @param header the JWS header of the parsed proof JWT
+     * @return the public JWK embedded in the header
+     * @throws DPoPProofException if any header constraint is violated
+     */
     private JWK validateHeader(JWSHeader header) throws DPoPProofException {
         // RFC 9449 §4.3 rule 4: typ must be "dpop+jwt"
-        if (header.getType() == null || !equalsIgnoreCase(DPOP_JWT_TYPE, header.getType().getType())) {
+        if (header.getType() == null || !equalsIgnoreCase(DPOP_JWT_TYPE, (header.getType().getType()))) {
             throw new DPoPProofException(DPoPProofException.ErrorCode.INVALID_DPOP_PROOF,
                     "DPoP proof typ must be \"dpop+jwt\", got: " + header.getType());
         }
@@ -239,6 +248,13 @@ public class DPoPProofValidator {
         return jwk;
     }
 
+    /**
+     * Verifies the DPoP proof signature against the public key embedded in its header.
+     *
+     * @param signedJWT the parsed proof JWT
+     * @param jwk       the public key extracted from the proof header
+     * @throws DPoPProofException if signature verification fails or the JWK type is unsupported
+     */
     private void verifySignature(SignedJWT signedJWT, JWK jwk) throws DPoPProofException {
         try {
             JWSVerifier verifier = buildVerifier(jwk);
@@ -252,6 +268,14 @@ public class DPoPProofValidator {
         }
     }
 
+    /**
+     * Constructs a {@link JWSVerifier} for the given JWK key type (RSA, EC, or OKP/Ed25519).
+     *
+     * @param jwk the public key from the proof header
+     * @return a verifier suitable for the key type
+     * @throws JOSEException      if the key material cannot be parsed
+     * @throws DPoPProofException if the key type or OKP curve is unsupported
+     */
     private JWSVerifier buildVerifier(JWK jwk) throws JOSEException, DPoPProofException {
         KeyType keyType = jwk.getKeyType();
         if (KeyType.RSA.equals(keyType)) {
@@ -270,6 +294,13 @@ public class DPoPProofValidator {
                 "Unsupported JWK key type: " + keyType);
     }
 
+    /**
+     * Extracts the JWT claims set from the signed JWT.
+     *
+     * @param signedJWT the parsed and signature-verified proof JWT
+     * @return the claims set
+     * @throws DPoPProofException if the claims payload cannot be parsed
+     */
     private JWTClaimsSet parseClaims(SignedJWT signedJWT) throws DPoPProofException {
 
         try {
@@ -280,6 +311,20 @@ public class DPoPProofValidator {
         }
     }
 
+    /**
+     * Validates proof claims per RFC 9449 §4.3 rules 8–12:
+     * {@code htm} must match the request method, {@code htu} must match the normalized
+     * request URI, {@code iat} must be within the skew window, {@code ath} must equal
+     * the access token hash when a token is present, and {@code nonce} must match the
+     * server-issued nonce when one is required.
+     *
+     * @param claims        the claims set from the proof JWT
+     * @param requestHtm    HTTP method of the current request
+     * @param requestHtu    normalized request URI (no query or fragment)
+     * @param accessToken   raw access token for {@code ath} verification, or {@code null}
+     * @param expectedNonce server-issued nonce to match, or {@code null} if not required
+     * @throws DPoPProofException if any claim constraint is violated
+     */
     private void validateClaims(JWTClaimsSet claims, String requestHtm, String requestHtu,
                                 String accessToken, String expectedNonce) throws DPoPProofException {
 
@@ -352,6 +397,14 @@ public class DPoPProofValidator {
         }
     }
 
+    /**
+     * Computes the {@code ath} claim value as {@code base64url(SHA-256(ASCII(accessToken)))}
+     * per RFC 9449 §4.2.
+     *
+     * @param accessToken raw access token string
+     * @return base64url-encoded SHA-256 hash of the ASCII-encoded token
+     * @throws DPoPProofException if the SHA-256 algorithm is unavailable on this JVM
+     */
     private String computeAth(String accessToken) throws DPoPProofException {
         try {
             MessageDigest digest = MessageDigest.getInstance(SHA256_HASH_ALG);
@@ -363,6 +416,14 @@ public class DPoPProofValidator {
         }
     }
 
+    /**
+     * Returns {@code true} if {@code a} and {@code b} are equal after stripping trailing
+     * slashes and ignoring case, following the URI normalization requirements of RFC 9449 §4.3.
+     *
+     * @param a first URI string, may be {@code null}
+     * @param b second URI string, may be {@code null}
+     * @return {@code true} if the normalized URIs are equal; {@code false} if either is {@code null}
+     */
     private boolean normalizedUriEquals(String a, String b) {
         if (a == null || b == null) {
             return false;
@@ -370,10 +431,24 @@ public class DPoPProofValidator {
         return equalsIgnoreCase(stripTrailingSlash(a), stripTrailingSlash(b));
     }
 
+    /**
+     * Removes a trailing {@code /} from {@code uri} if present.
+     *
+     * @param uri URI string to normalize
+     * @return the URI without a trailing slash
+     */
     private String stripTrailingSlash(String uri) {
         return uri.endsWith("/") ? uri.substring(0, uri.length() - 1) : uri;
     }
 
+    /**
+     * Strips the query string and fragment from {@code url}, returning only
+     * {@code scheme://authority/path} for htu claim comparison per RFC 9449 §4.3 rule 9.
+     *
+     * @param url the raw htu claim value from the proof
+     * @return normalized URI without query or fragment, or {@code null} if {@code url} is blank
+     * @throws DPoPProofException if {@code url} has invalid URI syntax
+     */
     private String removeQueryAndFragment(String url) throws DPoPProofException {
         try {
             if (StringUtils.isBlank(url)) {

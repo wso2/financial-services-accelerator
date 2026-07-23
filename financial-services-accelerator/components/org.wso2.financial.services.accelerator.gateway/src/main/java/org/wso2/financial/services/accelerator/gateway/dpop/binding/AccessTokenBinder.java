@@ -98,6 +98,15 @@ public class AccessTokenBinder {
 
     }
 
+    /**
+     * Resolves {@code cnf.jkt} for an opaque access token by calling the Key Manager
+     * introspection endpoint. Results are cached by {@link IntrospectionClient} for the
+     * configured TTL to avoid repeated round-trips for the same token.
+     *
+     * @param accessToken raw opaque access token
+     * @return the {@code cnf.jkt} JWK thumbprint, or {@code null} if the token has no DPoP binding
+     * @throws DPoPProofException if the introspection call fails
+     */
     private String extractJktViaIntrospection(String accessToken) throws DPoPProofException {
         try {
             return introspectionClient.getJwkThumbprint(accessToken);

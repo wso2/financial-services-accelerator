@@ -111,8 +111,7 @@ public final class DPoPUtils {
 
     private static Map<String, String> getHeaderMapByKey(org.apache.synapse.MessageContext synCtx, String propertyKey) {
 
-        @SuppressWarnings("unchecked")
-        final Map<String, String> headersMap =
+        @SuppressWarnings("unchecked") final Map<String, String> headersMap =
                 (Map<String, String>) ((Axis2MessageContext) synCtx).getAxis2MessageContext().getProperty(propertyKey);
         // Use a case-insensitive TreeMap because HTTP header names are case-insensitive
         final Map<String, String> headersTreeMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -193,6 +192,9 @@ public final class DPoPUtils {
             if (!trimmed.isEmpty()) {
                 result.add(trimmed);
             }
+        }
+        if (result.isEmpty()) {
+            return parseAlgorithms(DPoPConstants.Defaults.ACCEPTED_ALGORITHMS);
         }
         return result;
     }

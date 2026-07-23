@@ -23,6 +23,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.core.axis2.Axis2Sender;
 import org.apache.synapse.transport.passthru.util.RelayUtils;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
@@ -49,17 +50,14 @@ public class ChallengeTest {
     private Challenge challenge;
     private Axis2MessageContext mockSynCtx;
     private MessageContext mockAxis2MC;
-    private Map<String, String> responseHeaders;
 
     @BeforeMethod
     public void setUp() {
         challenge = new Challenge(ACCEPTED_ALGS);
         mockSynCtx = Mockito.mock(Axis2MessageContext.class);
         mockAxis2MC = Mockito.mock(MessageContext.class);
-        responseHeaders = new HashMap<>();
 
         Mockito.when(mockSynCtx.getAxis2MessageContext()).thenReturn(mockAxis2MC);
-        Mockito.when(mockAxis2MC.getProperty(MessageContext.TRANSPORT_HEADERS)).thenReturn(responseHeaders);
     }
 
     @Test
@@ -75,12 +73,13 @@ public class ChallengeTest {
             challenge.send401(mockSynCtx, DPoPProofException.ErrorCode.INVALID_DPOP_PROOF,
                     "Proof failed", null);
 
-            String wwwAuth = responseHeaders.get(HttpHeaders.WWW_AUTHENTICATE);
+            Map<String, String> headers = captureResponseHeaders();
+            String wwwAuth = headers.get(HttpHeaders.WWW_AUTHENTICATE);
             assertNotNull(wwwAuth, "WWW-Authenticate header must be set");
             assertTrue(wwwAuth.startsWith("DPoP"), "Challenge must start with 'DPoP'");
             assertTrue(wwwAuth.contains("error=\"invalid_dpop_proof\""),
                     "Challenge must contain the RFC error code");
-            assertFalse(responseHeaders.containsKey(HEADER_DPOP_NONCE),
+            assertFalse(headers.containsKey(HEADER_DPOP_NONCE),
                     "DPoP-Nonce header must not be present when no nonce is supplied");
         }
     }
@@ -100,11 +99,12 @@ public class ChallengeTest {
             challenge.send401(mockSynCtx, DPoPProofException.ErrorCode.USE_DPOP_NONCE,
                     "Nonce required", nonce);
 
-            String dpopNonce = responseHeaders.get(HEADER_DPOP_NONCE);
+            Map<String, String> headers = captureResponseHeaders();
+            String dpopNonce = headers.get(HEADER_DPOP_NONCE);
             assertNotNull(dpopNonce, "DPoP-Nonce header must be set when a nonce is supplied");
             assertEquals(dpopNonce, nonce);
 
-            String wwwAuth = responseHeaders.get(HttpHeaders.WWW_AUTHENTICATE);
+            String wwwAuth = headers.get(HttpHeaders.WWW_AUTHENTICATE);
             assertNotNull(wwwAuth);
             assertTrue(wwwAuth.contains("error=\"use_dpop_nonce\""));
         }
@@ -120,11 +120,11 @@ public class ChallengeTest {
             senderStatic.when(() -> Axis2Sender.sendBack(mockSynCtx))
                     .thenAnswer(inv -> null);
 
-            // Should complete without NullPointerException
             challenge.send401(mockSynCtx, DPoPProofException.ErrorCode.INVALID_DPOP_PROOF,
                     null, null);
 
-            String wwwAuth = responseHeaders.get(HttpHeaders.WWW_AUTHENTICATE);
+            Map<String, String> headers = captureResponseHeaders();
+            String wwwAuth = headers.get(HttpHeaders.WWW_AUTHENTICATE);
             assertNotNull(wwwAuth);
             assertTrue(wwwAuth.contains("error=\"invalid_dpop_proof\""));
             assertFalse(wwwAuth.contains("error_description"),
@@ -148,5 +148,50 @@ public class ChallengeTest {
             // Verify Axis2Sender.sendBack was called to dispatch the error response
             senderStatic.verify(() -> Axis2Sender.sendBack(mockSynCtx));
         }
+    }
+
+    @Test
+    public void send401ShouldNotEchoRequestHeadersInResponse() {
+        // Simulate what Synapse holds in TRANSPORT_HEADERS during handleRequest —
+        // the incoming client request headers.
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Authorization", "DPoP <access-token>");
+        requestHeaders.put("DPoP", "<dpop-proof>");
+        requestHeaders.put("User-Agent", "PostmanRuntime/7.54.0");
+        requestHeaders.put("Host", "localhost:8243");
+        Mockito.when(mockAxis2MC.getProperty(MessageContext.TRANSPORT_HEADERS))
+                .thenReturn(requestHeaders);
+
+        try (MockedStatic<RelayUtils> relayStatic = Mockito.mockStatic(RelayUtils.class);
+             MockedStatic<Axis2Sender> senderStatic = Mockito.mockStatic(Axis2Sender.class)) {
+
+            relayStatic.when(() -> RelayUtils.consumeAndDiscardMessage(mockAxis2MC))
+                    .thenAnswer(inv -> null);
+            senderStatic.when(() -> Axis2Sender.sendBack(mockSynCtx))
+                    .thenAnswer(inv -> null);
+
+            challenge.send401(mockSynCtx, DPoPProofException.ErrorCode.INVALID_DPOP_PROOF,
+                    "Proof failed", null);
+
+            Map<String, String> responseHeaders = captureResponseHeaders();
+            assertFalse(responseHeaders.containsKey("Authorization"),
+                    "Authorization request header must not appear in 401 response");
+            assertFalse(responseHeaders.containsKey("DPoP"),
+                    "DPoP request header must not appear in 401 response");
+            assertFalse(responseHeaders.containsKey("User-Agent"),
+                    "User-Agent request header must not appear in 401 response");
+            assertFalse(responseHeaders.containsKey("Host"),
+                    "Host request header must not appear in 401 response");
+            assertTrue(responseHeaders.containsKey(HttpHeaders.WWW_AUTHENTICATE),
+                    "WWW-Authenticate must still be present");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> captureResponseHeaders() {
+        ArgumentCaptor<Map> captor = ArgumentCaptor.forClass(Map.class);
+        Mockito.verify(mockAxis2MC)
+                .setProperty(Mockito.eq(MessageContext.TRANSPORT_HEADERS), captor.capture());
+        return (Map<String, String>) captor.getValue();
     }
 }

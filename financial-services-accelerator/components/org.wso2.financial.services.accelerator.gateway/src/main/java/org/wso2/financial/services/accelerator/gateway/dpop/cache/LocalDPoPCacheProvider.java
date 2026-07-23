@@ -92,19 +92,6 @@ public class LocalDPoPCacheProvider implements DPoPCacheProvider {
         return nonceCache.getActiveNonce(proofKeyId);
     }
 
-    /**
-     * Atomically verifies and consumes the nonce. Returns {@code false} immediately if
-     * {@code submittedNonce} is {@code null}.
-     */
-    @Override
-    public boolean isNonceValidAndConsumed(String proofKeyId, String submittedNonce) {
-
-        if (submittedNonce == null) {
-            return false;
-        }
-        return nonceCache.isNonceValidAndConsumed(proofKeyId, submittedNonce);
-    }
-
     private String generateNonce() {
 
         byte[] bytes = new byte[16];

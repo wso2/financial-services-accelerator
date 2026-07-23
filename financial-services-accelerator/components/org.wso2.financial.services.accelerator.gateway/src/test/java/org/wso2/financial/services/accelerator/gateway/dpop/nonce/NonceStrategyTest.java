@@ -38,6 +38,12 @@ public class NonceStrategyTest {
     }
 
     @Test
+    public void neverStrategyShouldNeverRotate() {
+        NeverNonceStrategy strategy = new NeverNonceStrategy();
+        assertFalse(strategy.shouldRotate("any-client"));
+    }
+
+    @Test
     public void alwaysStrategyShouldAlwaysRequireNonce() {
         AlwaysNonceStrategy strategy = new AlwaysNonceStrategy();
         assertTrue(strategy.requiresNonce("client-1"));
@@ -46,36 +52,40 @@ public class NonceStrategyTest {
     }
 
     @Test
-    public void rotatingStrategyShouldRequireNonceOnFirstAndEveryN() {
-        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3);
-        String client = "client-x";
-
-        assertTrue(strategy.requiresNonce(client));   // count=1 (first use)
-        assertFalse(strategy.requiresNonce(client));  // count=2
-        assertTrue(strategy.requiresNonce(client));   // count=3 (3%3==0)
-        assertFalse(strategy.requiresNonce(client));  // count=4
+    public void alwaysStrategyShouldNeverRotate() {
+        AlwaysNonceStrategy strategy = new AlwaysNonceStrategy();
+        assertFalse(strategy.shouldRotate("client-1"));
     }
 
     @Test
-    public void rotatingStrategyShouldRequireNonceAtModuloIntervals() {
-        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3);
-        String client = "client-y";
-
+    public void rotatingStrategyShouldAlwaysRequireNonce() {
+        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3, 10_000);
+        String client = "client-x";
         assertTrue(strategy.requiresNonce(client));
-        assertFalse(strategy.requiresNonce(client));
-        assertTrue(strategy.requiresNonce(client));   // count=3
-        assertFalse(strategy.requiresNonce(client));
-        assertFalse(strategy.requiresNonce(client));
-        assertTrue(strategy.requiresNonce(client));   // count=6
+        assertTrue(strategy.requiresNonce(client));
+        assertTrue(strategy.requiresNonce(client));
+        assertTrue(strategy.requiresNonce(client));
         assertEquals(strategy.getName(), "rotating");
+    }
+
+    @Test
+    public void rotatingStrategyShouldRotateAtModuloIntervals() {
+        RotatingNonceStrategy strategy = new RotatingNonceStrategy(3, 10_000);
+        String client = "client-y";
+        assertFalse(strategy.shouldRotate(client)); // count=1
+        assertFalse(strategy.shouldRotate(client)); // count=2
+        assertTrue(strategy.shouldRotate(client));  // count=3 → 3%3==0
+        assertFalse(strategy.shouldRotate(client)); // count=4
+        assertFalse(strategy.shouldRotate(client)); // count=5
+        assertTrue(strategy.shouldRotate(client));  // count=6 → 6%3==0
     }
 
     @Test
     public void rotatingStrategyShouldFloorRotateAfterUsesAtOne() {
         // A misconfiguration of 0 or negative must not cause a div-by-zero in the strategy.
-        RotatingNonceStrategy strategy = new RotatingNonceStrategy(0);
-        assertTrue(strategy.requiresNonce("c"));
-        assertTrue(strategy.requiresNonce("c"));
-        assertTrue(strategy.requiresNonce("c"));
+        RotatingNonceStrategy strategy = new RotatingNonceStrategy(0, 10_000);
+        assertTrue(strategy.shouldRotate("c")); // count=1 → 1%1==0
+        assertTrue(strategy.shouldRotate("c")); // count=2 → 2%1==0
+        assertTrue(strategy.shouldRotate("c")); // count=3 → 3%1==0
     }
 }

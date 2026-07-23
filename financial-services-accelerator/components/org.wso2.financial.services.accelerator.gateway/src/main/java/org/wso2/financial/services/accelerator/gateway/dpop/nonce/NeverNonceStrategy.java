@@ -30,6 +30,12 @@ public class NeverNonceStrategy implements NonceStrategy {
     }
 
     @Override
+    public boolean shouldRotate(String clientIdentity) {
+
+        return false;
+    }
+
+    @Override
     public String getName() {
 
         return "never";

@@ -28,9 +28,11 @@ import org.wso2.carbon.apimgt.gateway.APIMgtGatewayConstants;
 import org.wso2.carbon.apimgt.gateway.handlers.Utils;
 import org.wso2.financial.services.accelerator.common.logging.Log;
 import org.wso2.financial.services.accelerator.common.logging.LogFactory;
+import org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants;
 import org.wso2.financial.services.accelerator.gateway.dpop.proof.DPoPProofException;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.wso2.financial.services.accelerator.gateway.dpop.DPoPConstants.DPOP_NONCE_HEADER;
 
@@ -76,16 +78,14 @@ public class Challenge {
             challenge.append(", algs=\"").append(acceptedAlgorithms).append("\"");
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> headers = (Map<String, String>)
-                axis2MC.getProperty(MessageContext.TRANSPORT_HEADERS);
-        if (headers != null) {
-            headers.put(HttpHeaders.WWW_AUTHENTICATE, challenge.toString());
-            if (nonce != null) {
-                headers.put(DPOP_NONCE_HEADER, nonce);
-            }
-            axis2MC.setProperty(MessageContext.TRANSPORT_HEADERS, headers);
+        Map<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        headers.put(HttpHeaders.WWW_AUTHENTICATE, challenge.toString());
+        if (nonce != null) {
+            headers.put(DPOP_NONCE_HEADER, nonce);
+            // RFC 9449 §8.2: responses carrying a nonce must not be cached.
+            headers.put(HttpHeaders.CACHE_CONTROL, DPoPConstants.CACHE_CONTROL_NO_STORE);
         }
+        axis2MC.setProperty(MessageContext.TRANSPORT_HEADERS, headers);
 
         synCtx.setProperty(APIMgtGatewayConstants.HTTP_RESPONSE_STATUS_CODE, 401);
         Utils.send(synCtx, 401);

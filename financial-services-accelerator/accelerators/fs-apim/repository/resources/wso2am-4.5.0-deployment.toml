@@ -413,21 +413,6 @@ enable_certificate_chain_validation = true
 [financial_services.gateway.application_registration]
 tls_client_certificate_bound_access_tokens = true
 
-# RFC 9449 DPoP-bound access-token validation
-[financial_services.gateway.dpop]
-enabled = false
-accepted_algorithms = "ES256,ES384,ES512,PS256,PS384,PS512"
-iat_skew_seconds = 60
-jti_cache_ttl_seconds = 120
-nonce_strategy = "never"             # never | always | rotating
-nonce_ttl_seconds = 300
-nonce_rotate_after_uses = 10
-https_required = true
-strip_dpop_header = false
-introspection_cache_ttl_seconds = 60
-# Distributed deployments must point this at a cluster-aware DPoPCacheProvider.
-#cache_provider_class = "com.example.RedisDPoPCacheProvider"
-
 [[financial_services.keymanager.application.type.attributes]]
 name="regulatory"
 label="Regulatory Application"

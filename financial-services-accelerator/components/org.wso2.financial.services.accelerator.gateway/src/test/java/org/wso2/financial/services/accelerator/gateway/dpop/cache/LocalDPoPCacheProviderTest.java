@@ -127,37 +127,6 @@ public class LocalDPoPCacheProviderTest {
     }
 
     @Test
-    public void isNonceValidAndConsumedShouldReturnFalseForNullNonce() {
-        boolean result = provider.isNonceValidAndConsumed(KEY_ID, null);
-
-        assertFalse(result);
-        Mockito.verify(mockNonceCache, Mockito.never())
-                .isNonceValidAndConsumed(Mockito.any(), Mockito.any());
-    }
-
-    @Test
-    public void isNonceValidAndConsumedShouldReturnTrueOnValidMatch() {
-        String nonce = "correct-nonce";
-        Mockito.when(mockNonceCache.isNonceValidAndConsumed(KEY_ID, nonce)).thenReturn(true);
-
-        boolean result = provider.isNonceValidAndConsumed(KEY_ID, nonce);
-
-        assertTrue(result);
-        Mockito.verify(mockNonceCache).isNonceValidAndConsumed(KEY_ID, nonce);
-    }
-
-    @Test
-    public void isNonceValidAndConsumedShouldReturnFalseOnMismatch() {
-        String nonce = "wrong-nonce";
-        Mockito.when(mockNonceCache.isNonceValidAndConsumed(KEY_ID, nonce)).thenReturn(false);
-
-        boolean result = provider.isNonceValidAndConsumed(KEY_ID, nonce);
-
-        assertFalse(result);
-        Mockito.verify(mockNonceCache).isNonceValidAndConsumed(KEY_ID, nonce);
-    }
-
-    @Test
     public void initializeShouldCreateCachesWithProvidedTtl() {
         try (MockedConstruction<DPoPJtiCache> jtiCons = Mockito.mockConstruction(DPoPJtiCache.class);
              MockedConstruction<DPoPNonceCache> nonceCons = Mockito.mockConstruction(DPoPNonceCache.class)) {

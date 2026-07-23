@@ -30,6 +30,12 @@ public class AlwaysNonceStrategy implements NonceStrategy {
     }
 
     @Override
+    public boolean shouldRotate(String clientIdentity) {
+        // Nonce is reused until the TTL expires; rotation is driven by expiry, not by use-count.
+        return false;
+    }
+
+    @Override
     public String getName() {
 
         return "always";

@@ -22,7 +22,7 @@ import org.wso2.financial.services.accelerator.common.caching.FinancialServicesB
 
 /**
  * Cache for DPoP nonce storage (RFC 9449 §8).
- * Maintains the active nonce per client and supports single-use consumption.
+ * Maintains the active nonce per client; nonces are reusable until the server rotates them.
  */
 public class DPoPNonceCache extends FinancialServicesBaseCache<DPoPCacheKey, String> {
 
@@ -59,19 +59,6 @@ public class DPoPNonceCache extends FinancialServicesBaseCache<DPoPCacheKey, Str
     public String getActiveNonce(String proofKeyId) {
 
         return getFromCache(DPoPCacheKey.of(proofKeyId));
-    }
-
-    /**
-     * Atomically verifies that the submitted nonce matches the active nonce and removes it if so.
-     * Returns {@code true} only if the match and removal both succeeded.
-     *
-     * @param proofKeyId     the nonce cache key, typically the JWK thumbprint of the proof's public key.
-     * @param submittedNonce the nonce value presented by the client.
-     * @return {@code true} if the nonce was valid and consumed, {@code false} otherwise.
-     */
-    public boolean isNonceValidAndConsumed(String proofKeyId, String submittedNonce) {
-
-        return removeFromCacheIfMatch(DPoPCacheKey.of(proofKeyId), submittedNonce);
     }
 
     @Override

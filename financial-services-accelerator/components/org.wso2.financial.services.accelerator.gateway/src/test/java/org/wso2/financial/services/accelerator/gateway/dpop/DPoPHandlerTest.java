@@ -90,7 +90,6 @@ public class DPoPHandlerTest {
         mockNonceStrategy = Mockito.mock(NonceStrategy.class);
 
         // Inject all fields without calling init()
-        setField("globalDPoPEnabled", true);
         setField("apiDPoPEnabled", true);
         setField("iatSkewSeconds", 60L);
         setField("jtiCacheTtlSeconds", JTI_TTL);
@@ -102,8 +101,9 @@ public class DPoPHandlerTest {
         setField("challenge", mockChallenge);
         setField("nonceStrategy", mockNonceStrategy);
 
-        // Default: nonce not required
+        // Default: nonce not required, no rotation
         Mockito.when(mockNonceStrategy.requiresNonce(Mockito.anyString())).thenReturn(false);
+        Mockito.when(mockNonceStrategy.shouldRotate(Mockito.anyString())).thenReturn(false);
 
         mockSynCtx = Mockito.mock(org.apache.synapse.core.axis2.Axis2MessageContext.class);
         mockAxis2MC = Mockito.mock(MessageContext.class);
@@ -113,16 +113,6 @@ public class DPoPHandlerTest {
     @Test
     public void apiDPoPDisabledShouldPassThrough() throws Exception {
         setField("apiDPoPEnabled", false);
-
-        boolean result = handler.handleRequest(mockSynCtx);
-
-        assertTrue(result);
-        Mockito.verifyNoInteractions(mockValidator, mockCache, mockBinder, mockChallenge);
-    }
-
-    @Test
-    public void globalDPoPDisabledShouldPassThrough() throws Exception {
-        setField("globalDPoPEnabled", false);
 
         boolean result = handler.handleRequest(mockSynCtx);
 
@@ -449,48 +439,6 @@ public class DPoPHandlerTest {
     }
 
     @Test
-    public void validDPoPRequestWithNonceShouldConsumeNonce() throws Exception {
-        Map<String, String> headers = makeHeaders(
-                AUTH_HEADER, DPOP_SCHEME + " " + ACCESS_TOKEN,
-                HEADER_DPOP, DPOP_PROOF);
-        String activeNonce = "server-issued-nonce";
-
-        DPoPProofValidator.ParsedProof mockParsed = Mockito.mock(DPoPProofValidator.ParsedProof.class);
-        Mockito.when(mockParsed.getJwkThumbprint()).thenReturn(JWK_THUMBPRINT);
-        Mockito.when(mockParsed.getKid()).thenReturn(null);
-
-        DPoPProofValidator.ValidationResult mockResult = Mockito.mock(DPoPProofValidator.ValidationResult.class);
-        Mockito.when(mockResult.getProofJkt()).thenReturn(JWK_THUMBPRINT);
-        Mockito.when(mockResult.getJti()).thenReturn(JTI);
-
-        try (MockedStatic<DPoPUtils> utilsStatic = Mockito.mockStatic(DPoPUtils.class)) {
-            utilsStatic.when(() -> DPoPUtils.getTransportHeaders(mockSynCtx)).thenReturn(headers);
-            utilsStatic.when(() -> DPoPUtils.extractToken(
-                    DPOP_SCHEME + " " + ACCESS_TOKEN, DPOP_SCHEME)).thenReturn(ACCESS_TOKEN);
-            utilsStatic.when(() -> DPoPUtils.hasMultipleDPopHeaders(mockSynCtx)).thenReturn(false);
-            utilsStatic.when(() -> DPoPUtils.normalizeHtu(mockSynCtx, headers)).thenReturn(HTU);
-            utilsStatic.when(() -> DPoPUtils.removeHeader(Mockito.any(), Mockito.any()))
-                    .thenAnswer(inv -> null);
-
-            Mockito.when(mockAxis2MC.getProperty(Constants.Configuration.HTTP_METHOD)).thenReturn(HTTP_METHOD);
-            Mockito.when(mockValidator.parseDPoPProof(DPOP_PROOF)).thenReturn(mockParsed);
-            Mockito.when(mockBinder.resolveJkt(ACCESS_TOKEN)).thenReturn(null);
-            Mockito.when(mockNonceStrategy.requiresNonce(JWK_THUMBPRINT)).thenReturn(true);
-            Mockito.when(mockCache.getActiveNonce(JWK_THUMBPRINT)).thenReturn(activeNonce);
-            Mockito.when(mockValidator.validate(mockParsed, HTTP_METHOD, HTU, ACCESS_TOKEN, activeNonce))
-                    .thenReturn(mockResult);
-            Mockito.when(mockCache.isJtiFirstUse(JTI, JWK_THUMBPRINT, JTI_TTL)).thenReturn(true);
-            Mockito.doNothing().when(mockBinder).verifyBinding(null, JWK_THUMBPRINT);
-            Mockito.when(mockCache.isNonceValidAndConsumed(JWK_THUMBPRINT, activeNonce)).thenReturn(true);
-
-            boolean result = handler.handleRequest(mockSynCtx);
-
-            assertTrue(result);
-            Mockito.verify(mockCache).isNonceValidAndConsumed(JWK_THUMBPRINT, activeNonce);
-        }
-    }
-
-    @Test
     public void validDPoPRequestShouldStripDPoPHeaderWhenConfigured() throws Exception {
         setField("stripDpopHeader", true);
         Map<String, String> headers = makeHeaders(
@@ -526,6 +474,143 @@ public class DPoPHandlerTest {
 
             assertTrue(result);
             utilsStatic.verify(() -> DPoPUtils.removeHeader(headers, HEADER_DPOP));
+        }
+    }
+
+    @Test
+    public void validDPoPRequestWithNonceShouldReuseNonceWhenRotationNotNeeded() throws Exception {
+        // shouldRotate returns false (default from setUp) — issueNonce must never be called
+        Map<String, String> headers = makeHeaders(
+                AUTH_HEADER, DPOP_SCHEME + " " + ACCESS_TOKEN,
+                HEADER_DPOP, DPOP_PROOF);
+        String activeNonce = "server-issued-nonce";
+
+        DPoPProofValidator.ParsedProof mockParsed = Mockito.mock(DPoPProofValidator.ParsedProof.class);
+        Mockito.when(mockParsed.getJwkThumbprint()).thenReturn(JWK_THUMBPRINT);
+        Mockito.when(mockParsed.getKid()).thenReturn(null);
+
+        DPoPProofValidator.ValidationResult mockResult = Mockito.mock(DPoPProofValidator.ValidationResult.class);
+        Mockito.when(mockResult.getProofJkt()).thenReturn(JWK_THUMBPRINT);
+        Mockito.when(mockResult.getJti()).thenReturn(JTI);
+
+        try (MockedStatic<DPoPUtils> utilsStatic = Mockito.mockStatic(DPoPUtils.class)) {
+            utilsStatic.when(() -> DPoPUtils.getTransportHeaders(mockSynCtx)).thenReturn(headers);
+            utilsStatic.when(() -> DPoPUtils.extractToken(
+                    DPOP_SCHEME + " " + ACCESS_TOKEN, DPOP_SCHEME)).thenReturn(ACCESS_TOKEN);
+            utilsStatic.when(() -> DPoPUtils.hasMultipleDPopHeaders(mockSynCtx)).thenReturn(false);
+            utilsStatic.when(() -> DPoPUtils.normalizeHtu(mockSynCtx, headers)).thenReturn(HTU);
+            utilsStatic.when(() -> DPoPUtils.removeHeader(Mockito.any(), Mockito.any()))
+                    .thenAnswer(inv -> null);
+
+            Mockito.when(mockAxis2MC.getProperty(Constants.Configuration.HTTP_METHOD)).thenReturn(HTTP_METHOD);
+            Mockito.when(mockValidator.parseDPoPProof(DPOP_PROOF)).thenReturn(mockParsed);
+            Mockito.when(mockBinder.resolveJkt(ACCESS_TOKEN)).thenReturn(null);
+            Mockito.when(mockNonceStrategy.requiresNonce(JWK_THUMBPRINT)).thenReturn(true);
+            Mockito.when(mockCache.getActiveNonce(JWK_THUMBPRINT)).thenReturn(activeNonce);
+            Mockito.when(mockValidator.validate(mockParsed, HTTP_METHOD, HTU, ACCESS_TOKEN, activeNonce))
+                    .thenReturn(mockResult);
+            Mockito.when(mockCache.isJtiFirstUse(JTI, JWK_THUMBPRINT, JTI_TTL)).thenReturn(true);
+            Mockito.doNothing().when(mockBinder).verifyBinding(null, JWK_THUMBPRINT);
+            // shouldRotate already returns false (setUp default)
+
+            boolean result = handler.handleRequest(mockSynCtx);
+
+            assertTrue(result);
+            Mockito.verify(mockCache, Mockito.never()).issueNonce(Mockito.any());
+            Mockito.verify(mockSynCtx, Mockito.never())
+                    .setProperty(Mockito.eq(DPoPConstants.DPOP_RESPONSE_NONCE_PROPERTY), Mockito.any());
+        }
+    }
+
+    @Test
+    public void validDPoPRequestShouldRotateNonceInResponseWhenStrategyDecides() throws Exception {
+        // shouldRotate returns true → issueNonce is called and property is set on synCtx
+        Map<String, String> headers = makeHeaders(
+                AUTH_HEADER, DPOP_SCHEME + " " + ACCESS_TOKEN,
+                HEADER_DPOP, DPOP_PROOF);
+        String activeNonce = "server-issued-nonce";
+        String rotatedNonce = "rotated-nonce";
+
+        DPoPProofValidator.ParsedProof mockParsed = Mockito.mock(DPoPProofValidator.ParsedProof.class);
+        Mockito.when(mockParsed.getJwkThumbprint()).thenReturn(JWK_THUMBPRINT);
+        Mockito.when(mockParsed.getKid()).thenReturn(null);
+
+        DPoPProofValidator.ValidationResult mockResult = Mockito.mock(DPoPProofValidator.ValidationResult.class);
+        Mockito.when(mockResult.getProofJkt()).thenReturn(JWK_THUMBPRINT);
+        Mockito.when(mockResult.getJti()).thenReturn(JTI);
+
+        try (MockedStatic<DPoPUtils> utilsStatic = Mockito.mockStatic(DPoPUtils.class)) {
+            utilsStatic.when(() -> DPoPUtils.getTransportHeaders(mockSynCtx)).thenReturn(headers);
+            utilsStatic.when(() -> DPoPUtils.extractToken(
+                    DPOP_SCHEME + " " + ACCESS_TOKEN, DPOP_SCHEME)).thenReturn(ACCESS_TOKEN);
+            utilsStatic.when(() -> DPoPUtils.hasMultipleDPopHeaders(mockSynCtx)).thenReturn(false);
+            utilsStatic.when(() -> DPoPUtils.normalizeHtu(mockSynCtx, headers)).thenReturn(HTU);
+            utilsStatic.when(() -> DPoPUtils.removeHeader(Mockito.any(), Mockito.any()))
+                    .thenAnswer(inv -> null);
+
+            Mockito.when(mockAxis2MC.getProperty(Constants.Configuration.HTTP_METHOD)).thenReturn(HTTP_METHOD);
+            Mockito.when(mockValidator.parseDPoPProof(DPOP_PROOF)).thenReturn(mockParsed);
+            Mockito.when(mockBinder.resolveJkt(ACCESS_TOKEN)).thenReturn(null);
+            Mockito.when(mockNonceStrategy.requiresNonce(JWK_THUMBPRINT)).thenReturn(true);
+            Mockito.when(mockCache.getActiveNonce(JWK_THUMBPRINT)).thenReturn(activeNonce);
+            Mockito.when(mockValidator.validate(mockParsed, HTTP_METHOD, HTU, ACCESS_TOKEN, activeNonce))
+                    .thenReturn(mockResult);
+            Mockito.when(mockCache.isJtiFirstUse(JTI, JWK_THUMBPRINT, JTI_TTL)).thenReturn(true);
+            Mockito.doNothing().when(mockBinder).verifyBinding(null, JWK_THUMBPRINT);
+            Mockito.when(mockNonceStrategy.shouldRotate(JWK_THUMBPRINT)).thenReturn(true);
+            Mockito.when(mockCache.issueNonce(JWK_THUMBPRINT)).thenReturn(rotatedNonce);
+
+            boolean result = handler.handleRequest(mockSynCtx);
+
+            assertTrue(result);
+            Mockito.verify(mockCache).issueNonce(JWK_THUMBPRINT);
+            Mockito.verify(mockSynCtx).setProperty(DPoPConstants.DPOP_RESPONSE_NONCE_PROPERTY, rotatedNonce);
+        }
+    }
+
+    @Test
+    public void section11_3ActiveNonceWithoutStrategyRequirementShouldEnforceNonce() throws Exception {
+        // RFC 9449 §11.3: once a nonce has been issued the server must require it even
+        // if requiresNonce() returns false (e.g. between rotation intervals in a rotating strategy).
+        Map<String, String> headers = makeHeaders(
+                AUTH_HEADER, DPOP_SCHEME + " " + ACCESS_TOKEN,
+                HEADER_DPOP, DPOP_PROOF);
+        String activeNonce = "previously-issued-nonce";
+
+        DPoPProofValidator.ParsedProof mockParsed = Mockito.mock(DPoPProofValidator.ParsedProof.class);
+        Mockito.when(mockParsed.getJwkThumbprint()).thenReturn(JWK_THUMBPRINT);
+        Mockito.when(mockParsed.getKid()).thenReturn(null);
+
+        DPoPProofValidator.ValidationResult mockResult = Mockito.mock(DPoPProofValidator.ValidationResult.class);
+        Mockito.when(mockResult.getProofJkt()).thenReturn(JWK_THUMBPRINT);
+        Mockito.when(mockResult.getJti()).thenReturn(JTI);
+
+        try (MockedStatic<DPoPUtils> utilsStatic = Mockito.mockStatic(DPoPUtils.class)) {
+            utilsStatic.when(() -> DPoPUtils.getTransportHeaders(mockSynCtx)).thenReturn(headers);
+            utilsStatic.when(() -> DPoPUtils.extractToken(
+                    DPOP_SCHEME + " " + ACCESS_TOKEN, DPOP_SCHEME)).thenReturn(ACCESS_TOKEN);
+            utilsStatic.when(() -> DPoPUtils.hasMultipleDPopHeaders(mockSynCtx)).thenReturn(false);
+            utilsStatic.when(() -> DPoPUtils.normalizeHtu(mockSynCtx, headers)).thenReturn(HTU);
+            utilsStatic.when(() -> DPoPUtils.removeHeader(Mockito.any(), Mockito.any()))
+                    .thenAnswer(inv -> null);
+
+            Mockito.when(mockAxis2MC.getProperty(Constants.Configuration.HTTP_METHOD)).thenReturn(HTTP_METHOD);
+            Mockito.when(mockValidator.parseDPoPProof(DPOP_PROOF)).thenReturn(mockParsed);
+            Mockito.when(mockBinder.resolveJkt(ACCESS_TOKEN)).thenReturn(null);
+            // requiresNonce returns false (setUp default) but an active nonce exists
+            Mockito.when(mockNonceStrategy.requiresNonce(JWK_THUMBPRINT)).thenReturn(false);
+            Mockito.when(mockCache.getActiveNonce(JWK_THUMBPRINT)).thenReturn(activeNonce);
+            // validate must be called with the active nonce — §11.3 enforcement
+            Mockito.when(mockValidator.validate(mockParsed, HTTP_METHOD, HTU, ACCESS_TOKEN, activeNonce))
+                    .thenReturn(mockResult);
+            Mockito.when(mockCache.isJtiFirstUse(JTI, JWK_THUMBPRINT, JTI_TTL)).thenReturn(true);
+            Mockito.doNothing().when(mockBinder).verifyBinding(null, JWK_THUMBPRINT);
+
+            boolean result = handler.handleRequest(mockSynCtx);
+
+            assertTrue(result);
+            // The critical assertion: validate was called with the active nonce, not null
+            Mockito.verify(mockValidator).validate(mockParsed, HTTP_METHOD, HTU, ACCESS_TOKEN, activeNonce);
         }
     }
 
