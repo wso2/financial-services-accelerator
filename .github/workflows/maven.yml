@@ -17,33 +17,32 @@
 name: Build Financial Services Repository
 
 on:
-  # Triggers the workflow on pull request events but only for the main branch
+  pull_request:
+    branches:
+      - 'main'
   pull_request_target:
     branches:
       - 'main'
+    types: [opened, synchronize, reopened, labeled]
 
 jobs:
   Build-repo-check:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    env:
-      WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
-      WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      WSO2_U2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_U2_PASSWORD }}
-      WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
-      STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
-      TEST_HOME: /home/runner/work/financial-services/financial-services
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
       - name: Set up Adopt JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v5
         with:
           java-version: 11.0.25+9
           distribution: 'temurin'
       - name: Set up Node 16
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v5
         with:
           node-version: 16
       - name: Cache local Maven repository
@@ -86,7 +85,102 @@ jobs:
           mvn -B install --file pom.xml
 
       - name: Set up Adopt JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: "adopt"
+      - name: Build with Maven using JDK 17
+        run: |
+          export MAVEN_OPTS="-Xmx4g"
+          mvn -B install --file pom.xml
+
+  Reset-integration-label-on-push:
+    if: >
+      github.event_name == 'pull_request_target' &&
+      (github.event.action == 'synchronize' || github.event.action == 'reopened')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Remove stale Action/trigger-integration-tests label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          error_output=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/Action%2Ftrigger-integration-tests" \
+            -X DELETE 2>&1)
+          exit_code=$?
+          set -e
+          if [ $exit_code -ne 0 ] && ! echo "$error_output" | grep -qi "404\|not found"; then
+            echo "$error_output" >&2
+            exit $exit_code
+          fi
+
+  Integration-test-suite:
+    if: >
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'Action/trigger-integration-tests'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
+          persist-credentials: false
+      - name: Set up Adopt JDK 11
+        uses: actions/setup-java@v5
+        with:
+          java-version: 11.0.25+9
+          distribution: 'temurin'
+      - name: Set up Node 16
+        uses: actions/setup-node@v5
+        with:
+          node-version: 16
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Setup Maven settings.xml
+        uses: whelk-io/maven-settings-xml-action@v11
+        with:
+          mirrors: >
+            [
+              {
+                "id": "wso2-nexus",
+                "mirrorOf": "wso2-nexus",
+                "url": "http://maven.wso2.org/nexus/content/groups/wso2-public/"
+              },
+              {
+                "id": "wso2.releases",
+                "mirrorOf": "wso2.releases",
+                "url": "http://maven.wso2.org/nexus/content/repositories/releases/"
+              },
+              {
+                "id": "wso2.snapshots",
+                "mirrorOf": "wso2.snapshots",
+                "url": "http://maven.wso2.org/nexus/content/repositories/snapshots/"
+              },
+              {
+                "id": "knopflerfish",
+                "mirrorOf": "knopflerfish",
+                "url": "http://resources.knopflerfish.org/repo/maven2/release"
+              }
+            ]
+      - name: Build with Maven using JDK 11
+        run: |
+          export MAVEN_OPTS="-Xmx4g"
+          mvn -B install --file pom.xml
+
+      - name: Set up Adopt JDK 17
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "adopt"
@@ -95,6 +189,13 @@ jobs:
           export MAVEN_OPTS="-Xmx4g"
           mvn -B install --file pom.xml
       - name: Running the integration test suite
+        env:
+          WSO2_USERNAME: ${{ secrets.SOLUTIONS_BOT_EMAIL }}
+          WSO2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+          WSO2_U2_PASSWORD: ${{ secrets.SOLUTIONS_BOT_U2_PASSWORD }}
+          WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE: ${{ secrets.WSO2_UPDATE_LINUX_DECRYPTION_PASSPHRASE }}
+          STMP_ROOT_PASSWORD: ${{ secrets.SOLUTIONS_BOT_PASSWORD }}
+          TEST_HOME: /home/runner/work/financial-services/financial-services
         run: |
           echo "Starting tests..."
           export MAVEN_OPTS="-Xmx4g"
