@@ -24,7 +24,7 @@
 </div>
 
 
-<script src="libs/bootstrap_3.4.1/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-5.3.8-dist/js/bootstrap.min.js"></script>
 <jsp:include page="footer.jsp"/>
 </body>
 </html>
