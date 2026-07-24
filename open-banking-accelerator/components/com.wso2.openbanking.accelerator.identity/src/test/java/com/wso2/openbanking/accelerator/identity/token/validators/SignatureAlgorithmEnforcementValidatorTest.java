@@ -52,8 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.testng.Assert.assertEquals;
 
-@PrepareForTest({IdentityCommonUtil.class, OAuthServerConfiguration.class,
-        SignatureAlgorithmEnforcementValidator.class})
+@PrepareForTest({IdentityCommonUtil.class, OAuthServerConfiguration.class})
 @PowerMockIgnore({"jdk.internal.reflect.*"})
 public class SignatureAlgorithmEnforcementValidatorTest extends PowerMockTestCase {
 
@@ -262,9 +261,9 @@ public class SignatureAlgorithmEnforcementValidatorTest extends PowerMockTestCas
 
         IdentityCommonHelper mockedHelper = Mockito.mock(IdentityCommonHelper.class);
         Mockito.when(mockedHelper.getCertificateContent(clientId)).thenThrow(clientNotFoundException);
-        PowerMockito.whenNew(IdentityCommonHelper.class).withNoArguments().thenReturn(mockedHelper);
 
-        SignatureAlgorithmEnforcementValidator validator = new SignatureAlgorithmEnforcementValidator();
+        SignatureAlgorithmEnforcementValidator validator = Mockito.spy(SignatureAlgorithmEnforcementValidator.class);
+        Mockito.doReturn(mockedHelper).when(validator).getIdentityCommonHelper();
 
         try {
             validator.getRegisteredSigningAlgorithm(clientId);
