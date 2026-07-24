@@ -26,6 +26,14 @@
             <class name="org.wso2.financial.services.accelerator.gateway.executor.impl.error.handling.DefaultErrorHandlingExecutorTest" />
             <class name="org.wso2.financial.services.accelerator.gateway.executor.impl.dcr.DCRExecutorTest" />
             <class name="org.wso2.financial.services.accelerator.gateway.util.GatewayUtilsTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.nonce.NonceStrategyTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.proof.DPoPProofValidatorTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.binding.AccessTokenBinderTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.cache.LocalDPoPCacheProviderTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.util.DPoPUtilsTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.util.ChallengeTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.binding.IntrospectionClientTest"/>
+            <class name="org.wso2.financial.services.accelerator.gateway.dpop.DPoPHandlerTest"/>
         </classes>
     </test>
 </suite>
