@@ -42,14 +42,14 @@
     Map<String, List<String>> consentData = (Map<String, List<String>>) session.getAttribute("configParamsMap");
     session.setAttribute("configParamsMap", consentData);
 %>
-<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 data-container">
+<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
     <div class="clearfix"></div>
     <form action="${pageContext.request.contextPath}/oauth2_authz_confirm.do" method="post" id="oauth2_authz_confirm"
           name="oauth2_authz_confirm" class="form-horizontal">
         <div class="login-form">
             <div class="form-group ui form">
                 <div class="col-md-12 ui box">
-                    <h3 class="ui header"><strong><%=appName%>
+                    <h3 class="ui header" style="font-weight: normal;"><strong><%=appName%>
                     </strong> requests account details on your account.</h3>
                     <h4 class="section-heading-5 ui subheading">Data requested:</h4>
 

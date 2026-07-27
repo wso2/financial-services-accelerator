@@ -23,15 +23,15 @@
 <%
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
 %>
-<div class="row data-container">
+<div class="row">
     <div class="clearfix"></div>
     <form action="${pageContext.request.contextPath}/oauth2_authz_consent.do" method="post" id="oauth2_authz_consent"
           name="oauth2_authz_consent"
           class="form-horizontal">
         <div class="login-form">
             <div class="form-group ui form">
-                <div class="col-md-12 ui box">
-                    <h3 class="ui header"><strong>${app}
+                <div class="col-md-12 ui" style="padding:25px">
+                    <h3 class="ui header" style="font-weight: normal;"><strong>${app}
                     </strong> requests account details on your account.
                     </h3>
                 </div>
