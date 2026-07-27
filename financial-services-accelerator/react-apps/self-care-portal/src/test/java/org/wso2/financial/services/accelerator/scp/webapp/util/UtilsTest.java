@@ -83,6 +83,7 @@ public class UtilsTest {
     public void tearDown() {
         // Close the mocked static
         mockedStatic.close();
+        configParser.close();
     }
 
     @Test(description = "if valid request sent, return json response")
