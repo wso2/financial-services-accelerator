@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.test.framework
 
 import com.nimbusds.jwt.JWT
 import org.json.JSONObject
+import org.openqa.selenium.JavascriptExecutor
 import org.testng.Assert
 import org.wso2.bfsi.test.framework.CommonTest
 import org.wso2.bfsi.test.framework.automation.WaitForRedirectAutomationStep
@@ -743,7 +744,7 @@ class FSConnectorTest extends CommonTest{
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
-                    btnApprove.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnApprove)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -777,7 +778,7 @@ class FSConnectorTest extends CommonTest{
 
                     WebElement btnConfirm = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_DENY)))
-                    btnConfirm.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnConfirm)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -1003,7 +1004,7 @@ class FSConnectorTest extends CommonTest{
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
-                    btnApprove.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnApprove)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -1153,7 +1154,7 @@ class FSConnectorTest extends CommonTest{
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
-                    btnApprove.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnApprove)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
