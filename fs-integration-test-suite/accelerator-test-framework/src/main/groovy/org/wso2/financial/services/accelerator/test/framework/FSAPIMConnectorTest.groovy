@@ -24,6 +24,7 @@ import io.restassured.specification.RequestSpecification
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.openqa.selenium.By
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -193,7 +194,7 @@ class FSAPIMConnectorTest extends CommonTest{
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
-                    btnApprove.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnApprove)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -227,7 +228,7 @@ class FSAPIMConnectorTest extends CommonTest{
 
                     WebElement btnConfirm = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_DENY)))
-                    btnConfirm.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnConfirm)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -305,7 +306,7 @@ class FSAPIMConnectorTest extends CommonTest{
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.SUBMIT_XPATH)))
-                    btnApprove.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnApprove)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -420,7 +421,7 @@ class FSAPIMConnectorTest extends CommonTest{
 
                     WebElement btnconfirm = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.SUBMIT_XPATH)))
-                    btnconfirm.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnconfirm)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
@@ -695,7 +696,7 @@ class FSAPIMConnectorTest extends CommonTest{
 
                     WebElement btnConfirm = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_DENY)))
-                    btnConfirm.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnConfirm)
                 }
                 .execute()
 
@@ -725,7 +726,7 @@ class FSAPIMConnectorTest extends CommonTest{
                     }
                     WebElement btnConfirm = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_DENY)))
-                    btnConfirm.click()
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnConfirm)
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
