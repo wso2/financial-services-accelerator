@@ -75,6 +75,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }
+
         try {
             if (isPreInitiatedConsentFlow) {
 
@@ -153,7 +154,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
                     e.getMessage().replaceAll("\n\r", ""), consentData.getState());
         } catch (ConsentManagementException e) {
             throw new ConsentException(consentData.getRedirectURI(), AuthErrorCode.SERVER_ERROR,
-                    "Exception occurred while getting consent data", consentData.getState());
+                    e.getMessage(), consentData.getState());
         }
     }
 
