@@ -1,0 +1,50 @@
+{
+  "dbHost": "mysql-db",
+  "dbUser": "root",
+  "dbPass": "<db-password>",
+  "dbName": "fs_consentdb",
+
+  "isHost": "https://obiam:9446",
+  "apimHost": "https://obam:8243",
+
+  "consentAdminUser": "is_admin@wso2.com",
+  "consentAdminPassword": "<admin-password>",
+
+  "fapiFinancialId": "open-bank",
+  "aispContext": "/open-banking/v3.1/aisp",
+  "pispContext": "/open-banking/v3.1/pisp",
+
+  "clientPrivateKey": "<PKCS8-PEM-signing-private-key>",
+  "clientKeyId": "<signing-key-kid>",
+  "clientSecret": "",
+  "redirectUri": "",
+
+  "dcrSoftwareStatement": "<SSA-JWT>",
+  "dcrSoftwareId": "<software-id-from-SSA>",
+  "dcrRedirectUri": "https://www.google.com/redirects/redirect1",
+
+  "transportCertPem": "<OB-transport-certificate-PEM>",
+  "transportKeyPem": "<OB-transport-private-key-PEM>",
+
+  "testUserId": "psu@wso2.com",
+  "testUserPass": "<psu-password>",
+  "testAccountIds": ["ACC00000001", "ACC00000002"],
+
+  "searchUserId": "psu@wso2.com",
+  "searchLimit": 10,
+  "searchConsentId": "",
+  "searchDeepOffset": 200,
+  "searchLargeLimit": 200,
+
+  "peakVUs": 50,
+  "warmupDuration": "1m",
+  "steadyDuration": "10m",
+  "rampDownDuration": "1m",
+
+  "_comment_auto": "Fields below are written automatically by setup scripts — do not fill in manually.",
+  "clientId": "",
+  "mtlsClientId": "",
+  "applicationUserToken": "",
+  "applicationUserTokenExp": 0,
+  "applicationUserConsentId": ""
+}
