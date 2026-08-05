@@ -21,7 +21,9 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.common;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementRuntimeException;
 import org.wso2.financial.services.accelerator.common.util.Generated;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -85,8 +87,8 @@ public class ConsentExtensionUtils {
 
     /**
      * Validate whether the date is a valid ISO 8601 format.
-     * @param dateValue
-     * @return
+     * @param dateValue Date value to validate
+     * @return Whether the date value is in valid ISO 8601 format
      */
     public static boolean isValid8601(String dateValue) {
         try {
@@ -156,5 +158,52 @@ public class ConsentExtensionUtils {
             //Throwing a runtime exception since we cannot proceed with invalid objects
             throw new ConsentManagementRuntimeException("Defined class" + classpath + "cannot be instantiated.", e);
         }
+    }
+
+    /**
+     * Map the error code to the response status.
+     * @param errorCode Error code to be mapped
+     * @return Mapped response status
+     */
+    public static ResponseStatus mapToResponseStatus(ErrorConstants.ConsentMgtErrorCodes errorCode) {
+        switch (errorCode) {
+            case NOT_FOUND:
+                return ResponseStatus.NOT_FOUND;
+            case BAD_REQUEST:
+                return ResponseStatus.BAD_REQUEST;
+            default:
+                return ResponseStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
+
+    /**
+     * Build a ConsentException from a ConsentManagementException, mapping its error code to the
+     * corresponding response status and carrying over its message.
+     * @param e ConsentManagementException to convert
+     * @return Equivalent ConsentException
+     */
+    public static ConsentException toConsentException(ConsentManagementException e) {
+        return new ConsentException(mapToResponseStatus(e.getErrorCode()), e.getMessage());
+    }
+
+    /**
+     * Build a ConsentException from a ConsentManagementException, mapping its error code to the
+     * corresponding response status and tagging it with the given consent operation.
+     * @param e         ConsentManagementException to convert
+     * @param operation Consent operation to tag the resulting exception with
+     * @return Equivalent ConsentException
+     */
+    public static ConsentException toConsentException(ConsentManagementException e, ConsentOperationEnum operation) {
+        return new ConsentException(mapToResponseStatus(e.getErrorCode()), e.getMessage(), operation);
+    }
+
+    /**
+     * Build a ConsentException from a ConsentManagementException, mapping its error code to the
+     * corresponding response status and preserving it as the cause.
+     * @param e ConsentManagementException to convert
+     * @return Equivalent ConsentException with the original exception set as its cause
+     */
+    public static ConsentException toConsentExceptionWithCause(ConsentManagementException e) {
+        return new ConsentException(mapToResponseStatus(e.getErrorCode()), e.getMessage(), e);
     }
 }
