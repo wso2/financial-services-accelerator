@@ -80,12 +80,31 @@ function pctChange(base, ext) {
   return ((ext - base) / base) * 100;
 }
 
+// Error-rate delta: use absolute point difference so a 0 % baseline that gains
+// errors is never silently reported as '-'. Returns an object { abs, pct } where
+// pct is null when base is 0 (percentage change is undefined).
+function errChange(base, ext) {
+  if (base == null || ext == null) return null;
+  return { abs: ext - base, pct: base === 0 ? null : ((ext - base) / base) * 100 };
+}
+
 function fmt(n, digits = 1) { return n == null ? '-' : n.toFixed(digits); }
 function fmtPct(n) {
   if (n == null) return '-';
   const sign = n > 0 ? '+' : '';
   const arrow = n > 5 ? ' ▲' : n < -5 ? ' ▼' : '';
   return `${sign}${n.toFixed(1)}%${arrow}`;
+}
+function fmtErrDelta(delta) {
+  if (delta == null) return '-';
+  const abs  = delta.abs;
+  const sign = abs > 0 ? '+' : '';
+  if (delta.pct == null) {
+    // baseline was 0 % — show absolute point change with a "new" marker
+    return abs === 0 ? '±0pp' : `${sign}${abs.toFixed(2)}pp ⚠ new`;
+  }
+  const arrow = abs > 0.5 ? ' ▲' : abs < -0.5 ? ' ▼' : '';
+  return `${sign}${abs.toFixed(2)}pp (${fmtPct(delta.pct)})${arrow}`;
 }
 
 // Build rows — only endpoints present in at least one summary
@@ -97,10 +116,10 @@ const rows = ENDPOINTS.map((e) => {
     ...e,
     base: b,
     ext:  x,
-    p95Delta:   pctChange(b?.p95,    x?.p95),
-    p99Delta:   pctChange(b?.p99,    x?.p99),
-    avgDelta:   pctChange(b?.avg,    x?.avg),
-    errDelta:   pctChange(b?.errRate, x?.errRate),
+    p95Delta:   pctChange(b?.p95,     x?.p95),
+    p99Delta:   pctChange(b?.p99,     x?.p99),
+    avgDelta:   pctChange(b?.avg,     x?.avg),
+    errDelta:   errChange(b?.errRate, x?.errRate),
   };
 }).filter(Boolean);
 
@@ -148,7 +167,7 @@ console.log('|---|---|---|---|');
 rows.forEach((r) => {
   const bErr = r.base?.errRate != null ? `${r.base.errRate.toFixed(2)}%` : '-';
   const xErr = r.ext?.errRate  != null ? `${r.ext.errRate.toFixed(2)}%`  : '-';
-  console.log(`| ${r.name} | ${bErr} | ${xErr} | ${fmtPct(r.errDelta)} |`);
+  console.log(`| ${r.name} | ${bErr} | ${xErr} | ${fmtErrDelta(r.errDelta)} |`);
 });
 
 // ---------------------------------------------------------------------------

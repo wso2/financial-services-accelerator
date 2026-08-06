@@ -111,6 +111,7 @@ function toSecs(str) {
     if (match[2] === 's')  total += n;
     if (match[2] === 'ms') total += n / 1000;
   }
+  if (total === 0) throw new Error(`toSecs: could not parse duration "${str}" — check warmupDuration/steadyDuration/rampDownDuration in test-config.json`);
   return total;
 }
 

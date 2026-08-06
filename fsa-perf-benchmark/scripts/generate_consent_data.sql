@@ -221,7 +221,7 @@ BEGIN
                             'InstructionIdentification', CONCAT('INSTR', LPAD(v_i, 12, '0')),
                             'EndToEndIdentification',    CONCAT('E2E',   LPAD(v_i, 12, '0')),
                             'InstructedAmount', JSON_OBJECT(
-                                'Amount',   FORMAT(10.00 + MOD(v_i, 9990), 2),
+                                'Amount',   CONCAT(10 + MOD(v_i, 9990), '.00'),
                                 'Currency', 'GBP'
                             ),
                             'CreditorAccount', JSON_OBJECT(

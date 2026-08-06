@@ -14,7 +14,7 @@ import { safeJson } from '../lib/safe-json.js';
 
 export function getAccounts() {
   const token = config.applicationUserToken;
-  if (!token) return;
+  if (!token) { check(null, { 'accounts: APPLICATION_USER token configured': () => false }); return; }
   const hdrs = { ...authHeader(token), 'Accept': 'application/json', 'x-fapi-interaction-id': `${Date.now()}` };
   const res = http.get(`${config.apimHost}${config.aispContext}/accounts`, {
     headers: hdrs,
@@ -25,7 +25,7 @@ export function getAccounts() {
 
 export function getBalances() {
   const token = config.applicationUserToken;
-  if (!token) return;
+  if (!token) { check(null, { 'balances: APPLICATION_USER token configured': () => false }); return; }
   const hdrs = { ...authHeader(token), 'Accept': 'application/json', 'x-fapi-interaction-id': `${Date.now()}` };
   // Fetch accountId silently — excluded from metrics
   const setupRes = http.get(`${config.apimHost}${config.aispContext}/accounts`, {
@@ -43,7 +43,7 @@ export function getBalances() {
 
 export function getTransactions() {
   const token = config.applicationUserToken;
-  if (!token) return;
+  if (!token) { check(null, { 'transactions: APPLICATION_USER token configured': () => false }); return; }
   const hdrs = { ...authHeader(token), 'Accept': 'application/json', 'x-fapi-interaction-id': `${Date.now()}` };
   // Fetch accountId silently — excluded from metrics
   const setupRes = http.get(`${config.apimHost}${config.aispContext}/accounts`, {
@@ -65,7 +65,7 @@ export function getTransactions() {
 
 export function accountsFlow() {
   const token = config.applicationUserToken;
-  if (!token) return;
+  if (!token) { check(null, { 'accounts flow: APPLICATION_USER token configured': () => false }); return; }
   const headers = { ...authHeader(token), 'Accept': 'application/json', 'x-fapi-interaction-id': `${Date.now()}` };
 
   const accountsRes = http.get(`${config.apimHost}${config.aispContext}/accounts`, {

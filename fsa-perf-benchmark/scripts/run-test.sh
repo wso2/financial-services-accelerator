@@ -106,6 +106,7 @@ case "$TEST" in
 esac
 
 cd "$ROOT"
+mkdir -p results
 
 # Apply optional scenario filter (second argument)
 if [ -n "$SCENARIO_FILTER" ] && [ "${#SCENARIOS[@]}" -gt 0 ]; then
@@ -141,8 +142,14 @@ wait_for_healthy() {
   if echo "$CONTAINERS" | grep -q "obiam"; then
     echo "    Waiting for IS (obiam)..."
     docker exec obiam bash -c "
+      attempts=0
       until curl -sk https://localhost:9446/api/health \
              -o /dev/null -w '%{http_code}' | grep -qE '^[2345][0-9][0-9]$'; do
+        attempts=\$((attempts + 1))
+        if [ \$attempts -ge 36 ]; then
+          echo 'ERROR: IS (obiam) did not become healthy after 3 minutes.' >&2
+          exit 1
+        fi
         sleep 5
       done
     "
@@ -152,18 +159,30 @@ wait_for_healthy() {
   if echo "$CONTAINERS" | grep -q "obam"; then
     echo "    Waiting for APIM (obam) management plane..."
     docker exec obam bash -c "
+      attempts=0
       until wget -qSO /dev/null \
              'http://localhost:9763/api/am/publisher/v4/apis?limit=1' 2>&1 \
              | grep -q 'HTTP/'; do
+        attempts=\$((attempts + 1))
+        if [ \$attempts -ge 36 ]; then
+          echo 'ERROR: APIM (obam) management plane did not become healthy after 3 minutes.' >&2
+          exit 1
+        fi
         sleep 5
       done
     "
     echo "    APIM management plane is ready."
     echo "    Waiting for APIM gateway APIs to load (DCR endpoint)..."
+    attempts=0
     until [ "$(curl -sk -o /dev/null -w '%{http_code}' \
                "https://obam:8243/open-banking/v3.3.0/register" \
                -H 'Content-Type: application/json' \
                -d '{}')" != "404" ]; do
+      attempts=$((attempts + 1))
+      if [ $attempts -ge 30 ]; then
+        echo "ERROR: APIM gateway DCR endpoint did not load after 5 minutes." >&2
+        exit 1
+      fi
       sleep 10
     done
     echo "    APIM gateway is ready."
@@ -316,7 +335,8 @@ else
   echo "==> [5/5] Running measured test: $K6_FILE"
   k6 run --insecure-skip-tls-verify \
          --summary-export="$SUMMARY" \
-         "$K6_FILE"
+         "$K6_FILE" \
+    || true   # threshold failures don't abort before the report step
 fi
 
 # ---------------------------------------------------------------------------

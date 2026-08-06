@@ -198,6 +198,10 @@ async function main() {
 
   // ── Step 2: Create account access consent ─────────────────────────────────
   console.log('[user-auth] Step 2: Creating account access consent...');
+  function isoDateOffset(days) {
+    const d = new Date(Date.now() + days * 86400000);
+    return d.toISOString().replace(/\.\d{3}Z$/, '+00:00');
+  }
   const consentPayload = JSON.stringify({
     Data: {
       Permissions: [
@@ -206,9 +210,9 @@ async function main() {
         'ReadBalances',
         'ReadTransactionsDetail',
       ],
-      ExpirationDateTime: '2026-12-31T00:00:00+00:00',
-      TransactionFromDateTime: '2016-01-01T00:00:00+00:00',
-      TransactionToDateTime:   '2026-12-31T00:00:00+00:00',
+      ExpirationDateTime:      isoDateOffset(365),
+      TransactionFromDateTime: isoDateOffset(-3650),
+      TransactionToDateTime:   isoDateOffset(365),
     },
     Risk: {},
   });

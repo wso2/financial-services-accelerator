@@ -59,10 +59,7 @@ async function buildClientAssertion() {
     inputBytes,
   );
 
-  const sigBytes = new Uint8Array(sigBuffer);
-  let binary = '';
-  for (let i = 0; i < sigBytes.length; i++) binary += String.fromCharCode(sigBytes[i]);
-  return `${signingInput}.${encoding.b64encode(binary, 'rawurl')}`;
+  return `${signingInput}.${encoding.b64encode(sigBuffer, 'rawurl')}`;
 }
 
 // ---------------------------------------------------------------------------

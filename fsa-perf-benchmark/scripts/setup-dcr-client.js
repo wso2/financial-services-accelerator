@@ -76,7 +76,7 @@ async function main() {
 
   const searchRes = await httpsRequest(
     'GET',
-    `${isHost}/api/server/v1/applications?filter=name+eq+${softwareId}&limit=1`,
+    `${isHost}/api/server/v1/applications?filter=name+eq+${encodeURIComponent(softwareId)}&limit=1`,
     null,
     { Authorization: adminAuth, Accept: 'application/json' },
     certPem, keyPem,
@@ -181,7 +181,7 @@ async function main() {
 
   const searchRes2 = await httpsRequest(
     'GET',
-    `${isHost}/api/server/v1/applications?filter=name+eq+${softwareId}&limit=1`,
+    `${isHost}/api/server/v1/applications?filter=name+eq+${encodeURIComponent(softwareId)}&limit=1`,
     null,
     { Authorization: adminAuth, Accept: 'application/json' },
     certPem, keyPem,

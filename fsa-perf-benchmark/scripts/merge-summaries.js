@@ -22,6 +22,12 @@ if (files.length === 0) {
 
 const summaries = files.map(f => JSON.parse(fs.readFileSync(f, 'utf8')));
 
+// Sum each scenario's testRunDurationMs so html-report.js uses the correct
+// total elapsed time rather than deriving a spurious duration from count/rate.
+const totalDurationMs = summaries.reduce(
+  (s, summary) => s + (summary.state?.testRunDurationMs || 0), 0
+);
+
 // ---------------------------------------------------------------------------
 // Merge helpers
 // ---------------------------------------------------------------------------
@@ -52,13 +58,19 @@ function mergeRate(metrics) {
 
 function mergeCounter(metrics) {
   const count = metrics.reduce((s, m) => s + (m.count || 0), 0);
-  const rate  = metrics.reduce((s, m) => s + (m.rate  || 0), 0);
+  // Derive rate from the summed scenario durations so throughput reflects the
+  // full sequential test wall-clock time, not a sum of per-run rates which
+  // would produce a nonsense value (each rate was already divided by its own
+  // run duration).
+  const rate = totalDurationMs > 0
+    ? count / (totalDurationMs / 1000)
+    : metrics.reduce((s, m) => s + (m.rate || 0), 0);
   return { count, rate };
 }
 
 function mergeGauge(metrics) {
   return {
-    value: metrics[metrics.length - 1].value ?? 0,
+    value: Math.max(...metrics.map(m => m.value ?? 0)),
     min:   Math.min(...metrics.map(m => m.min ?? Infinity)),
     max:   Math.max(...metrics.map(m => m.max ?? 0)),
   };
@@ -83,8 +95,12 @@ summaries.forEach(s => Object.keys(s.metrics || {}).forEach(k => allKeys.add(k))
 const merged = {};
 
 for (const key of allKeys) {
-  const samples = summaries.map(s => s.metrics?.[key]).filter(Boolean);
-  if (samples.length === 0) continue;
+  const rawSamples = summaries.map(s => s.metrics?.[key]).filter(Boolean);
+  if (rawSamples.length === 0) continue;
+
+  // --summary-export wraps stats in a nested .values object; normalize so
+  // the type predicates and merge functions always see flat stat objects.
+  const samples = rawSamples.map(m => m.values || m);
 
   const first = samples[0];
   let result;
@@ -93,10 +109,13 @@ for (const key of allKeys) {
   else if (isRate(first))    result = mergeRate(samples);
   else if (isCounter(first)) result = mergeCounter(samples);
   else if (isGauge(first))   result = mergeGauge(samples);
-  else                       result = { ...first }; // fallback: keep first
+  else {
+    process.stderr.write(`merge-summaries: unknown metric shape for "${key}", keeping first file's data\n`);
+    result = { ...first };
+  }
 
-  // Merge thresholds: a threshold fails if it failed in any run
-  const thresholdMaps = samples.map(m => m.thresholds).filter(Boolean);
+  // Thresholds live on the raw metric object, not inside .values.
+  const thresholdMaps = rawSamples.map(m => m.thresholds).filter(Boolean);
   if (thresholdMaps.length > 0) {
     const thresholds = {};
     for (const t of thresholdMaps) {
@@ -114,5 +133,6 @@ for (const key of allKeys) {
 // Output
 // ---------------------------------------------------------------------------
 
-const output = { metrics: merged, root_group: summaries[0].root_group || {} };
+const state = totalDurationMs > 0 ? { testRunDurationMs: totalDurationMs } : {};
+const output = { metrics: merged, state, root_group: summaries[0].root_group || {} };
 process.stdout.write(JSON.stringify(output, null, 2) + '\n');

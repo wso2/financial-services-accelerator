@@ -64,7 +64,7 @@ export function revokeAccountConsent(consentId) {
 }
 
 export function searchConsents() {
-  const url = `${config.isHost}/api/fs/consent/admin/search?limit=25&clientId=${config.clientId}`;
+  const url = `${config.isHost}/api/fs/consent/admin/search?limit=25&clientIds=${encodeURIComponent(config.clientId)}`;
   const res = http.get(url, { headers: headers(), tags: { name: 'IS_SearchConsents' } });
   check(res, { 'search consents: status 200': (r) => r.status === 200 });
 }

@@ -78,7 +78,16 @@ function qs(params) {
     .join('&');
 }
 
-function search(params, tag) {
+function search(params, tag, required) {
+  if (required) {
+    for (const key of required) {
+      const v = params[key];
+      if (v === null || v === undefined || v === '' || v === 0) {
+        check(null, { [`${tag}: required param '${key}' configured`]: () => false });
+        return;
+      }
+    }
+  }
   const res = http.get(
     `${config.isHost}/api/fs/consent/admin/search?${qs(params)}`,
     { headers: headers(), tags: { name: tag } },
@@ -241,7 +250,7 @@ export function searchByUserId() {
     userIds:         config.searchUserId,
     limit:  config.searchLimit,
     offset: 0,
-  }, 'IS_ByUserId');
+  }, 'IS_ByUserId', ['userIds']);
   sleep(0.5);
 }
 
@@ -295,7 +304,7 @@ export function searchDeepPagination() {
     consentStatuses: AUTHORISED,
     limit:           config.searchLimit,
     offset:          config.searchDeepOffset,
-  }, 'IS_DeepPagination');
+  }, 'IS_DeepPagination', ['offset']);
   sleep(0.5);
 }
 
@@ -313,6 +322,6 @@ export function searchLargePageSize() {
     toTime:   TIME.now,
     limit:    config.searchLargeLimit,
     offset:   0,
-  }, 'IS_LargePageSize');
+  }, 'IS_LargePageSize', ['limit']);
   sleep(0.5);
 }
