@@ -156,6 +156,7 @@ public class OAuthService {
         cookie.setSecure(true);
         cookie.setMaxAge(maxAge);
         cookie.setPath(path);
+        cookie.setHttpOnly(true);
 
         resp.addCookie(cookie);
     }
