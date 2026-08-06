@@ -602,6 +602,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         ConsentOperationEnum.CONSENT_FILE_UPLOAD);
             }
 
+            if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
+                        ConsentOperationEnum.CONSENT_FILE_UPLOAD);
+            }
+
             Object fileFromRequest = consentManageData.getPayload();
             if (!(fileFromRequest instanceof String)) {
                 log.error("Invalid file content found in the request.");
