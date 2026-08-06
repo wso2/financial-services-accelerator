@@ -10,7 +10,7 @@
 #   ./scripts/run-comparison.sh baseline  is-crud
 #   # ...toggle the extension on/off, restart containers, re-seed data...
 #   ./scripts/run-comparison.sh extended  is-crud
-#   node results/compare-variants.js \
+#   node scripts/compare-variants.js \
 #        results/comparison/baseline-is-crud.json \
 #        results/comparison/extended-is-crud.json
 #
@@ -30,6 +30,11 @@ set -euo pipefail
 
 VARIANT="${1:?usage: run-comparison.sh <baseline|extended> <is-crud|apim-crud|dcr-latency|is-search>}"
 SUITE="${2:?usage: run-comparison.sh <baseline|extended> <is-crud|apim-crud|dcr-latency|is-search>}"
+
+case "$VARIANT" in
+  baseline|extended) ;;
+  *) echo "unknown variant '$VARIANT' - expected baseline or extended" >&2; exit 1 ;;
+esac
 COOLDOWN="${COOLDOWN_SECONDS:-60}"
 
 RUN_ID="${RUN_ID:-$(git rev-parse --short HEAD 2>/dev/null || date +%Y%m%d%H%M%S)}"
@@ -61,6 +66,6 @@ k6 run --insecure-skip-tls-verify \
 echo ""
 echo "Done: $SUMMARY"
 echo "Once both variants have been run, compare them with:"
-echo "  node results/compare-variants.js \\"
+echo "  node scripts/compare-variants.js \\"
 echo "       results/comparison/baseline-${SUITE}.json \\"
 echo "       results/comparison/extended-${SUITE}.json"
