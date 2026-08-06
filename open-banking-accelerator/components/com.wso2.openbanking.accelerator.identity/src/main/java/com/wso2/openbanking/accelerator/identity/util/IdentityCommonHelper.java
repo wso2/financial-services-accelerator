@@ -40,6 +40,7 @@ import org.wso2.carbon.identity.oauth2.bean.OAuthClientAuthnContext;
 import org.wso2.carbon.identity.oauth2.dao.OAuthTokenPersistenceFactory;
 import org.wso2.carbon.identity.oauth2.dto.OAuthRevocationRequestDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuthRevocationResponseDTO;
+import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
@@ -243,8 +244,8 @@ public class IdentityCommonHelper {
             return;
         }
 
-        Set<String> activeTokens = OAuthTokenPersistenceFactory.getInstance().getAccessTokenDAO()
-                .getActiveTokensByConsumerKey(clientId);
+        Set<AccessTokenDO> activeTokens = OAuthTokenPersistenceFactory.getInstance().getAccessTokenDAO()
+                .getActiveAcessTokenDataByConsumerKey(clientId);
         if (!activeTokens.isEmpty()) {
             OAuthClientAuthnContext oAuthClientAuthnContext = new OAuthClientAuthnContext();
             oAuthClientAuthnContext.setAuthenticated(true);
@@ -255,15 +256,18 @@ public class IdentityCommonHelper {
             revocationRequestDTO.setConsumerKey(clientId);
             revocationRequestDTO.setTokenType(GrantType.REFRESH_TOKEN.toString());
 
-            for (String accessToken : activeTokens) {
-                revocationRequestDTO.setToken(accessToken);
-                OAuthRevocationResponseDTO oAuthRevocationResponseDTO =  IdentityExtensionsDataHolder.getInstance()
-                        .getOAuth2Service().revokeTokenByOAuthClient(revocationRequestDTO);
+            for (AccessTokenDO accessToken : activeTokens) {
+                if (accessToken.getRefreshToken() != null) {
 
-                if (oAuthRevocationResponseDTO.isError()) {
-                    throw new IdentityOAuth2Exception(
-                            String.format("Error occurred while revoking access tokens for clientId: %s. Caused by, %s",
-                                    clientId, oAuthRevocationResponseDTO.getErrorMsg()));
+                    revocationRequestDTO.setToken(accessToken.getRefreshToken());
+                    OAuthRevocationResponseDTO oAuthRevocationResponseDTO = IdentityExtensionsDataHolder.getInstance()
+                            .getOAuth2Service().revokeTokenByOAuthClient(revocationRequestDTO);
+
+                    if (oAuthRevocationResponseDTO.isError()) {
+                        throw new IdentityOAuth2Exception(
+                                String.format("Error occurred while revoking access tokens for clientId: %s. " +
+                                        "Caused by, %s", clientId, oAuthRevocationResponseDTO.getErrorMsg()));
+                    }
                 }
             }
         }
