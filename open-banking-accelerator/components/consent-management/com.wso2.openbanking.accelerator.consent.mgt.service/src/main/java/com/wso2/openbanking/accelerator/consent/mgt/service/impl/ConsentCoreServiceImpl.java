@@ -565,6 +565,133 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
         }
     }
 
+    /**
+     * This method is used to revoke existing consents for the given clientID, userID, consent types and statuses
+     * combination. Also revokes the tokens related to the consents which are revoked if the flag
+     * 'shouldRevokeTokens' is true. If the userID is null then consents related to all the users are revoked.
+     *
+     * @param clientID ID of the client
+     * @param userID ID of the user
+     * @param consentTypes list of consent types
+     * @param applicableStatusesToRevoke list of statuses that a consent should have for revoking
+     * @param revokedConsentStatus the status should be updated the consent with after revoking
+     * @return returns true if successful
+     * @throws ConsentManagementException thrown if an error occurs in the process
+     */
+    @Override
+    public boolean revokeExistingApplicableConsents(String clientID, String userID, List<String> consentTypes,
+                                                    List<String> applicableStatusesToRevoke,
+                                                    String revokedConsentStatus, boolean shouldRevokeTokens)
+            throws ConsentManagementException {
+
+        if (StringUtils.isBlank(clientID) || StringUtils.isBlank(revokedConsentStatus)
+                || CollectionUtils.isEmpty(applicableStatusesToRevoke) || CollectionUtils.isEmpty(consentTypes)) {
+            log.error("Client ID, new consent status, consent types or applicable consent statuses to revoke is" +
+                    " missing, cannot proceed");
+            throw new ConsentManagementException("Client ID, new consent status, consent types or applicable " +
+                    "consent statuses to revoke is missing, cannot proceed");
+        }
+
+        Connection connection = DatabaseUtil.getDBConnection();
+
+        try {
+            ConsentCoreDAO consentCoreDAO = ConsentStoreInitializer.getInitializedConsentCoreDAOImpl();
+            try {
+
+                ArrayList<String> accountMappingIDsList = new ArrayList<>();
+                ArrayList<String> clientIDsList = new ArrayList<>();
+                clientIDsList.add(clientID);
+                ArrayList<String> userIDsList = new ArrayList<>();
+
+                if (userID != null) {
+                    userIDsList.add(userID);
+                }
+
+                ArrayList<String> consentTypesList = new ArrayList<>(consentTypes);
+                ArrayList<String> consentStatusesList = new ArrayList<>(applicableStatusesToRevoke);
+
+                // Get existing consents
+                log.debug("Retrieving existing consents");
+
+                // Only parameters needed for the search are provided, others are made null
+                ArrayList<DetailedConsentResource> retrievedDetailedConsentResources = consentCoreDAO
+                        .searchConsents(connection, null, clientIDsList, consentTypesList,
+                                consentStatusesList, userIDsList, null, null, null, null);
+
+                // Revoke existing consents and create audit records
+                for (DetailedConsentResource resource : retrievedDetailedConsentResources) {
+                    String previousConsentStatus = resource.getCurrentStatus();
+
+                    // Update consent status
+                    if (log.isDebugEnabled()) {
+                        log.debug("Updating consent status for consent ID: " +
+                                resource.getConsentID().replaceAll("[\r\n]", ""));
+                    }
+                    consentCoreDAO.updateConsentStatus(connection, resource.getConsentID(), revokedConsentStatus);
+
+                    // Create an audit record for consent update
+                    if (log.isDebugEnabled()) {
+                        log.debug("Creating audit record for the status change of consent ID: "
+                                + resource.getConsentID().replaceAll("[\r\n]", ""));
+                    }
+
+                    for (AuthorizationResource authorizationResource : resource.getAuthorizationResources()) {
+                        String authResourceUserId = authorizationResource.getUserID();
+
+                        if (shouldRevokeTokens) {
+                            revokeTokens(resource, authResourceUserId);
+                        }
+
+                        // Create an audit record execute state change listener
+                        HashMap<String, Object> consentDataMap = new HashMap<>();
+                        consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, resource);
+                        postStateChange(connection, consentCoreDAO, resource.getConsentID(), authResourceUserId,
+                                revokedConsentStatus, previousConsentStatus,
+                                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON, resource.getClientID(),
+                                consentDataMap);
+                    }
+
+                    // Extract account mapping IDs for retrieved applicable consents
+                    if (log.isDebugEnabled()) {
+                        log.debug("Extracting account mapping IDs from consent ID: " +
+                                resource.getConsentID().replaceAll("[\r\n]", ""));
+                    }
+                    for (ConsentMappingResource mappingResource : resource.getConsentMappingResources()) {
+                        accountMappingIDsList.add(mappingResource.getMappingID());
+                    }
+                }
+
+                // Update account mappings as inactive
+                log.debug("Deactivating account mappings");
+                if (accountMappingIDsList.size() > 0) {
+                    consentCoreDAO.updateConsentMappingStatus(connection, accountMappingIDsList,
+                            ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS);
+                }
+                //Commit transaction
+                DatabaseUtil.commitTransaction(connection);
+                log.debug(ConsentCoreServiceConstants.TRANSACTION_COMMITTED_LOG_MSG);
+                return true;
+            } catch (OBConsentDataRetrievalException e) {
+                log.error(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_RETRIEVE_ERROR_MSG, e);
+            } catch (OBConsentDataInsertionException e) {
+                log.error(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
+                DatabaseUtil.rollbackTransaction(connection);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_INSERTION_ROLLBACK_ERROR_MSG, e);
+            } catch (OBConsentDataUpdationException e) {
+                log.error(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+                DatabaseUtil.rollbackTransaction(connection);
+                throw new ConsentManagementException(ConsentCoreServiceConstants.DATA_UPDATE_ROLLBACK_ERROR_MSG, e);
+            } catch (IdentityOAuth2Exception e) {
+                log.error("Error while revoking tokens for existing consents", e);
+                throw new ConsentManagementException("Error occurred while revoking tokens for existing consents");
+            }
+        } finally {
+            log.debug(ConsentCoreServiceConstants.DATABASE_CONNECTION_CLOSE_LOG_MSG);
+            DatabaseUtil.closeConnection(connection);
+        }
+    }
+
     @Override
     public ConsentResource getConsent(String consentID, boolean withAttributes)
             throws ConsentManagementException {
