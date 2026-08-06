@@ -60,8 +60,10 @@ import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -823,6 +825,210 @@ public class OBConsentMgtCoreServiceTests {
                 ConsentMgtServiceTestData.SAMPLE_USER_ID, ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE,
                 null, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS
                 , false);
+    }
+
+    @Test
+    public void testRevokeExistingApplicableConsentsWithConsentTypesAndStatusesList() throws Exception {
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+
+        Mockito.doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .updateConsentStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingStatus(Mockito.any(),
+                Mockito.any(), Mockito.any());
+
+        Assert.assertTrue(consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false));
+    }
+
+    @Test
+    public void testRevokeExistingApplicableConsentsWithConsentTypesAndStatusesListWithTokens() throws Exception {
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+
+        Mockito.doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .updateConsentStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingStatus(Mockito.any(),
+                Mockito.any(), Mockito.any());
+
+        Assert.assertTrue(new MockConsentCoreServiceImpl().revokeExistingApplicableConsents(sampleID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, true));
+    }
+
+    @Test
+    public void testRevokeExistingApplicableConsentsWithConsentTypesAndStatusesListWithNoAttributes()
+            throws Exception {
+
+        DetailedConsentResource detailedConsentResource =
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
+        detailedConsentResource.setConsentAttributes(null);
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+        detailedConsentResources.add(detailedConsentResource);
+
+        Mockito.doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .updateConsentStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingStatus(Mockito.any(),
+                Mockito.any(), Mockito.any());
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsRetrieveError() throws Exception {
+
+        Mockito.doThrow(OBConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsUpdateError() throws Exception {
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+
+        Mockito.doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doThrow(OBConsentDataUpdationException.class).when(mockedConsentCoreDAO)
+                .updateConsentStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsInsertionError() throws Exception {
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+
+        Mockito.doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .updateConsentStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+        Mockito.doThrow(OBConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(sampleID, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsWithoutClientID() throws Exception {
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(null, ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsWithoutRevokedConsentStatus() throws Exception {
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS), null, false);
+    }
+
+    @Test
+    public void testRevokeExistingApplicableConsentsWithListsWithoutUserID() throws Exception {
+
+        ArrayList<DetailedConsentResource> detailedConsentResources = new ArrayList<>();
+        detailedConsentResources.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+
+        Mockito.doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
+                .searchConsents(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+                        Mockito.any(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentResource()).when(mockedConsentCoreDAO)
+                .updateConsentStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+        Mockito.doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
+                        ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS)).when(mockedConsentCoreDAO)
+                .storeConsentStatusAuditRecord(Mockito.any(), Mockito.anyObject());
+        Mockito.doReturn(true).when(mockedConsentCoreDAO).updateConsentMappingStatus(Mockito.any(),
+                Mockito.any(), Mockito.any());
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
+                null, Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsWithoutConsentTypes() throws Exception {
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID, (List<String>) null,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsWithoutApplicableStatusesToRevoke() throws Exception {
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                (List<String>) null, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsWithEmptyConsentTypes() throws Exception {
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID, Collections.emptyList(),
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeExistingApplicableConsentsWithListsWithEmptyApplicableStatusesToRevoke() throws Exception {
+
+        consentCoreServiceImpl.revokeExistingApplicableConsents(ConsentMgtServiceTestData.SAMPLE_CLIENT_ID,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID,
+                Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
+                Collections.emptyList(), ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, false);
     }
 
     @Test (expectedExceptions = ConsentManagementException.class)
