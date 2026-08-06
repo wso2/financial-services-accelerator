@@ -30,6 +30,8 @@ Each endpoint runs in **isolation** — one at a time with its own container res
 | `./scripts/run-test.sh dcr` | APIM DCR registration latency (POST /register) | steady duration only |
 | `./scripts/run-test.sh is-search` | IS consent search — 14 filter scenarios | ~3 h 40 m |
 
+> **is-search** was benchmarked against a database seeded with **1,000,000 consent records**.
+
 `run-test.sh` handles the full per-scenario lifecycle automatically:
 1. Restart the relevant Docker containers
 2. Wait for health checks to pass
@@ -141,6 +143,15 @@ Fields with an empty string default (`""`) are auto-populated by the setup scrip
 | `consentAdminPassword` | IS admin password |
 | `fapiFinancialId` | Value for the `x-fapi-financial-id` header |
 
+### Database (required for is-search)
+
+| Field | Description |
+|---|---|
+| `dbHost` | MySQL container name, e.g. `mysql-db` |
+| `dbUser` | MySQL username, e.g. `root` |
+| `dbPass` | MySQL password |
+| `dbName` | Consent database name, e.g. `fs_consentdb` |
+
 ### Required for is-crud and apim-crud (DCR + mTLS)
 
 | Field | Description |
@@ -174,13 +185,13 @@ Fields with an empty string default (`""`) are auto-populated by the setup scrip
 
 ### Required for is-search
 
-| Field | Description |
-|---|---|
-| `clientId` | OAuth2 client ID of an existing IS application |
-| `searchUserId` | PSU user ID used when seeding consent records |
-| `searchLimit` | Default page size for search requests |
-| `searchDeepOffset` | Offset for the deep-pagination scenario |
-| `searchLargeLimit` | Page size for the large-page-size scenario |
+| Field | Default | Description |
+|---|---|---|
+| `searchUserId` | `psu@wso2.com` | PSU user ID used when seeding consent records |
+| `searchRecordCount` | `1000000` | Number of consent records to seed before the run. Set to `100` for a quick smoke test |
+| `searchLimit` | `10` | Default page size for search requests |
+| `searchDeepOffset` | `200` | Offset value for the deep-pagination scenario |
+| `searchLargeLimit` | `200` | Page size for the large-page-size scenario |
 
 ### Load profile tunables
 
@@ -188,10 +199,10 @@ Fields with an empty string default (`""`) are auto-populated by the setup scrip
 |---|---|---|
 | `peakVUs` | `50` | Max virtual users during the steady state |
 | `warmupDuration` | `1m` | Time to ramp from 0 → `peakVUs` |
-| `steadyDuration` | `1m` | Time to hold `peakVUs` — the measured window |
+| `steadyDuration` | `10m` | Time to hold `peakVUs` — the measured window |
 | `rampDownDuration` | `1m` | Time to ramp from `peakVUs` → 0 |
 
-For a production benchmark, use `peakVUs=50`, `warmupDuration=2m`, `steadyDuration=12m`, `rampDownDuration=1m`.
+For a full benchmark, use `peakVUs=50`, `warmupDuration=2m`, `steadyDuration=12m`, `rampDownDuration=1m`. For a quick smoke test, use `steadyDuration=1m`.
 
 ---
 
@@ -247,13 +258,18 @@ Output: `results/dcr-latency-report.html`
 
 ### IS Search Operations
 
-Measures the IS consent search API across 14 filter scenarios. Requires `obiam` and a seeded database.
-
-**Prerequisite: seed 1 million consent records first — see [§7](#7-test-data-setup-is-search-only).**
+Measures the IS consent search API across 14 filter scenarios. Requires `obiam` and a running MySQL container.
 
 ```bash
 ./scripts/run-test.sh is-search
 ```
+
+`run-test.sh` automatically handles the full setup before the first scenario:
+1. Registers a DCR client with IS and saves the `clientId` to `test-config.json`
+2. Truncates the consent tables (`FS_CONSENT` and related tables)
+3. Seeds `searchRecordCount` consent records using `scripts/generate_consent_data.sql`
+
+To run a quick smoke test with 100 records, set `"searchRecordCount": 100` in `test-config.json` before running.
 
 Output: `results/is-search-report.html`
 
@@ -292,15 +308,21 @@ Each scenario also gets a **warm-up pass** (same profile, results discarded) bef
 
 > Skip this section for `is-crud`, `apim-crud`, and `dcr`.
 
-The search test requires a large dataset. `scripts/generate_consent_data.sql` seeds **1,000,000 consent records** across all consent types and statuses.
+`run-test.sh is-search` handles seeding automatically — it truncates the consent tables and seeds `searchRecordCount` records before the first scenario runs. No manual steps are required for a normal run.
 
-**Data distribution**
+The seeding uses `scripts/generate_consent_data.sql`, which generates consent records with the following distribution:
 
 | Dimension | Distribution |
 |---|---|
 | `CONSENT_TYPE` | accounts 50% · payments 35% · fundsconfirmations 15% |
 | `CURRENT_STATUS` | Authorised 38% · Expired 30% · Revoked 22% · Consumed 10% |
 | `UPDATED_TIME` | 2% last 24 h · 8% last 2–7 d · 15% last 8–30 d · 75% older |
+
+> **Expected seeding time for 1M records:** 10–30 minutes. The script commits every 1,000 rows and prints progress, so partial progress is preserved if interrupted.
+
+### Manual seeding (optional / troubleshooting)
+
+If you need to seed independently of the test run:
 
 **Step 1 — Export DB credentials**
 
@@ -313,34 +335,27 @@ DB_NAME=$(jq -r '.dbName' k6/test-config.json)
 
 > Requires [`jq`](https://stedolan.github.io/jq/) — `brew install jq`.
 
-**Step 2 — Drop and recreate the consent database**
+**Step 2 — Truncate consent tables**
 
 ```bash
-docker exec -it mysql-db mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -e "
-DROP DATABASE IF EXISTS $DB_NAME;
-CREATE DATABASE $DB_NAME;
-ALTER DATABASE $DB_NAME CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+docker exec mysql-db mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" "$DB_NAME" -e "
+  SET FOREIGN_KEY_CHECKS=0;
+  TRUNCATE TABLE FS_CONSENT_MAPPING;
+  TRUNCATE TABLE FS_CONSENT_AUTH_RESOURCE;
+  TRUNCATE TABLE FS_CONSENT_STATUS_AUDIT;
+  TRUNCATE TABLE FS_CONSENT;
+  SET FOREIGN_KEY_CHECKS=1;
 "
 ```
 
-**Step 3 — Apply the consent schema**
-
-```bash
-docker cp /path/to/financial-services-accelerator/accelerators/fs-is/carbon-home/dbscripts/financial-services/consent/mysql.sql \
-  mysql-db:/tmp/fs_consentdb.sql
-
-docker exec -it mysql-db mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" "$DB_NAME" \
-  -e "SOURCE /tmp/fs_consentdb.sql"
-```
-
-**Step 4 — Seed 1,000,000 records**
+**Step 3 — Seed records**
 
 ```bash
 docker exec -i mysql-db mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" "$DB_NAME" \
   < scripts/generate_consent_data.sql
 ```
 
-> **Expected runtime:** 10–30 minutes. The script commits every 1,000 rows and prints progress every 100,000 rows, so partial progress is preserved if interrupted.
+The default record count is set by `@total_records` in the SQL file (default `1000000`). Override it by setting `searchRecordCount` in `test-config.json` — `run-test.sh` injects the value automatically via `sed`.
 
 ---
 
