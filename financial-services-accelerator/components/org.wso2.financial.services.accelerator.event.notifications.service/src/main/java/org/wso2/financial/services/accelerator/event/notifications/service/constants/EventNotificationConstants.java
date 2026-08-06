@@ -158,6 +158,8 @@ public class EventNotificationConstants {
     public static final String SUBSCRIPTION_EXISTS = "Subscription Resource already exists for the client";
     public static final String SUBSCRIPTION_RESOURCE_NOT_FOUND = "A subscription Resource does not exists for" +
             " the client";
+    public static final String CLIENT_ID_MISMATCH_ERROR = "Client Id in the request does not match with the client Id" +
+            " associated to the event subscription";
 
     public static final String EVENT_DATA = "eventData";
     public static final String EVENT_POLLING_DATA = "eventPollingData";
