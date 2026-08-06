@@ -1,6 +1,6 @@
 {
-  "dbHost": "mysql-db",
-  "dbUser": "root",
+  "dbHost": "<mysql-container-name>",
+  "dbUser": "<db-username>",
   "dbPass": "<db-password>",
   "dbName": "fs_consentdb",
 
@@ -31,6 +31,7 @@
   "testAccountIds": ["ACC00000001", "ACC00000002"],
 
   "searchUserId": "psu@wso2.com",
+  "searchRecordCount": 1000000,
   "searchLimit": 10,
   "searchConsentId": "",
   "searchDeepOffset": 200,

@@ -14,11 +14,13 @@
 # If omitted, all scenarios for that test are run.
 # Example: ./scripts/run-test.sh apim-crud get_accounts,get_balances,get_transactions
 #
-# Per-scenario flow (is-crud / apim-crud):
+# Per-scenario flow (is-crud / apim-crud / is-search):
+#   is-search only — runs once before the loop:
+#     0. Register IS DCR client, truncate consent tables, seed searchRecordCount records
 #   For each scenario slot:
 #     1. Restart containers
 #     2. Wait until healthy
-#     3. Run client setup (DCR + user-auth where needed)
+#     3. Run client setup (DCR + user-auth where needed; skipped for is-search)
 #     4. Warm-up pass for that scenario (results discarded)
 #     5. Measured run for that scenario → per-scenario summary JSON
 #   After all scenarios:
@@ -79,8 +81,23 @@ case "$TEST" in
     REPORT="results/is-search-report.html"
     TIER="medium"
     CONTAINERS="obiam"
-    SETUP_SCRIPT=""
-    SCENARIOS=()
+    SETUP_SCRIPT="is-search"
+    SCENARIOS=(
+      "portal_accounts_load"
+      "portal_payments_load"
+      "accounts_active_tab"
+      "accounts_inactive_tab"
+      "payments_active_tab"
+      "payments_inactive_tab"
+      "cof_active_tab"
+      "by_consent_id"
+      "by_client_id"
+      "by_user_id"
+      "date_narrow"
+      "date_wide"
+      "deep_pagination"
+      "large_page"
+    )
     ;;
   *)
     echo "Unknown test: $TEST"
@@ -115,6 +132,11 @@ fi
 # Helpers
 # ---------------------------------------------------------------------------
 
+# Read a single field from k6/test-config.json.
+read_config() {
+  node -e "process.stdout.write(String(require('./k6/test-config.json')['$1'] || ''))"
+}
+
 wait_for_healthy() {
   if echo "$CONTAINERS" | grep -q "obiam"; then
     echo "    Waiting for IS (obiam)..."
@@ -148,6 +170,43 @@ wait_for_healthy() {
   fi
 }
 
+run_search_data_setup() {
+  echo "    Registering IS DCR client for search test..."
+  node scripts/setup-is-client.js
+
+  local CLIENT_ID SEARCH_USER DB_HOST DB_USER DB_PASS DB_NAME
+  CLIENT_ID=$(read_config clientId)
+  SEARCH_USER=$(read_config searchUserId)
+  DB_HOST=$(read_config dbHost)
+  DB_USER=$(read_config dbUser)
+  DB_PASS=$(read_config dbPass)
+  DB_NAME=$(read_config dbName)
+
+  echo "    Truncating consent tables..."
+  docker exec mysql-db mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" "$DB_NAME" -e "
+    SET FOREIGN_KEY_CHECKS=0;
+    TRUNCATE TABLE FS_CONSENT_MAPPING;
+    TRUNCATE TABLE FS_CONSENT_AUTH_RESOURCE;
+    TRUNCATE TABLE FS_CONSENT_STATUS_AUDIT;
+    TRUNCATE TABLE FS_CONSENT;
+    SET FOREIGN_KEY_CHECKS=1;
+  "
+  echo "    Consent tables truncated."
+
+  local RECORD_COUNT
+  RECORD_COUNT=$(read_config searchRecordCount)
+  RECORD_COUNT="${RECORD_COUNT:-1000000}"
+
+  echo "    Seeding ${RECORD_COUNT} consent records (clientId=${CLIENT_ID})..."
+  sed \
+    -e "s|SET @primary_client_id = .*|SET @primary_client_id = '${CLIENT_ID}';|" \
+    -e "s|SET @primary_user_id   = .*|SET @primary_user_id   = '${SEARCH_USER}';|" \
+    -e "s|SET @total_records     = .*|SET @total_records     = ${RECORD_COUNT};|" \
+    scripts/generate_consent_data.sql \
+  | docker exec -i mysql-db mysql -u"$DB_USER" -p"$DB_PASS" -h"$DB_HOST" "$DB_NAME"
+  echo "    Seeding complete."
+}
+
 run_client_setup() {
   if [ "$SETUP_SCRIPT" = "is" ]; then
     echo "    Registering IS DCR client..."
@@ -167,6 +226,13 @@ run_client_setup() {
 if [ "${#SCENARIOS[@]}" -gt 0 ]; then
   SCENARIO_SUMMARIES=()
   TOTAL="${#SCENARIOS[@]}"
+
+  # is-search: register DCR client and seed DB once before the scenario loop.
+  if [ "$SETUP_SCRIPT" = "is-search" ]; then
+    echo ""
+    echo "==> [Pre-loop] Search test setup: DCR client + DB seed"
+    run_search_data_setup
+  fi
 
   for i in "${!SCENARIOS[@]}"; do
     SCENARIO="${SCENARIOS[$i]}"
@@ -223,7 +289,7 @@ if [ "${#SCENARIOS[@]}" -gt 0 ]; then
   echo "    Merged summary: $SUMMARY"
 
 else
-  # dcr / is-search: single restart + single k6 run (no per-scenario isolation)
+  # dcr: single restart + single k6 run (no per-scenario isolation)
 
   echo ""
   echo "==> [1/5] Restarting containers: $CONTAINERS"

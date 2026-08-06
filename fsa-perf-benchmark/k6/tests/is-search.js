@@ -143,7 +143,42 @@ function scenarioAt(slot) {
 // Options
 // ---------------------------------------------------------------------------
 
-const VARIANT = __ENV.VARIANT || 'baseline';
+const VARIANT       = __ENV.VARIANT        || 'baseline';
+const ONLY_SCENARIO = __ENV.ONLY_SCENARIO  || '';
+
+// When ONLY_SCENARIO is set the test runs a single isolated scenario at slot 0.
+// run-test.sh uses this to restart the IS container between scenarios.
+const ALL_SCENARIOS = {
+  // Portal initial load — type filter only (no status)
+  portal_accounts_load:  { ...scenarioAt(0),  exec: 'testPortalAccountsLoad'  },
+  portal_payments_load:  { ...scenarioAt(1),  exec: 'testPortalPaymentsLoad'  },
+
+  // Tab navigation — type + status
+  accounts_active_tab:   { ...scenarioAt(2),  exec: 'testAccountsActiveTab'   },
+  accounts_inactive_tab: { ...scenarioAt(3),  exec: 'testAccountsInactiveTab' },
+  payments_active_tab:   { ...scenarioAt(4),  exec: 'testPaymentsActiveTab'   },
+  payments_inactive_tab: { ...scenarioAt(5),  exec: 'testPaymentsInactiveTab' },
+  cof_active_tab:        { ...scenarioAt(6),  exec: 'testCofActiveTab'        },
+
+  // Advanced search filters
+  by_consent_id:         { ...scenarioAt(7),  exec: 'testByConsentId'         },
+  by_client_id:          { ...scenarioAt(8),  exec: 'testByClientId'          },
+  by_user_id:            { ...scenarioAt(9),  exec: 'testByUserId'            },
+  date_narrow:           { ...scenarioAt(10), exec: 'testDateNarrow'          },
+  date_wide:             { ...scenarioAt(11), exec: 'testDateWide'            },
+
+  // Pagination
+  deep_pagination:       { ...scenarioAt(12), exec: 'testDeepPagination'      },
+  large_page:            { ...scenarioAt(13), exec: 'testLargePageSize'       },
+};
+
+function buildScenarios() {
+  if (ONLY_SCENARIO) {
+    if (!ALL_SCENARIOS[ONLY_SCENARIO]) throw new Error(`Unknown scenario: ${ONLY_SCENARIO}`);
+    return { [ONLY_SCENARIO]: { ...ALL_SCENARIOS[ONLY_SCENARIO], startTime: '0s' } };
+  }
+  return ALL_SCENARIOS;
+}
 
 export const options = {
   tags: {
@@ -156,29 +191,7 @@ export const options = {
 
   summaryTrendStats: ['count', 'avg', 'min', 'med', 'max', 'p(90)', 'p(95)', 'p(99)'],
 
-  scenarios: {
-    // Portal initial load — type filter only (no status)
-    portal_accounts_load:  { ...scenarioAt(0),  exec: 'testPortalAccountsLoad'  },
-    portal_payments_load:  { ...scenarioAt(1),  exec: 'testPortalPaymentsLoad'  },
-
-    // Tab navigation — type + status (portal tab IDs from specConfigurations.js)
-    accounts_active_tab:   { ...scenarioAt(2),  exec: 'testAccountsActiveTab'   },
-    accounts_inactive_tab: { ...scenarioAt(3),  exec: 'testAccountsInactiveTab' },
-    payments_active_tab:   { ...scenarioAt(4),  exec: 'testPaymentsActiveTab'   },
-    payments_inactive_tab: { ...scenarioAt(5),  exec: 'testPaymentsInactiveTab' },
-    cof_active_tab:        { ...scenarioAt(6),  exec: 'testCofActiveTab'        },
-
-    // Advanced search filters (base: accounts + Authorised)
-    by_consent_id:         { ...scenarioAt(7),  exec: 'testByConsentId'         },
-    by_client_id:          { ...scenarioAt(8),  exec: 'testByClientId'          },
-    by_user_id:            { ...scenarioAt(9),  exec: 'testByUserId'            },
-    date_narrow:           { ...scenarioAt(10), exec: 'testDateNarrow'          },
-    date_wide:             { ...scenarioAt(11), exec: 'testDateWide'            },
-
-    // Pagination
-    deep_pagination:       { ...scenarioAt(12), exec: 'testDeepPagination'      },
-    large_page:            { ...scenarioAt(13), exec: 'testLargePageSize'       },
-  },
+  scenarios: buildScenarios(),
 
   thresholds: {
     // Aggregate — all search scenarios blended.

@@ -38,6 +38,7 @@
 -- Match to k6/test-config.json
 SET @primary_client_id = 'eLeNklWedBlm0ozXtsF_mdNqY_sa';
 SET @primary_user_id   = 'psu@wso2.com';
+SET @total_records     = 1000000;
 
 -- ── Optional: wipe existing data before re-seeding ───────────────────────────
 -- Uncomment the block below if you want a clean slate each run.
@@ -356,7 +357,7 @@ SELECT CONCAT(
     '  Primary user: ',   @primary_user_id
 ) AS status;
 
-CALL _fsa_generate_consents(1000000, @primary_client_id, @primary_user_id);
+CALL _fsa_generate_consents(@total_records, @primary_client_id, @primary_user_id);
 
 DROP PROCEDURE IF EXISTS _fsa_generate_consents;
 

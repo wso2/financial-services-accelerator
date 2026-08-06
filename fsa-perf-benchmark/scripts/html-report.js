@@ -74,6 +74,21 @@ const ENDPOINTS = [
   { name: 'APIM_GetPaymentConsent',    scenario: 'payments',        method: 'GET',    path: '{pispContext}/domestic-payment-consents/{id}' },
   { name: 'APIM_DCR_Register',         scenario: 'dcr',             method: 'POST',   path: '/open-banking/v3.3.0/register' },
   { name: 'APIM_DCR_Delete',           scenario: 'dcr',             method: 'DELETE', path: '/open-banking/v3.3.0/register/{clientId}' },
+  // IS search scenarios
+  { name: 'IS_PortalAccountsLoad',     scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=accounts' },
+  { name: 'IS_PortalPaymentsLoad',     scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=payments' },
+  { name: 'IS_AccountsActiveTab',      scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=accounts&consentStatuses=Authorised' },
+  { name: 'IS_AccountsInactiveTab',    scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=accounts&consentStatuses=Expired,Revoked' },
+  { name: 'IS_PaymentsActiveTab',      scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=payments&consentStatuses=Authorised' },
+  { name: 'IS_PaymentsInactiveTab',    scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=payments&consentStatuses=Consumed,Expired,Revoked' },
+  { name: 'IS_CofActiveTab',           scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentTypes=fundsconfirmations&consentStatuses=Authorised' },
+  { name: 'IS_ByConsentId',            scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?consentIDs={id}' },
+  { name: 'IS_ByClientId',             scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?clientIDs={id}' },
+  { name: 'IS_ByUserId',               scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?userIDs={id}' },
+  { name: 'IS_DateNarrow',             scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?fromTime=now-24h' },
+  { name: 'IS_DateWide',               scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?fromTime=now-30d' },
+  { name: 'IS_DeepPagination',         scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?offset=200' },
+  { name: 'IS_LargePageSize',          scenario: 'is_search',       method: 'GET',    path: '/api/fs/consent/admin/search?limit=200' },
 ];
 
 function statsFor(name) {
