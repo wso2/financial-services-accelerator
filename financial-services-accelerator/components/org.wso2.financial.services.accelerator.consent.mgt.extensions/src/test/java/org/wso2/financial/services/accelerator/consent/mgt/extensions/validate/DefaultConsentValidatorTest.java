@@ -36,6 +36,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
@@ -318,6 +319,117 @@ public class DefaultConsentValidatorTest {
         Assert.assertEquals(consentValidationResultMock.getErrorMessage(), "Permission mismatch. " +
                 "Consent does not contain necessary permissions");
         Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_FORBIDDEN);
+    }
+
+    @Test
+    public void testValidateWithInvalidAccountIdForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
+        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        doReturn(authResources).when(consentResource).getAuthorizationResources();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentResource).getClientID();
+        doReturn(TestConstants.ACCOUNTS).when(consentResource).getConsentType();
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>(List.of(
+                TestUtil.getSampleConsentMappingResource(TestConstants.SAMPLE_AUTH_ID)));
+        doReturn(consentMappingResources).when(consentResource).getConsentMappingResources();
+
+        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
+        doReturn("/accounts/invalid-account-id").when(consentValidateDataMock).getRequestPath();
+
+        validator.validate(consentValidateDataMock, consentValidationResultMock);
+
+        Assert.assertFalse(consentValidationResultMock.isValid());
+        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.UNAUTHORIZED.getReasonPhrase());
+        Assert.assertEquals(consentValidationResultMock.getErrorMessage(),
+                "Account Id requested is not consented for the user");
+        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void testValidateWithInactiveAccountIdForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
+        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        doReturn(authResources).when(consentResource).getAuthorizationResources();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentResource).getClientID();
+        doReturn(TestConstants.ACCOUNTS).when(consentResource).getConsentType();
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>(List.of(
+                TestUtil.getSampleInactiveConsentMappingResource(TestConstants.SAMPLE_AUTH_ID)));
+        doReturn(consentMappingResources).when(consentResource).getConsentMappingResources();
+
+        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
+        doReturn("/accounts/" + TestConstants.SAMPLE_ACCOUNT_ID).when(consentValidateDataMock).getRequestPath();
+
+        validator.validate(consentValidateDataMock, consentValidationResultMock);
+
+        Assert.assertFalse(consentValidationResultMock.isValid());
+        Assert.assertEquals(consentValidationResultMock.getErrorCode(), ResponseStatus.UNAUTHORIZED.getReasonPhrase());
+        Assert.assertEquals(consentValidationResultMock.getErrorMessage(),
+                "Account Id requested is not consented for the user");
+        Assert.assertEquals(consentValidationResultMock.getHttpCode(), HttpStatus.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void testValidateWithValidAccountIdForAccounts() {
+
+        FinancialServicesConfigParser configParserMock = Mockito.mock(FinancialServicesConfigParser.class);
+        Mockito.doReturn(false).when(configParserMock).isServiceExtensionsEndpointEnabled();
+        Mockito.doReturn(Collections.emptyList()).when(configParserMock).getServiceExtensionTypes();
+        financialServicesConfigParserMockedStatic.when(FinancialServicesConfigParser::getInstance)
+                .thenReturn(configParserMock);
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+
+        DetailedConsentResource consentResource = mock(DetailedConsentResource.class);
+        doReturn(TestConstants.VALID_INITIATION).when(consentResource).getReceipt();
+        ArrayList<AuthorizationResource> authResources = TestUtil.getSampleAuthorizationResourceArray(
+                TestConstants.SAMPLE_CONSENT_ID, TestConstants.SAMPLE_AUTH_ID);
+        doReturn(authResources).when(consentResource).getAuthorizationResources();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentResource).getClientID();
+        doReturn(TestConstants.ACCOUNTS).when(consentResource).getConsentType();
+        doReturn(TestConstants.AUTHORISED_STATUS).when(consentResource).getCurrentStatus();
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>(List.of(
+                TestUtil.getSampleConsentMappingResource(TestConstants.SAMPLE_AUTH_ID),
+                TestUtil.getSampleInactiveConsentMappingResource(TestConstants.SAMPLE_AUTH_ID)));
+        doReturn(consentMappingResources).when(consentResource).getConsentMappingResources();
+
+        doReturn(consentResource).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
+        doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
+        doReturn("/accounts/" + TestConstants.SAMPLE_ACCOUNT_ID + "/transactions")
+                .when(consentValidateDataMock).getRequestPath();
+        doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentValidateDataMock).getConsentId();
+
+        validator.validate(consentValidateDataMock, consentValidationResultMock);
+
+        Assert.assertTrue(consentValidationResultMock.isValid());
     }
 
     @Test
