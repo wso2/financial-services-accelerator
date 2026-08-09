@@ -85,9 +85,9 @@ public class SignatureAlgorithmEnforcementValidator implements OBIdentityFilterV
     public String getRegisteredSigningAlgorithm(String clientId) throws TokenFilterException {
 
         try {
-            if (!(StringUtils.isNotEmpty(new IdentityCommonHelper().getCertificateContent(clientId))
+            if (!(StringUtils.isNotEmpty(getIdentityCommonHelper().getCertificateContent(clientId))
                     && IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId))) {
-                return new IdentityCommonHelper().getAppPropertyFromSPMetaData(clientId,
+                return getIdentityCommonHelper().getAppPropertyFromSPMetaData(clientId,
                         IdentityCommonConstants.TOKEN_ENDPOINT_AUTH_SIGNING_ALG);
             }
         } catch (OpenBankingException e) {
@@ -102,6 +102,12 @@ public class SignatureAlgorithmEnforcementValidator implements OBIdentityFilterV
                     .OAUTH2_INVALID_REQUEST_MESSAGE, "Token signing algorithm not registered", e);
         }
         return IdentityCommonConstants.NOT_APPLICABLE;
+    }
+
+    @Generated(message = "Trivial factory method, overridden in tests")
+    IdentityCommonHelper getIdentityCommonHelper() {
+
+        return new IdentityCommonHelper();
     }
 
     public String getRequestSigningAlgorithm(String signedObject) throws TokenFilterException {
