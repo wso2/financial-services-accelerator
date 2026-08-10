@@ -69,7 +69,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Key;
-import java.security.interfaces.RSAPrivateKey;
+import java.security.PrivateKey;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -430,10 +430,11 @@ public class ConsentUtils {
 
     /**
      * Util method to generate JWT using a payload and a private key. RS256 is the
-     * algorithm used
+     * algorithm used. Supports both software-based RSAPrivateKey and HSM-backed
+     * PKCS#11 keys (P11PrivateKey).
      *
      * @param payload    The payload body to be signed
-     * @param privateKey The private key for the JWT to be signed with
+     * @param privateKey The private key for the JWT to be signed with (RSA)
      * @return String signed JWT
      */
     public static String generateJWT(String payload, Key privateKey) {
@@ -443,11 +444,11 @@ public class ConsentUtils {
             throw new ConsentManagementRuntimeException("Payload and key cannot be null");
         }
 
-        if (!(privateKey instanceof RSAPrivateKey)) {
-            throw new ConsentManagementRuntimeException("Private key should be an instance of RSAPrivateKey");
+        if (!(privateKey instanceof PrivateKey)) {
+            throw new ConsentManagementRuntimeException("Private key should be an instance of PrivateKey");
         }
 
-        JWSSigner signer = new RSASSASigner((RSAPrivateKey) privateKey);
+        JWSSigner signer = new RSASSASigner((PrivateKey) privateKey);
         JWSHeader.Builder headerBuilder = new JWSHeader.Builder(JWSAlgorithm.RS256);
 
         SignedJWT signedJWT = null;
@@ -455,7 +456,7 @@ public class ConsentUtils {
             signedJWT = new SignedJWT(headerBuilder.build(), JWTClaimsSet.parse(payload));
             signedJWT.sign(signer);
         } catch (ParseException | JOSEException e) {
-            throw new ConsentManagementRuntimeException("Error occurred while signing JWT");
+            throw new ConsentManagementRuntimeException("Error occurred while signing JWT", e);
         }
         return signedJWT.serialize();
     }
