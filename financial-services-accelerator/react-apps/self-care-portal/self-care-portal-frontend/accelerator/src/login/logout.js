@@ -18,7 +18,7 @@
 
 import {CONFIG} from "../config"
 
-export const logout = (idToken) => {
-    window.location.href = `${CONFIG.LOGOUT_URL}?id_token_hint=${idToken}&post_logout_redirect_uri=${CONFIG.REDIRECT_URI}`;
+export const logout = () => {
+    window.location.href = CONFIG.LOGOUT_ENDPOINT;
     localStorage.setItem("userId" , null)
 }

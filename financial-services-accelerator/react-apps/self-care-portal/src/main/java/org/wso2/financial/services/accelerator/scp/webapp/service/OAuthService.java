@@ -84,6 +84,20 @@ public class OAuthService {
         return authUri.toString();
     }
 
+    /**
+     * Builds the IS logout URL. The id_token is only ever read server-side (from the httpOnly
+     * split cookies) so the frontend never needs to hold or decode the raw id_token itself.
+     */
+    public String generateLogoutUrl(String iamBaseUrl, String idToken) throws URISyntaxException {
+        URIBuilder logoutUriBuilder = new URIBuilder(iamBaseUrl)
+                .setPath(Constants.PATH_LOGOUT)
+                .addParameter(Constants.POST_LOGOUT_REDIRECT_URI, iamBaseUrl + Constants.PATH_CALLBACK);
+        if (StringUtils.isNotEmpty(idToken)) {
+            logoutUriBuilder.addParameter(Constants.ID_TOKEN_HINT, idToken);
+        }
+        return logoutUriBuilder.build().toString();
+    }
+
     private JSONObject sendTokenRequest(String iamBaseUrl, String clientKey, String clientSecret, List<NameValuePair>
             params) throws UnsupportedEncodingException, TokenGenerationException {
 
@@ -170,7 +184,11 @@ public class OAuthService {
         cookie.setSecure(true);
         cookie.setMaxAge(maxAge);
         cookie.setPath(path);
-        cookie.setHttpOnly(true);
+        // Access token halves must stay JS-readable: the frontend reads them to send the
+        // Authorization header (SplitTokenValve CSRF pattern) and to reconstruct the token for
+        // Popup.jsx's device registration call. Everything else (id token, refresh token,
+        // validity marker) is only ever read server-side, so it can be locked down.
+        cookie.setHttpOnly(!cookieName.startsWith(Constants.ACCESS_TOKEN_COOKIE_NAME));
 
         resp.addCookie(cookie);
     }

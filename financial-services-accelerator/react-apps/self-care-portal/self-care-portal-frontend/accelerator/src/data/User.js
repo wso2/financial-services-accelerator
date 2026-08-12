@@ -15,37 +15,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { id } from "date-fns/locale";
 import Cookies from "js-cookie";
+import axios from "axios";
+import { CONFIG } from "../config";
 
 export default class User {
-  constructor() {
-    let idToken = getIdToken();
+  constructor(isLogged, email, role) {
+    this.isLogged = !!isLogged;
+    this.email = email;
+    this.role = role;
+  }
 
-    if (idToken) {
-      this.isLogged = true;
-      this.idToken = idToken;
-      this.email = decodeIdToken(idToken).sub;
-      this.role = decodeIdToken(idToken).user_role;
-    } else {
-      this.isLogged = false;
+  /**
+   * Builds a User by asking the backend to decode the id_token (kept in httpOnly
+   * cookies) and return only the email/role claims needed by the UI.
+   * @returns {Promise<User>}
+   */
+  static async load() {
+    const accessTokenPart1 = Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1);
+    if (!accessTokenPart1) {
+      return new User(false);
+    }
+
+    try {
+      const response = await axios.get(`${CONFIG.BACKEND_URL}/userinfo`, {
+        headers: {
+          Authorization: `Bearer ${accessTokenPart1}`,
+        },
+      });
+      return new User(true, response.data.email, response.data.role);
+    } catch (error) {
+      return new User(false);
     }
   }
 }
-
-/**
- * Concat id_token cookies and return token
- * @returns {String|null} - If cookies found, return its value, Else null value is returned
- */
-const getIdToken = () => {
-  const idTokenPart1 = Cookies.get(User.CONST.OB_SCP_ID_TOKEN_P1);
-  const idTokenPart2 = Cookies.get(User.CONST.OB_SCP_ID_TOKEN_P2);
-
-  if (!idTokenPart1 || !idTokenPart2) {
-    return null;
-  }
-  return idTokenPart1 + idTokenPart2;
-};
 
 export const getAccessToken = () => {
   const accessTokenPart1 = Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1);
@@ -57,15 +60,7 @@ export const getAccessToken = () => {
   return accessTokenPart1 + accessTokenPart2;
 };
 
-export function decodeIdToken(token) {
-  return JSON.parse(atob(token.split(".")[1]));
-}
-
 User.CONST = {
   OB_SCP_ACC_TOKEN_P1: "OB_SCP_AT_P1",
   OB_SCP_ACC_TOKEN_P2: "OB_SCP_AT_P2",
-  OB_SCP_ID_TOKEN_P1: "OB_SCP_IT_P1",
-  OB_SCP_ID_TOKEN_P2: "OB_SCP_IT_P2",
-  OB_SCP_REF_TOKEN_P1: "OB_SCP_RT_P1",
-  OB_SCP_REF_TOKEN_P2: "OB_SCP_RT_P2",
 };
