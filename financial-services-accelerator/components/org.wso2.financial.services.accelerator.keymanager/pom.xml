@@ -112,7 +112,6 @@
                     </suiteXmlFiles>
                     <systemPropertyVariables>
                         <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
-                        <javax.net.ssl.trustStorePassword>wso2carbon</javax.net.ssl.trustStorePassword>
                     </systemPropertyVariables>
                     <reuseForks>true</reuseForks>
                 </configuration>
