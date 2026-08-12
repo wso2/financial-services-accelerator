@@ -24,6 +24,8 @@
             <class name="com.wso2.openbanking.scp.webapp.service.APIMServiceTest"/>
             <class name="com.wso2.openbanking.scp.webapp.service.OAuthServiceTest"/>
             <class name="com.wso2.openbanking.scp.webapp.util.UtilsTest"/>
+            <class name="com.wso2.openbanking.scp.webapp.servlet.LogoutServletTest"/>
+            <class name="com.wso2.openbanking.scp.webapp.servlet.UserInfoServletTest"/>
         </classes>
     </test>
 </suite>
