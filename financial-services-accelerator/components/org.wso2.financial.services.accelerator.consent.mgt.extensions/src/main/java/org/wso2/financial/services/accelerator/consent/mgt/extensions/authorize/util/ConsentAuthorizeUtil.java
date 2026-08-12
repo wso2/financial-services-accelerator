@@ -317,6 +317,28 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
+     * Utility method to determine whether the pre-initiated consent flow should be used, given the full
+     * consent data.
+     *
+     * @param consentData                   consent data
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(ConsentData consentData, List<String> preInitiatedConsentScopes,
+                                                    List<String> scopeBasedConsentScopes) {
+
+        String requestObject = extractRequestObject(consentData.getSpQueryParams());
+        JSONObject requestParameters = getRequestObjectJson(requestObject);
+        String scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
+        JSONArray authorizationDetails = requestParameters.optJSONArray(FinancialServicesConstants
+                .AUTHORIZATION_DETAILS);
+
+        return FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
+    }
+
+    /**
      * Populate Domestic and international Payment Details.
      *
      * @param data            data request from the request
@@ -910,18 +932,5 @@ public class ConsentAuthorizeUtil {
         isReauthorization = isReauthorization != null && isReauthorization;
 
         consentPersistPayload.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, Boolean.TRUE.equals(isReauthorization));
-    }
-
-    /**
-     * Utility method to retrieve scopes from consent data.
-     *
-     * @param consentData  consent data
-     * @return scopes
-     */
-    public static String retrieveScopes(ConsentData consentData) {
-
-        log.debug("Retrieving scopes from request object");
-        String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        return ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
     }
 }

@@ -155,7 +155,7 @@ public class FinancialServicesUtilsTest {
                                               List<String> scopeBasedConsentScopes,
                                               boolean expected) {
 
-        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, preInitiatedConsentScopes,
+        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, null, preInitiatedConsentScopes,
                 scopeBasedConsentScopes);
         Assert.assertEquals(result, expected);
     }
@@ -165,8 +165,8 @@ public class FinancialServicesUtilsTest {
                                               List<String> scopeBasedConsentScopes,
                                               boolean expected) {
 
-        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, preInitiatedConsentScopes,
-                scopeBasedConsentScopes);
+        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
+                null, preInitiatedConsentScopes, scopeBasedConsentScopes);
         Assert.assertEquals(result, expected);
     }
 

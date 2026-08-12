@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
@@ -70,8 +69,10 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         JSONObject consentDataJSON;
         ConsentResource consentResource;
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
-                preInitiatedConsentScopes, scopeBasedConsentScopes);
+
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }

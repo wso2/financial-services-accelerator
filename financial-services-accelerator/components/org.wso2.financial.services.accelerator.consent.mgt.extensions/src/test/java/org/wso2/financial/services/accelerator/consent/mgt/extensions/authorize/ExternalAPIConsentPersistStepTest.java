@@ -62,6 +62,11 @@ import static org.testng.Assert.assertEquals;
  */
 public class ExternalAPIConsentPersistStepTest {
 
+    private static final String REQUEST_OBJECT_SCOPE_ACCOUNTS =
+            "request=eyJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6ImFjY291bnRzIn0.sig";
+    private static final String REQUEST_OBJECT_SCOPE_SCOPE =
+            "request=eyJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6InNjb3BlIn0.sig";
+
     private static class MockContext {
         MockedStatic<FinancialServicesConfigParser> configStatic;
         MockedStatic<ConsentExtensionsDataHolder> dataHolderStatic;
@@ -69,7 +74,8 @@ public class ExternalAPIConsentPersistStepTest {
 
     private static ConsentData createConsentData(String consentId, String userId, boolean withAuthResource) throws
             Exception {
-        ConsentData data = new ConsentData("sessionKey", userId, "req", "scope", "myApp", Map.of());
+        ConsentData data = new ConsentData("sessionKey", userId, REQUEST_OBJECT_SCOPE_ACCOUNTS, "scope", "myApp",
+                Map.of());
         data.setConsentId(consentId);
         data.setRedirectURI(new URI("https://localhost/redirect"));
         data.setState("xyz");
@@ -229,7 +235,8 @@ public class ExternalAPIConsentPersistStepTest {
         MockContext mocks = mockPreInitiatedMode(Collections.emptyList(), Collections.singletonList("scope"),
                 configMock, consentCoreService);
 
-        ConsentData consentData = new ConsentData("sessionKey", "user2", "req", "scope", "appX", new HashMap<>());
+        ConsentData consentData = new ConsentData("sessionKey", "user2", REQUEST_OBJECT_SCOPE_SCOPE, "scope", "appX",
+                new HashMap<>());
         consentData.setRedirectURI(new URI("https://localhost/return"));
         consentData.setState("state-x");
         consentData.setMetaDataMap(getValidMetadataMap());

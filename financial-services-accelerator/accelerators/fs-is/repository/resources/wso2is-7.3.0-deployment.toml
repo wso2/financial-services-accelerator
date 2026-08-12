@@ -11,7 +11,6 @@ offset = 3
 enable_email_domain = true
 
 #================configs related to user-mgt.xml=============
-
 [super_admin]
 username = "IS_ADMIN_USERNAME"
 password = "IS_ADMIN_PASSWORD"
@@ -135,13 +134,6 @@ pool_options.validationQuery="SELECT 1"
 pool_options.validationInterval="30000"
 pool_options.defaultAutoCommit=false
 pool_options.commitOnReturn=true
-
-[[datasource]]
-id = "AgentIdentity"
-url = "jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
-username = "wso2carbon"
-password = "wso2carbon"
-driver = "org.h2.Driver"
 
 [keystore.primary]
 file_name = "wso2carbon.p12"
@@ -270,7 +262,7 @@ scopes=[]
 
 [oauth]
 drop_unregistered_scopes = true
-authorize_all_scopes = true
+authorize_all_scopes = false
 
 [oauth.endpoints.v2]
 oauth2_consent_page = "${carbon.protocol}://IS_HOSTNAME:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"
@@ -666,6 +658,6 @@ circuit_breaker_open_timeout=500
 pool_size=20
 event_notification_request_generator="org.wso2.financial.services.accelerator.event.notifications.service.realtime.service.DefaultRealtimeEventNotificationRequestGenerator"
 
-#[agent_identity]
-#enabled=false
+[agent_identity]
+enabled=false
 

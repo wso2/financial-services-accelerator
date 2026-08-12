@@ -204,8 +204,8 @@ public class IdentityCommonUtils {
         List<String> scopeBasedConsentScopes = getConfiguredScopeList(identityExtensionsDataHolder
                 .getConfigurationMap().get(FinancialServicesConstants.SCOPE_BASED_CONSENT_SCOPES));
 
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                oauthAuthzMsgCtx.getApprovedScope(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = isPreInitiatedConsentFlow(
+                oauthAuthzMsgCtx, preInitiatedConsentScopes, scopeBasedConsentScopes);
 
         if (!isPreInitiatedConsentFlow) {
             String commonAuthId = getCommonAuthIdFromCookies(oauthAuthzMsgCtx.getAuthorizationReqDTO().getCookie());
@@ -224,6 +224,28 @@ public class IdentityCommonUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Check if the authorization request is part of a pre-initiated consent flow.
+     *
+     * @param oauthAuthzMsgCtx          The OAuth authorization request message context.
+     * @param preInitiatedConsentScopes List of scopes configured for pre-initiated consent flows.
+     * @param scopeBasedConsentScopes   List of scopes configured for scope-based consent flows.
+     * @return
+     */
+    private static boolean isPreInitiatedConsentFlow(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
+                                                     List<String> preInitiatedConsentScopes,
+                                                     List<String> scopeBasedConsentScopes) {
+
+        // Checking if RAR is used in the request. If RAR is used, we consider it as a non pre-initiated consent flow.
+        if (oauthAuthzMsgCtx.getRequestedAuthorizationDetails() != null) {
+            return false;
+        }
+
+        return FinancialServicesUtils.isPreInitiatedConsentFlow(
+                oauthAuthzMsgCtx.getApprovedScope(), null,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
     }
 
     /**
