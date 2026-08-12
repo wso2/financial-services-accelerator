@@ -119,6 +119,36 @@ public class APIMServiceTest extends PowerMockTestCase {
         Assert.assertFalse(optAccessToken.isPresent());
     }
 
+    @Test(description = "when valid req, then return id token")
+    public void testConstructIdTokenFromCookiesWithValidReq() {
+        // mock
+        HttpServletRequest reqMock = Mockito.mock(HttpServletRequest.class);
+
+        // when
+        Cookie cookie1 = new Cookie(Constants.ID_TOKEN_COOKIE_NAME + "_P1", "dummy-cookie-p1");
+        Cookie cookie2 = new Cookie(Constants.ID_TOKEN_COOKIE_NAME + "_P2", "dummy-cookie-p2");
+
+        Mockito.when(reqMock.getCookies()).thenReturn(new Cookie[]{cookie1, cookie2});
+
+        // assert
+        Optional<String> optIdToken = uut.constructIdTokenFromCookies(reqMock);
+        Assert.assertTrue(optIdToken.isPresent());
+        Assert.assertEquals(optIdToken.get(), "dummy-cookie-p1dummy-cookie-p2");
+    }
+
+    @Test(description = "when invalid req, then return empty string")
+    public void testConstructIdTokenFromCookiesWithInvalidReq() {
+        // mock
+        HttpServletRequest reqMock = Mockito.mock(HttpServletRequest.class);
+
+        // when
+        Mockito.when(reqMock.getCookies()).thenReturn(new Cookie[]{});
+
+        // assert
+        Optional<String> optIdToken = uut.constructIdTokenFromCookies(reqMock);
+        Assert.assertFalse(optIdToken.isPresent());
+    }
+
     @Test(description = "if access token is not expired return false")
     public void testIsAccessTokenExpired() throws SessionTimeoutException {
         // mock

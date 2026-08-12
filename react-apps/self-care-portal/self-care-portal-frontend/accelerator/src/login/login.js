@@ -30,12 +30,15 @@ export const Login = () => {
   const [user, setLoggedUser] = useState({});
 
   useEffect(() => {
-    // this object contains user details
-    let user = new User();
-    setLoggedUser(user);
-    setIsLoggedIn(user.isLogged);
-    setIsLoading(false);
-    setContextUser(user);
+    const fetchUser = async () => {
+      // this object contains user details
+      const user = await User.load();
+      setLoggedUser(user);
+      setIsLoggedIn(user.isLogged);
+      setIsLoading(false);
+      setContextUser(user);
+    };
+    fetchUser();
   },[]);
 
   const renderLoading = () => {

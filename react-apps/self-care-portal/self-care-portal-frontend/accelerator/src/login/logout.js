@@ -18,7 +18,9 @@
 
 import {CONFIG} from "../config"
 
-export const logout = (idToken) => {
-    window.location.href = `${CONFIG.LOGOUT_URL}?id_token_hint=${idToken}&post_logout_redirect_uri=${CONFIG.REDIRECT_URI}`;
+export const logout = () => {
+    // the backend builds the identity server logout redirect (with id_token_hint) server-side,
+    // since the id token is HttpOnly and never available to frontend JavaScript
+    window.location.href = `${CONFIG.BACKEND_URL}/logout`;
     localStorage.setItem("userId" , null)
 }

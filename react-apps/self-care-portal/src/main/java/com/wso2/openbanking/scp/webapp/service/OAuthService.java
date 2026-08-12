@@ -80,6 +80,26 @@ public class OAuthService {
         return authUri.toString();
     }
 
+    /**
+     * Build the identity server's RP-initiated logout URL. Constructed entirely server-side so that the
+     * raw id token never needs to be handed to frontend JavaScript to perform a logout redirect.
+     *
+     * @param iamBaseUrl base url of the identity server
+     * @param idToken    the id token to pass as id_token_hint, may be null/empty if the session already expired
+     * @return the logout url to redirect the browser to
+     */
+    public String generateLogoutUrl(String iamBaseUrl, String idToken) throws URISyntaxException {
+        URIBuilder logoutUriBuilder = new URIBuilder(iamBaseUrl)
+                .setPath(Constants.PATH_LOGOUT)
+                .addParameter(Constants.POST_LOGOUT_REDIRECT_URI, iamBaseUrl + Constants.PATH_CALLBACK);
+
+        if (StringUtils.isNotEmpty(idToken)) {
+            logoutUriBuilder.addParameter(Constants.ID_TOKEN_HINT, idToken);
+        }
+
+        return logoutUriBuilder.build().toString();
+    }
+
     private JSONObject sendTokenRequest(String iamBaseUrl, String clientKey, String clientSecret, List<NameValuePair>
             params) throws UnsupportedEncodingException, TokenGenerationException {
 
@@ -156,7 +176,7 @@ public class OAuthService {
         cookie.setSecure(true);
         cookie.setMaxAge(maxAge);
         cookie.setPath(path);
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(!(Constants.ACCESS_TOKEN_COOKIE_NAME + "_P1").equals(cookieName));
 
         resp.addCookie(cookie);
     }

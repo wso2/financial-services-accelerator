@@ -75,6 +75,26 @@ public class OAuthServiceTest extends PowerMockTestCase {
 
     }
 
+    @Test(description = "method should return a logout url containing the id token hint")
+    public void testGenerateLogoutUrl() throws URISyntaxException {
+        String logoutUrl = uut.generateLogoutUrl(IAM_BASE_URL, "dummy-id-token");
+        URI uri = new URI(logoutUrl);
+
+        Assert.assertEquals(uri.getHost(), "localhost");
+        Assert.assertEquals(uri.getPath(), Constants.PATH_LOGOUT);
+        Assert.assertTrue(uri.getQuery().contains("id_token_hint=dummy-id-token"));
+        Assert.assertTrue(uri.getQuery().contains("post_logout_redirect_uri"));
+    }
+
+    @Test(description = "method should return a logout url without id_token_hint when id token is absent")
+    public void testGenerateLogoutUrlWithoutIdToken() throws URISyntaxException {
+        String logoutUrl = uut.generateLogoutUrl(IAM_BASE_URL, null);
+        URI uri = new URI(logoutUrl);
+
+        Assert.assertFalse(uri.getQuery().contains("id_token_hint"));
+        Assert.assertTrue(uri.getQuery().contains("post_logout_redirect_uri"));
+    }
+
     @Test
     public void testSendAccessTokenRequest() throws TokenGenerationException, UnsupportedEncodingException {
         PowerMockito.mockStatic(Utils.class);

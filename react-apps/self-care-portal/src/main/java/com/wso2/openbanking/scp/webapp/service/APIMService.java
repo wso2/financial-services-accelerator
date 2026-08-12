@@ -86,6 +86,26 @@ public class APIMService implements Serializable {
         return Optional.empty();
     }
 
+    /**
+     * Reconstruct the id token from its two cookie halves. Both halves are HttpOnly and are read here
+     * server-side only, so the id token itself is never exposed to frontend JavaScript.
+     *
+     * @param req the servlet request carrying the id token cookies
+     * @return the reconstructed id token, if both cookie halves are present
+     */
+    public Optional<String> constructIdTokenFromCookies(HttpServletRequest req) {
+        Optional<Cookie> idTokenPart1 = Utils
+                .getCookieFromRequest(req, Constants.ID_TOKEN_COOKIE_NAME + "_P1");
+
+        Optional<Cookie> idTokenPart2 = Utils
+                .getCookieFromRequest(req, Constants.ID_TOKEN_COOKIE_NAME + "_P2");
+
+        if (idTokenPart1.isPresent() && idTokenPart2.isPresent()) {
+            return Optional.of(idTokenPart1.get().getValue() + idTokenPart2.get().getValue());
+        }
+        return Optional.empty();
+    }
+
     public void forwardRequest(HttpServletResponse resp, HttpUriRequest httpRequest, Map<String, String> headers)
             throws TokenGenerationException {
         // adding headers to request

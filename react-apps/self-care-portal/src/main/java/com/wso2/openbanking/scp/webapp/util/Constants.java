@@ -40,6 +40,11 @@ public class Constants {
     public static final String REFRESH_TOKEN = "refresh_token";
     public static final String EXPIRES_IN = "expires_in";
 
+    public static final String ID_TOKEN_HINT = "id_token_hint";
+    public static final String POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri";
+    public static final String CLAIM_SUB = "sub";
+    public static final String CLAIM_USER_ROLE = "user_role";
+
     public static final String COOKIE_BASE_NAME = "OB_SCP_";
     public static final String ACCESS_TOKEN_COOKIE_NAME = COOKIE_BASE_NAME + "AT";
     public static final String ID_TOKEN_COOKIE_NAME = COOKIE_BASE_NAME + "IT";
