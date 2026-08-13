@@ -20,6 +20,7 @@ package org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -35,6 +36,7 @@ import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -44,11 +46,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.C
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidateRequest;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.validate.model.ConsentValidationResult;
+import org.wso2.financial.services.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Consent validator default implementation.
@@ -60,11 +65,14 @@ public class DefaultConsentValidator implements ConsentValidator {
     private static final String ACCOUNTS_REGEX = "/accounts/[^/?]*";
     private static final String TRANSACTIONS_REGEX = "/accounts/[^/?]*/transactions";
     private static final String BALANCES_REGEX = "/accounts/[^/?]*/balances";
+    private static final Pattern ACCOUNT_ID_PATH_PATTERN =
+            Pattern.compile("^/accounts/([^/?]+)(?:/transactions|/balances)?$");
     private static final String COF_SUBMISSION_PATH = "/funds-confirmations";
     private static final String PERMISSION_MISMATCH_ERROR = "Permission mismatch. Consent does not contain necessary " +
             "permissions";
     private static final String INVALID_URI_ERROR = "Path requested is invalid";
     private static final String CONSENT_EXPIRED_ERROR = "Provided consent is expired";
+    private static final String INVALID_ACCOUNT_ID_ERROR = "Account Id requested is not consented for the user";
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -289,6 +297,20 @@ public class DefaultConsentValidator implements ConsentValidator {
             consentValidationResult.setErrorCode(ResponseStatus.FORBIDDEN.getReasonPhrase());
             consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
             return;
+        }
+
+        // Perform Account Id Validation for endpoints that carry an account id in the request path.
+        if (!uri.matches(ACCOUNTS_BULK_REGEX)) {
+            String accountId = extractAccountIdFromPath(uri);
+            if (StringUtils.isBlank(accountId) ||
+                    !isAccountIdConsented(accountId, consentValidateData.getComprehensiveConsent())) {
+                log.error(INVALID_ACCOUNT_ID_ERROR);
+                consentValidationResult.setValid(false);
+                consentValidationResult.setErrorMessage(INVALID_ACCOUNT_ID_ERROR);
+                consentValidationResult.setErrorCode(ResponseStatus.UNAUTHORIZED.getReasonPhrase());
+                consentValidationResult.setHttpCode(HttpStatus.SC_UNAUTHORIZED);
+                return;
+            }
         }
 
         //Consent Status Validation
@@ -517,5 +539,44 @@ public class DefaultConsentValidator implements ConsentValidator {
             log.error("Error occurred while comparing the JSON Objects", e);
             return false;
         }
+    }
+
+    /**
+     * Extract the account id sent in the request path for account retrieval endpoints.
+     *
+     * @param uri  Request URI
+     * @return  Account id present in the path, null if not found
+     */
+    private static String extractAccountIdFromPath(String uri) {
+
+        Matcher matcher = ACCOUNT_ID_PATH_PATTERN.matcher(uri);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    /**
+     * Check whether the given account id is present in the active consent mapping resources of the consent.
+     *
+     * @param accountId              Account id extracted from the request path
+     * @param comprehensiveConsent   Consent resource containing the consent mapping resources
+     * @return  Whether the account id is consented
+     */
+    private static boolean isAccountIdConsented(String accountId, DetailedConsentResource comprehensiveConsent) {
+
+        ArrayList<ConsentMappingResource> consentMappingResources =
+                comprehensiveConsent.getConsentMappingResources();
+        if (consentMappingResources == null) {
+            return false;
+        }
+
+        for (ConsentMappingResource mappingResource : consentMappingResources) {
+            if (accountId.equals(mappingResource.getAccountID()) &&
+                    ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS.equals(mappingResource.getMappingStatus())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

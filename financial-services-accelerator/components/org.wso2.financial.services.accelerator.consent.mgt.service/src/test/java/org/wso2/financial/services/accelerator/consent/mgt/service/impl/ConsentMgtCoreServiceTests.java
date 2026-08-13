@@ -32,6 +32,7 @@ import org.wso2.carbon.identity.oauth2.model.AccessTokenDO;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.DatabaseUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.ConsentCoreDAO;
+import org.wso2.financial.services.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataDeletionException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataInsertionException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.exceptions.ConsentDataRetrievalException;
@@ -3309,5 +3310,226 @@ public class ConsentMgtCoreServiceTests {
 
         boolean result = consentCoreServiceImpl.updateConsentMappingResources(mappingResources);
         Assert.assertTrue(result);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testGetConsentNotFound() throws Exception {
+
+        doThrow(new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG))
+                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+
+        consentCoreServiceImpl.getConsent(ConsentMgtServiceTestData
+                .getSampleStoredConsentResource().getConsentID(), false);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testGetConsentAttributesWithAttributeKeysConsentNotFound() throws Exception {
+
+        doReturn(null).when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+
+        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID,
+                ConsentMgtServiceTestData.SAMPLE_CONSENT_ATTRIBUTES_KEYS);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testGetConsentAttributesConsentNotFound() throws Exception {
+
+        doReturn(null).when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+
+        consentCoreServiceImpl.getConsentAttributes(ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID);
+    }
+
+    @Test
+    public void testCreateConsentFileWithoutApplicableStatus() throws Exception {
+
+        doReturn(ConsentMgtServiceTestData
+                        .getSampleTestConsentResource(ConsentMgtServiceTestData.AWAITING_UPLOAD_STATUS))
+                .when(mockedConsentCoreDAO).getConsentResource(any(), anyString());
+        doReturn(true).when(mockedConsentCoreDAO).storeConsentFile(any(), any());
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+
+        boolean result = consentCoreServiceImpl.createConsentFile(ConsentMgtServiceTestData
+                        .getSampleConsentFileObject(ConsentMgtServiceTestData.SAMPLE_CONSENT_FILE),
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_USER_ID);
+
+        Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testGetConsentsEligibleForExpiration() throws Exception {
+
+        ArrayList<DetailedConsentResource> expiringConsents = new ArrayList<>();
+        expiringConsents.add(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource());
+        doReturn(expiringConsents).when(mockedConsentCoreDAO).getExpiringConsents(any(), anyString());
+
+        ArrayList<DetailedConsentResource> result = consentCoreServiceImpl
+                .getConsentsEligibleForExpiration(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.size(), 1);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testGetConsentsEligibleForExpirationDataRetrieveError() throws Exception {
+
+        doThrow(ConsentDataRetrievalException.class).when(mockedConsentCoreDAO)
+                .getExpiringConsents(any(), anyString());
+
+        consentCoreServiceImpl.getConsentsEligibleForExpiration(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS);
+    }
+
+    @Test
+    public void testReAuthorizeConsentWithNewAuthResourceDeactivatesExistingMappings() throws Exception {
+
+        AuthorizationResource authorizationResource = ConsentMgtServiceTestData
+                .getSampleTestAuthorizationResource(sampleID, null);
+        ArrayList<String> consentIDs = new ArrayList<>();
+        consentIDs.add(sampleID);
+        ArrayList<AuthorizationResource> existingAuthResources =
+                ConsentMgtServiceTestData.getSampleAuthorizationResourcesList(consentIDs);
+
+        doReturn(existingAuthResources).when(mockedConsentCoreDAO).searchConsentAuthorizations(any(), anyString(),
+                anyString());
+        doNothing().when(mockedConsentCoreDAO).updateAuthorizationStatus(any(), anyString(), anyString());
+        // Return a non-empty mapping list so the deactivation lambda actually executes.
+        doReturn(ConsentMgtServiceTestData.getSampleConsentMappingResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1))))
+                .when(mockedConsentCoreDAO).getConsentMappingResources(any(), anyString());
+        doReturn(authorizationResource).when(mockedConsentCoreDAO).storeAuthorizationResource(any(),
+                any(AuthorizationResource.class));
+        doReturn(ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource())
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), anyString());
+        doReturn(ConsentMgtServiceTestData
+                        .getSampleTestConsentMappingResource(sampleID))
+                .when(mockedConsentCoreDAO).storeConsentMappingResource(any(),
+                        any(ConsentMappingResource.class));
+        doNothing().when(mockedConsentCoreDAO).updateConsentMappingStatus(any(),
+                any(), anyString());
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+        doReturn(ConsentMgtServiceTestData
+                        .getSampleTestConsentStatusAuditRecord(sampleID,
+                                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS))
+                .when(mockedConsentCoreDAO).storeConsentStatusAuditRecord(any(),
+                        any(ConsentStatusAuditRecord.class));
+
+        boolean result = consentCoreServiceImpl.reAuthorizeConsentWithNewAuthResource(sampleID, sampleID,
+                ConsentMgtServiceTestData.SAMPLE_ACCOUNT_IDS_AND_PERMISSIONS_MAP,
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_STATUS);
+
+        Assert.assertTrue(result);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testUpdateAuthorizationResourcesWithoutAuthID() throws Exception {
+
+        List<AuthorizationResource> authorizationResources = new ArrayList<>();
+        authorizationResources.add(new AuthorizationResource());
+
+        consentCoreServiceImpl.updateAuthorizationResources(authorizationResources);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testUpdateAuthorizationResourcesDataUpdateError() throws Exception {
+
+        List<AuthorizationResource> authorizationResources =
+                ConsentMgtServiceTestData.getSampleAuthorizationResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.CONSENT_ID)));
+
+        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
+                .updateAuthorizationResources(any(), anyList());
+
+        consentCoreServiceImpl.updateAuthorizationResources(authorizationResources);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testCreateConsentMappingResourcesWithoutMandatoryParameters() throws Exception {
+
+        List<ConsentMappingResource> inputResources = new ArrayList<>();
+        inputResources.add(new ConsentMappingResource());
+
+        consentCoreServiceImpl.createConsentMappingResources(inputResources);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testCreateConsentMappingResourcesDataInsertError() throws Exception {
+
+        List<ConsentMappingResource> inputResources =
+                ConsentMgtServiceTestData.getSampleConsentMappingResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1)));
+
+        doThrow(ConsentDataInsertionException.class).when(mockedConsentCoreDAO)
+                .storeConsentMappingResources(any(), eq(inputResources));
+
+        consentCoreServiceImpl.createConsentMappingResources(inputResources);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentMappingResourcesWithoutMandatoryParameters() throws Exception {
+
+        List<ConsentMappingResource> mappingResources = new ArrayList<>();
+        mappingResources.add(new ConsentMappingResource());
+
+        consentCoreServiceImpl.updateConsentMappingResources(mappingResources);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testUpdateConsentMappingResourcesDataUpdateError() throws Exception {
+
+        List<ConsentMappingResource> mappingResources =
+                ConsentMgtServiceTestData.getSampleConsentMappingResourcesList(
+                        new ArrayList<>(List.of(ConsentMgtServiceTestData.SAMPLE_AUTHORIZATION_ID_1)));
+
+        doThrow(ConsentDataUpdationException.class).when(mockedConsentCoreDAO)
+                .updateConsentMappingResources(any(), eq(mappingResources));
+
+        consentCoreServiceImpl.updateConsentMappingResources(mappingResources);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeConsentWithReasonNoUserIDsForTokenRevocation() throws Exception {
+
+        DetailedConsentResource retrievedDetailedConsentResource =
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
+        retrievedDetailedConsentResource.setAuthorizationResources(new ArrayList<>());
+
+        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), any());
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+
+        consentCoreServiceImpl.revokeConsentWithReason(
+                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID, true,
+                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeConsentWithReasonUserIDMismatch() throws Exception {
+
+        DetailedConsentResource retrievedDetailedConsentResource =
+                ConsentMgtServiceTestData.getSampleDetailedStoredTestConsentResource();
+
+        doReturn(retrievedDetailedConsentResource).when(mockedConsentCoreDAO)
+                .getDetailedConsentResource(any(), any());
+        doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(), anyString());
+
+        consentCoreServiceImpl.revokeConsentWithReason(
+                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                "someone-else@wso2.com", true,
+                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
+    }
+
+    @Test (expectedExceptions = ConsentManagementException.class)
+    public void testRevokeConsentWithReasonConsentNotFound() throws Exception {
+
+        doThrow(new ConsentDataRetrievalException(ConsentMgtDAOConstants.NO_RECORDS_FOUND_ERROR_MSG))
+                .when(mockedConsentCoreDAO).getDetailedConsentResource(any(), any());
+
+        consentCoreServiceImpl.revokeConsentWithReason(
+                ConsentMgtServiceTestData.UNMATCHED_CONSENT_ID, ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS,
+                ConsentMgtServiceTestData.SAMPLE_USER_ID, false,
+                ConsentCoreServiceConstants.CONSENT_REVOKE_REASON);
     }
 }

@@ -18,16 +18,36 @@
 
 package org.wso2.financial.services.accelerator.common.exception;
 
+import org.wso2.financial.services.accelerator.common.constant.ErrorConstants;
+
 /**
  * Used for handling exceptions in consent management component.
  */
 public class ConsentManagementException extends FinancialServicesException {
 
+    private final ErrorConstants.ConsentMgtErrorCodes errorCode;
+
     public ConsentManagementException(String message) {
         super(message);
+        this.errorCode = ErrorConstants.ConsentMgtErrorCodes.INTERNAL_ERROR;
     }
 
     public ConsentManagementException(String message, Throwable e) {
         super(message, e);
+        this.errorCode = ErrorConstants.ConsentMgtErrorCodes.INTERNAL_ERROR;
+    }
+
+    public ConsentManagementException(ErrorConstants.ConsentMgtErrorCodes errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public ConsentManagementException(ErrorConstants.ConsentMgtErrorCodes errorCode, String message, Throwable e) {
+        super(message, e);
+        this.errorCode = errorCode;
+    }
+
+    public ErrorConstants.ConsentMgtErrorCodes getErrorCode() {
+        return errorCode;
     }
 }
