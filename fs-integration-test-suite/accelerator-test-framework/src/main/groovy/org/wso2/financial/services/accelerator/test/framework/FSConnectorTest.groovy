@@ -736,11 +736,15 @@ class FSConnectorTest extends CommonTest{
 
                     WebDriverWait wait = new WebDriverWait(driver, 10)
                     if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                        WebElement btnAccounts = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnAccounts)
                     }
 
                     if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                        WebElement btnPayments = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnPayments)
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
@@ -773,7 +777,9 @@ class FSConnectorTest extends CommonTest{
 
                     WebDriverWait wait = new WebDriverWait(driver, 60)
                     if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                        WebElement btnAccounts = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnAccounts)
                     }
 
                     WebElement btnConfirm = wait.until(
@@ -996,11 +1002,15 @@ class FSConnectorTest extends CommonTest{
 
                     WebDriverWait wait = new WebDriverWait(driver, 10)
                     if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                        WebElement btnAccounts = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnAccounts)
                     }
 
                     if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                        WebElement btnPayments = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnPayments)
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
@@ -1146,11 +1156,15 @@ class FSConnectorTest extends CommonTest{
 
                     WebDriverWait wait = new WebDriverWait(driver, 10)
                     if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                        WebElement btnAccounts = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnAccounts)
                     }
 
                     if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                        WebElement btnPayments = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnPayments)
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
