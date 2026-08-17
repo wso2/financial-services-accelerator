@@ -212,7 +212,6 @@ public class FinancialServicesConstants {
     public static final String BASIC_TAG = "Basic ";
     public static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final String SCOPE = "scope";
-    public static final String AUTHORIZATION_DETAILS = "authorization_details";
     public static final String REQUEST_OBJECT = "requestObject";
     public static final String REQUEST_PARAM = "requestParam";
     public static final String REGULATORY = "regulatory";

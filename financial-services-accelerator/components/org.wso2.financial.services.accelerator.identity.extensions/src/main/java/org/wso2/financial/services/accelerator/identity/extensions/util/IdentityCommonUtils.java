@@ -33,6 +33,7 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
+import org.wso2.carbon.identity.oauth2.rar.util.AuthorizationDetailsUtils;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
@@ -239,7 +240,7 @@ public class IdentityCommonUtils {
                                                      List<String> scopeBasedConsentScopes) {
 
         // Checking if RAR is used in the request. If RAR is used, we consider it as a non pre-initiated consent flow.
-        if (oauthAuthzMsgCtx.getRequestedAuthorizationDetails() != null) {
+        if (AuthorizationDetailsUtils.isRichAuthorizationRequest(oauthAuthzMsgCtx)) {
             return false;
         }
 

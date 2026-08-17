@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.carbon.identity.oauth.rar.util.AuthorizationDetailsConstants;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
@@ -331,7 +332,7 @@ public class ConsentAuthorizeUtil {
         String requestObject = extractRequestObject(consentData.getSpQueryParams());
         JSONObject requestParameters = getRequestObjectJson(requestObject);
         String scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
-        JSONArray authorizationDetails = requestParameters.optJSONArray(FinancialServicesConstants
+        JSONArray authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
                 .AUTHORIZATION_DETAILS);
 
         return FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
