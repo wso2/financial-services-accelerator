@@ -19,6 +19,8 @@
 package org.wso2.financial.services.accelerator.common.test.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.testng.Assert;
@@ -151,22 +153,24 @@ public class FinancialServicesUtilsTest {
     }
 
     @Test(dataProviderClass = FinancialServicesUtilsTest.class, dataProvider = "consentFlowTypesForScopes")
-    public void testisPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
-                                              List<String> scopeBasedConsentScopes,
-                                              boolean expected) {
+    public void testisPreInitiatedConsentFlow(String scope, JSONArray authorizationDetails,
+                                             List<String> preInitiatedConsentScopes,
+                                             List<String> scopeBasedConsentScopes,
+                                             boolean expected) {
 
-        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, null, preInitiatedConsentScopes,
-                scopeBasedConsentScopes);
+        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
         Assert.assertEquals(result, expected);
     }
 
     @Test(dataProviderClass = FinancialServicesUtilsTest.class, dataProvider = "consentFlowTypesForScopeList")
-    public void testisPreInitiatedConsentFlow(String[] scope, List<String> preInitiatedConsentScopes,
+    public void testisPreInitiatedConsentFlow(String[] scope, JSONArray authorizationDetails,
+                                              List<String> preInitiatedConsentScopes,
                                               List<String> scopeBasedConsentScopes,
                                               boolean expected) {
 
-        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
-                null, preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean result = FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
         Assert.assertEquals(result, expected);
     }
 
@@ -174,11 +178,22 @@ public class FinancialServicesUtilsTest {
     public Object[][] getConsentFlowTypesForScopes() {
 
         return new Object[][] {
-                {"accounts", Collections.emptyList(), Collections.emptyList(), true},
-                {"accounts", Collections.singletonList("payments"), Collections.singletonList("accounts"), false},
-                {"payments", Collections.singletonList("payments"), Collections.singletonList("accounts"), true},
-                {"accounts", List.of("payments", "accounts"), Collections.emptyList(), true},
-                {"accounts", Collections.emptyList(), List.of("payments", "accounts"), false}
+                // scope, authorizationDetails, preInitiatedConsentScopes, scopeBasedConsentScopes, expected
+                {"accounts", null, Collections.emptyList(), Collections.emptyList(), true},
+                {"accounts", null, Collections.singletonList("payments"), Collections.singletonList("accounts"),
+                        false},
+                {"payments", null, Collections.singletonList("payments"), Collections.singletonList("accounts"),
+                        true},
+                {"accounts", null, List.of("payments", "accounts"), Collections.emptyList(), true},
+                {"accounts", null, Collections.emptyList(), List.of("payments", "accounts"), false},
+                // RAR (authorization_details) must override scope-based determination unconditionally.
+                {"accounts", sampleAuthorizationDetails(), Collections.singletonList("accounts"),
+                        Collections.emptyList(), false},
+                {"accounts", sampleAuthorizationDetails(), Collections.emptyList(),
+                        Collections.singletonList("accounts"), false},
+                {"", sampleAuthorizationDetails(), Collections.emptyList(), Collections.emptyList(), false},
+                // An empty authorization_details array is not RAR, so it must fall back to scope matching.
+                {"accounts", new JSONArray(), Collections.emptyList(), Collections.singletonList("accounts"), false}
         };
     }
 
@@ -186,14 +201,50 @@ public class FinancialServicesUtilsTest {
     public Object[][] getConsentFlowTypesForScopeList() {
 
         return new Object[][] {
-                {new String[] {"accounts", "openid"}, Collections.emptyList(), Collections.emptyList(), true},
-                {new String[] {"accounts", "openid"}, Collections.singletonList("payments"),
+                // scope, authorizationDetails, preInitiatedConsentScopes, scopeBasedConsentScopes, expected
+                {new String[] {"accounts", "openid"}, null, Collections.emptyList(), Collections.emptyList(), true},
+                {new String[] {"accounts", "openid"}, null, Collections.singletonList("payments"),
                         Collections.singletonList("accounts"), false},
-                {new String[] {"payments", "openid"}, Collections.singletonList("payments"),
+                {new String[] {"payments", "openid"}, null, Collections.singletonList("payments"),
                         Collections.singletonList("accounts"), true},
-                {new String[] {"accounts", "openid"}, List.of("payments", "accounts"), Collections.emptyList(), true},
-                {new String[] {"accounts", "openid"}, Collections.emptyList(), List.of("payments", "accounts"), false}
+                {new String[] {"accounts", "openid"}, null, List.of("payments", "accounts"),
+                        Collections.emptyList(), true},
+                {new String[] {"accounts", "openid"}, null, Collections.emptyList(),
+                        List.of("payments", "accounts"), false},
+                // RAR (authorization_details) must override scope-based determination unconditionally.
+                {new String[] {"accounts", "openid"}, sampleAuthorizationDetails(),
+                        Collections.singletonList("accounts"), Collections.emptyList(), false},
+                {new String[] {"accounts", "openid"}, sampleAuthorizationDetails(), Collections.emptyList(),
+                        Collections.singletonList("accounts"), false},
+                {null, sampleAuthorizationDetails(), Collections.emptyList(), Collections.emptyList(), false},
+                {new String[] {}, sampleAuthorizationDetails(), Collections.emptyList(), Collections.emptyList(),
+                        false},
+                // An empty authorization_details array is not RAR, so it must fall back to scope matching.
+                {new String[] {"accounts", "openid"}, new JSONArray(), Collections.emptyList(),
+                        Collections.singletonList("accounts"), false}
         };
+    }
+
+    /**
+     * Builds a fresh, non-empty "authorization_details" JSON array for RAR-based test scenarios.
+     */
+    private static JSONArray sampleAuthorizationDetails() {
+        return new JSONArray().put(new JSONObject().put("type", "payments"));
+    }
+
+    @Test
+    public void testIsRarBasedConsentFlowReturnsFalseForNull() {
+        Assert.assertFalse(FinancialServicesUtils.isRarBasedConsentFlow(null));
+    }
+
+    @Test
+    public void testIsRarBasedConsentFlowReturnsFalseForEmptyArray() {
+        Assert.assertFalse(FinancialServicesUtils.isRarBasedConsentFlow(new JSONArray()));
+    }
+
+    @Test
+    public void testIsRarBasedConsentFlowReturnsTrueForNonEmptyArray() {
+        Assert.assertTrue(FinancialServicesUtils.isRarBasedConsentFlow(sampleAuthorizationDetails()));
     }
 
     @Test
