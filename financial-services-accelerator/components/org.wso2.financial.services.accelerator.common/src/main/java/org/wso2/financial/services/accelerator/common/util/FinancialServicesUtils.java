@@ -325,11 +325,7 @@ public class FinancialServicesUtils {
             return true;
         }
 
-        String[] scopeList = scopes.split(" ");
-
-        if (scopeList.length == 0) {
-            return true;
-        }
+        String[] scopeList = StringUtils.split(scopes);
 
         for (String scope : scopeList) {
             if (preInitiatedConsentScopes.contains(scope)) {

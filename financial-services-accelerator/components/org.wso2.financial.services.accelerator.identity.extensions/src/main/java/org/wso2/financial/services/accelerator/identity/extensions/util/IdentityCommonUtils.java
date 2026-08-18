@@ -233,7 +233,7 @@ public class IdentityCommonUtils {
      * @param oauthAuthzMsgCtx          The OAuth authorization request message context.
      * @param preInitiatedConsentScopes List of scopes configured for pre-initiated consent flows.
      * @param scopeBasedConsentScopes   List of scopes configured for scope-based consent flows.
-     * @return
+     * @return true if the request should be treated as pre-initiated; false otherwise
      */
     private static boolean isPreInitiatedConsentFlow(OAuthAuthzReqMessageContext oauthAuthzMsgCtx,
                                                      List<String> preInitiatedConsentScopes,
