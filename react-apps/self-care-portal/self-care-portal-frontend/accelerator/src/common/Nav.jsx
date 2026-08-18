@@ -34,7 +34,7 @@ import { userIdAdjustment } from "../services/utils.js";
 export const Nav = (user) => {
 
   const handleLogout = () => {
-    logout(user.idToken)
+    logout()
   };
 
   const showQR = () => {

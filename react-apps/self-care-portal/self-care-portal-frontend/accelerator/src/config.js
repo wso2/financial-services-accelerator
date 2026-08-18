@@ -30,8 +30,6 @@ export const CONFIG = {
     TENANT_DOMAIN:window.env.TENANT_DOMAIN,
     TOKEN_ENDPOINT: serverUrl + "/oauth2/token",
     AUTHORIZE_ENDPOINT: serverUrl + "/consentmgr/scp_oauth2_authorize",
-    LOGOUT_URL: serverUrl + "/oidc/logout",
-    REDIRECT_URI: serverUrl + "/consentmgr/scp_oauth2_callback",
     BACKEND_URL: serverUrl + "/consentmgr/scp",
     NUMBER_OF_CONSENTS: window.env.NUMBER_OF_CONSENTS,
     VERSION: window.env.VERSION,
