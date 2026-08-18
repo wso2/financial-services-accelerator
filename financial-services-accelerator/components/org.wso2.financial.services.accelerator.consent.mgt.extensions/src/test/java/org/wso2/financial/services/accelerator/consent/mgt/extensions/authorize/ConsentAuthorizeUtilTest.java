@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
@@ -35,10 +36,14 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestU
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Test class for ConsentAuthorizeUtil.
@@ -122,6 +127,39 @@ public class ConsentAuthorizeUtilTest {
                 TestConstants.PAYMENT_INITIATION, TestConstants.AWAITING_AUTH_STATUS);
         JSONObject consentJson = ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(consentResource);
         assertNotNull(consentJson);
+    }
+
+    @Test
+    public void testIsPreInitiatedConsentFlowReturnsFalseWhenRarBased() {
+
+        // JWT payload: {"scope":"accounts","authorization_details":[{"type":"payment_initiation"}]}
+        String requestObject = "eyJhbGciOiJIUzI1NiJ9." +
+                "eyJzY29wZSI6ImFjY291bnRzIiwiYXV0aG9yaXphdGlvbl9kZXRhaWxzIjpbeyJ0eXBlIjoicGF5bWVudF9pbml0" +
+                "aWF0aW9uIn1dfQ" +
+                ".sig";
+        ConsentData consentData = new ConsentData("sessionKey", "user1", "request=" + requestObject,
+                "accounts", "app", Map.of());
+
+        // Even though "accounts" is configured as a pre-initiated scope, the authorization_details claim
+        // must take precedence and force a non-pre-initiated (RAR-based) result.
+        boolean result = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(consentData,
+                Collections.singletonList("accounts"), Collections.emptyList());
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testIsPreInitiatedConsentFlowFallsBackToScopeWhenNoAuthorizationDetails() {
+
+        // JWT payload: {"scope":"accounts"} - no authorization_details claim at all.
+        String requestObject = "eyJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6ImFjY291bnRzIn0.sig";
+        ConsentData consentData = new ConsentData("sessionKey", "user1", "request=" + requestObject,
+                "accounts", "app", Map.of());
+
+        boolean result = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(consentData,
+                Collections.singletonList("accounts"), Collections.emptyList());
+
+        assertTrue(result);
     }
 
     private static String decodeRequestObjectPayload(String requestObject) {

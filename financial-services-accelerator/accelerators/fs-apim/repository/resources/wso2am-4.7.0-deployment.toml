@@ -432,3 +432,8 @@ required="false"
 mask="false"
 multiple="false"
 priority="2"
+
+[[resource.access_control]]
+context = "(.*)/api/fs/backend/(.*)"
+secure = false
+http_method = "all"

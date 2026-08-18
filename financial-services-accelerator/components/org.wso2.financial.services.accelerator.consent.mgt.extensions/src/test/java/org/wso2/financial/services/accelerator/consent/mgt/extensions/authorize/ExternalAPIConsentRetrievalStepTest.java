@@ -343,6 +343,8 @@ public class ExternalAPIConsentRetrievalStepTest {
                 .thenReturn(new JSONObject());
         authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.extractConsentIdFromRequestObject(anyString()))
                 .thenReturn("consent123");
+        authorizeUtilMockedStatic.when(() -> ConsentAuthorizeUtil.isPreInitiatedConsentFlow(any(), any(), any()))
+                .thenReturn(true);
 
         // Execute
         consentRetrievalStep = new ExternalAPIConsentRetrievalStep();
