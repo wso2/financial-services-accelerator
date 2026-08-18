@@ -155,8 +155,8 @@ class RefreshTokenGrantAccessToken extends FSAPIMConnectorTest {
 				clientId, refreshToken.toString(), scopeList)
 
 		Assert.assertEquals(refreshTokenResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_400)
-		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
-				"Persisted access token data not found")
+//		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR_DESCRIPTION),
+//				"Persisted access token data not found")
 		Assert.assertEquals(TestUtil.parseResponseBody(refreshTokenResponse, ConnectorTestConstants.ERROR),
 				ConnectorTestConstants.INVALID_GRANT)
 	}

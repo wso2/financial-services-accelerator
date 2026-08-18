@@ -52,7 +52,7 @@ class AuthorizationFlowValidationTest extends FSAPIMConnectorTest {
         Assert.assertEquals(consentResponse.getStatusCode(), ConnectorTestConstants.STATUS_CODE_201)
 
         //Authorise Consent
-        doCofConsentDeny(scopeList)
+        consentDenial(configuration.getAppInfoClientID(), scopeList)
         Assert.assertEquals(denyResponse, "User+denied+the+consent")
 
         //Retrieve Consent Status
