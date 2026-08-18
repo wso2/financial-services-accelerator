@@ -25,8 +25,18 @@ function denyConsent() {
 // Confirm sharing data
 function approvedConsent() {
     updateAccountNamesFromPermissions();
+    // Submit the consent form to the verify servlet for OTP generation
+    var consentForm = document.getElementById('oauth2_authz_confirm');
     document.getElementById('consent').value = true;
-    document.getElementById("oauth2_authz_confirm").submit();
+    consentForm.action = 'consent_smsotp.do';
+    consentForm.method = 'post';
+    // Include an action marker so servlet knows this is initial step
+    var otpMarker = document.createElement('input');
+    otpMarker.type = 'hidden';
+    otpMarker.name = 'otpAction';
+    otpMarker.value = 'init';
+    consentForm.appendChild(otpMarker);
+    consentForm.submit();
 }
 
 // Confirm accounts selected
