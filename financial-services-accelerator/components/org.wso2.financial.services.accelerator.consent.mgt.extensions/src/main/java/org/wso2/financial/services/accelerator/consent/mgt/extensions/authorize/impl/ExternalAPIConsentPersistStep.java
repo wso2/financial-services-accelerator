@@ -32,7 +32,6 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -111,8 +110,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                    consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+            boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
             if (log.isDebugEnabled()) {
                 log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
             }
@@ -244,8 +243,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private void persistConsent(ExternalAPIConsentResourceResponseDTO responseConsentResource,
                                 ConsentData consentData) throws ConsentManagementException {
 
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
 
         if (isPreInitiatedConsentFlow) {
             // Get the existing authorization resource for the initiated consent

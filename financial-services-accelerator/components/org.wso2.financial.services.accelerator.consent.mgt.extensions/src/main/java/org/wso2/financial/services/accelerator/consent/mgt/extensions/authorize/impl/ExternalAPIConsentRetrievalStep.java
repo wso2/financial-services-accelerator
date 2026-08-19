@@ -32,7 +32,6 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.common.validator.FinancialServicesValidator;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -103,8 +102,8 @@ public class ExternalAPIConsentRetrievalStep implements ConsentRetrievalStep {
             consentId = ConsentAuthorizeUtil.extractConsentIdFromRequestObject(requestObject);
         }
 
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                ConsentAuthorizeUtil.retrieveScopes(consentData), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }

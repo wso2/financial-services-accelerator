@@ -19,6 +19,7 @@
 package org.wso2.financial.services.accelerator.is.test.consent.management.ConsentAuthorisationTest
 
 import org.openqa.selenium.By
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -418,11 +419,15 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
 
                     WebDriverWait wait = new WebDriverWait(driver, 10)
                     if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                        WebElement btnAccounts = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnAccounts)
                     }
 
                     if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                        WebElement btnPayments = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnPayments)
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))
@@ -460,11 +465,15 @@ class AuthorizationFlowValidationTest extends FSConnectorTest {
 
                     WebDriverWait wait = new WebDriverWait(driver, 10)
                     if ((driver.findElements(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)).click()
+                        WebElement btnAccounts = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.CHK_SALARY_SAVER_ACC)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnAccounts)
                     }
 
                     if ((driver.findElements(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH))).displayed) {
-                        driver.findElement(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)).click()
+                        WebElement btnPayments = wait.until(
+                                ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.PAYMENTS_SELECT_XPATH)))
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnPayments)
                     }
                     WebElement btnApprove = wait.until(
                             ExpectedConditions.elementToBeClickable(By.xpath(PageObjects.BTN_APPROVE)))

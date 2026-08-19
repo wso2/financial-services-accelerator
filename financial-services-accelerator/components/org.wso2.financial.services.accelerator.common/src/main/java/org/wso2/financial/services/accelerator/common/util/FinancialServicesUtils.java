@@ -21,9 +21,11 @@ package org.wso2.financial.services.accelerator.common.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientException;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
@@ -41,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -284,38 +287,47 @@ public class FinancialServicesUtils {
     }
 
     /**
-     * Utility method to determine whether the pre-initiated consent flow should be used.
+     * Utility method to determine whether the RAR (Rich Authorization Requests) based consent flow should be used.
+     * A request is considered RAR-based purely by the presence of a non-empty "authorization_details" claim in the
+     * request object, independent of scope configuration.
      *
-     * @param scope                         Scope from the request
-     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
-     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
-     * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
+     * @param authorizationDetails "authorization_details" claim extracted from the request object, or null/empty
+     * @return true if the RAR-based consent flow should be used
      */
-    public static boolean isPreInitiatedConsentFlow(String scope, List<String> preInitiatedConsentScopes,
-                                                    List<String> scopeBasedConsentScopes) {
+    public static boolean isRarBasedConsentFlow(JSONArray authorizationDetails) {
 
-        if (StringUtils.isBlank(scope)) {
-            return true;
-        }
-        return isPreInitiatedConsentFlow(scope.split(" "), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        return authorizationDetails != null && authorizationDetails.length() > 0;
     }
 
     /**
-     * Utility method to determine whether the pre-initiated consent flow should be used.
+     * Utility method to determine whether the pre-initiated consent flow should be used, also accounting for the
+     * RAR (Rich Authorization Requests) based consent flow. The "authorization_details" claim is checked first and
+     * unconditionally: a request carrying it is never pre-initiated, regardless of whether its scope would
+     * otherwise match preInitiatedConsentScopes. Only when it's absent does the existing scope-based determination
+     * run.
      *
-     * @param scopes                        List of Scope from the request
+     * @param scopes                        Scope from the request
+     * @param authorizationDetails          "authorization_details" claim extracted from the request object,
+     *                                      or null/empty
      * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
      * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
-     * @return  true if pre-initiated consent flow should be used, false if scope-based consent flow should be used
+     * @return  true if pre-initiated consent flow should be used
      */
-    public static boolean isPreInitiatedConsentFlow(String[] scopes, List<String> preInitiatedConsentScopes,
+    public static boolean isPreInitiatedConsentFlow(String scopes, JSONArray authorizationDetails,
+                                                    List<String> preInitiatedConsentScopes,
                                                     List<String> scopeBasedConsentScopes) {
 
-        if (scopes == null || scopes.length == 0) {
+        if (isRarBasedConsentFlow(authorizationDetails)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(scopes)) {
             return true;
         }
 
-        for (String scope : scopes) {
+        String[] scopeList = StringUtils.split(scopes);
+
+        for (String scope : scopeList) {
             if (preInitiatedConsentScopes.contains(scope)) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Found in preInitiatedConsentScopes: %s", scope.replaceAll("[\r\n]", "")));
@@ -330,6 +342,25 @@ public class FinancialServicesUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Overload of {@link #isPreInitiatedConsentFlow(String, JSONArray, List, List)} that accepts the scopes
+     * as an array instead of a space-delimited string.
+     *
+     * @param scopes                        Scopes from the request
+     * @param authorizationDetails          "authorization_details" claim extracted from the request object,
+     *                                      or null/empty
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(String[] scopes, JSONArray authorizationDetails,
+                                                    List<String> preInitiatedConsentScopes,
+                                                    List<String> scopeBasedConsentScopes) {
+
+        return isPreInitiatedConsentFlow(scopes == null ? null : String.join(" ", scopes), authorizationDetails,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
     }
 
     /**
@@ -360,5 +391,22 @@ public class FinancialServicesUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Case-insensitive string comparison for ASCII values.
+     *
+     * @param a first string
+     * @param b second string
+     * @return {@code true} if both strings are equal ignoring case, or both are {@code null}
+     */
+    @SuppressFBWarnings(value = "IMPROPER_UNICODE",
+            justification = "Compares ASCII-only values; Unicode edge cases do not apply.")
+    public static boolean equalsIgnoreCase(String a, String b) {
+
+        if (a == null || b == null) {
+            return Objects.equals(a, b);
+        }
+        return a.equalsIgnoreCase(b);
     }
 }

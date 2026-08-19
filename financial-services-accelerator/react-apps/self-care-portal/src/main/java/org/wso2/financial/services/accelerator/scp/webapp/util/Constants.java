@@ -49,6 +49,9 @@ public class Constants {
     public static final String SCP_TOKEN_VALIDITY_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String DEFAULT_COOKIE_PATH = "/consentmgr";
     public static final int DEFAULT_COOKIE_MAX_AGE = 3600; //(60*60) = 1h
+    // Buffer (seconds) subtracted from token expiry when writing the TOKEN_VALIDITY cookie so
+    // the BFF triggers a proactive refresh while the JWT is still valid for IS transport validation.
+    public static final int TOKEN_VALIDITY_BUFFER_SECONDS = 30;
 
     public static final String CONFIG_FILE_NAME = "configurations.properties";
     public static final String LOCATION_OF_CREDENTIALS = "Consent.Portal.Params.IsConfiguredInWebapp";
@@ -63,6 +66,8 @@ public class Constants {
     public static final String PATH_LOGOUT = "/oidc/logout";
     public static final String PATH_CALLBACK = "/consentmgr/scp_oauth2_callback";
     public static final String PATH_AUTHORIZE = "/oauth2/authorize";
+    public static final String ID_TOKEN_HINT = "id_token_hint";
+    public static final String POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri";
     public static final String PREFIX_CONSENT_MANAGER = "/consentmgr/scp";
     public static final String PREFIX_OB_CONSENT = "/api/fs/consent";
     public static final String PATH_APP_RETRIEVAL = "/api/server/v1/applications?attributes=advancedConfigurations," +

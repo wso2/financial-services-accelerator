@@ -44,6 +44,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.util
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.admin.utils.ExternalAPIConsentAdminUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentOperationEnum;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.model.ExternalAPIConsentResourceRequestDTO;
@@ -147,7 +148,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             count = searchResults.length();
             total = results.size();
         } catch (ConsentManagementException e) {
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_SEARCH);
         }
 
         //retrieve the total of the data set queried
@@ -158,7 +159,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                 clientIDs, consentTypes, consentStatuses, userIDs, fromTime, toTime, null, null);
                 total = results.size();
             } catch (ConsentManagementException e) {
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+                throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_SEARCH);
             }
         }
 
@@ -215,7 +216,9 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             String consentId = ConsentAdminUtils.validateAndGetQueryParam(queryParams,
                     ConsentExtensionConstants.CC_CONSENT_ID);
             if (consentId == null) {
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory parameter consent ID not available");
+                log.error("Request missing the mandatory query parameter consentId");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                        "Mandatory parameter consent ID not available", ConsentOperationEnum.CONSENT_REVOKE);
             } else {
                 String userId = ConsentAdminUtils.validateAndGetQueryParam(queryParams,
                         ConsentExtensionConstants.USER_ID_PARAM);
@@ -239,13 +242,13 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                 userId, responseDTO.getRequireTokenRevocation(),
                                 ConsentExtensionConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
                     } catch (FinancialServicesException e) {
-                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
-                                ConsentOperationEnum.CONSENT_DELETE);
+                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                e.getMessage(), ConsentOperationEnum.CONSENT_REVOKE);
                     }
                 } else {
                     if (!ConsentExtensionConstants.AUTHORIZED_STATUS.equals(consentResource.getCurrentStatus())) {
                         throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                                "Consent is not in a revocable status");
+                                "Consent is not in a revocable status", ConsentOperationEnum.CONSENT_REVOKE);
                     } else {
                         coreService
                                 .revokeConsentWithReason(ConsentAdminUtils.validateAndGetQueryParam(queryParams,
@@ -260,8 +263,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             consentAdminData.setResponseStatus(ResponseStatus.OK);
             consentAdminData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Exception occurred while revoking consents", e);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_REVOKE);
         }
     }
 
@@ -275,8 +277,9 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         if (StringUtils.isBlank(consentId)) {
             log.error("Request missing the mandatory query parameter consentId");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter consentId " +
-                    "not available");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Mandatory query parameter consentId not available",
+                    ConsentOperationEnum.CONSENT_AMENDMENT_HISTORY_RETRIEVAL);
         }
 
         int count = 0;
@@ -318,7 +321,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
                 } catch (FinancialServicesException e) {
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
-                            ConsentOperationEnum.CONSENT_SEARCH);
+                            ConsentOperationEnum.CONSENT_AMENDMENT_HISTORY_RETRIEVAL);
                 }
             } else {
 
@@ -327,7 +330,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             }
         } catch (ConsentManagementException e) {
             log.error("Error while retrieving consent amendment history data", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw ConsentExtensionUtils.toConsentExceptionWithCause(e);
         }
 
         JSONObject metadata = new JSONObject();
@@ -347,7 +350,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             consentAdminData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
             log.error("Error while retrieving expiring consents", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw ConsentExtensionUtils.toConsentException(e);
         }
 
     }
@@ -404,7 +407,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             total = results.size();
         } catch (ConsentManagementException e) {
             log.error("Error while retrieving consent status audit data");
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw ConsentExtensionUtils.toConsentExceptionWithCause(e);
         }
 
         //retrieve the total of the data set queried
@@ -415,7 +418,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
                                 null, null);
                 total = results.size();
             } catch (ConsentManagementException e) {
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+                throw ConsentExtensionUtils.toConsentExceptionWithCause(e);
             }
         }
 
@@ -439,8 +442,8 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         if (StringUtils.isBlank(consentId)) {
             log.error("Request missing the mandatory query parameter consentId");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter consentId " +
-                    "not available");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Mandatory query parameter consentId not available", ConsentOperationEnum.CONSENT_FILE_SEARCH);
         }
 
         try {
@@ -449,7 +452,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             response.put(ConsentExtensionConstants.CONSENT_FILE, file.getConsentFile());
         } catch (ConsentManagementException e) {
             log.error("Error while retrieving consent file");
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw ConsentExtensionUtils.toConsentExceptionWithCause(e);
         }
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
@@ -470,14 +473,16 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
 
         if (StringUtils.isBlank(attributeKey) && StringUtils.isBlank(attributeValue)) {
             log.error("Request missing the mandatory query parameters: key and value");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameters 'key' and " +
-                    "'value' are not available");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Mandatory query parameters 'key' and 'value' are not available",
+                    ConsentOperationEnum.CONSENT_ATTRIBUTES_SEARCH);
         }
 
         if (StringUtils.isBlank(attributeKey)) {
             log.error("Request missing the mandatory query parameters: key");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameters 'key' are not" +
-                    " available");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Mandatory query parameters 'key' are not available",
+                    ConsentOperationEnum.CONSENT_ATTRIBUTES_SEARCH);
         }
 
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
@@ -506,7 +511,7 @@ public class DefaultConsentAdminHandler implements ConsentAdminHandler {
             response.put(ConsentExtensionConstants.DATA.toLowerCase(), searchResults);
         } catch (ConsentManagementException e) {
             log.error("Error while searching consent attributes : ", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw ConsentExtensionUtils.toConsentExceptionWithCause(e);
         }
 
         consentAdminData.setResponseStatus(ResponseStatus.OK);

@@ -58,4 +58,8 @@
         <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.ResourceInterceptorServlet"/>
         <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.financial.services.accelerator.scp.webapp.servlet.ResourceInterceptorServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
 </FindBugsFilter>

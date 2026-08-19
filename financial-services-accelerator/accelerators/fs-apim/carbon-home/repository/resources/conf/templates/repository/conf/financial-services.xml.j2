@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com).
+ ~ Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
  ~
  ~ WSO2 LLC. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -80,6 +80,42 @@
             <TLSClientCertBoundAccessTokens>true</TLSClientCertBoundAccessTokens>
             {% endif %}
         </DCR>
+        <!-- RFC 9449 DPoP-bound access-token validation. Read by DPoPHandler at init(). -->
+        <DPoP>
+            {% if financial_services.gateway.dpop.accepted_algorithms is defined %}
+            <AcceptedAlgorithms>{{financial_services.gateway.dpop.accepted_algorithms}}</AcceptedAlgorithms>
+            {% endif %}
+            {% if financial_services.gateway.dpop.iat_skew_seconds is defined %}
+            <IatSkewSeconds>{{financial_services.gateway.dpop.iat_skew_seconds}}</IatSkewSeconds>
+            {% endif %}
+            {% if financial_services.gateway.dpop.jti_cache_ttl_seconds is defined %}
+            <JtiCacheTtlSeconds>{{financial_services.gateway.dpop.jti_cache_ttl_seconds}}</JtiCacheTtlSeconds>
+            {% endif %}
+            {% if financial_services.gateway.dpop.nonce_strategy is defined %}
+            <NonceStrategy>{{financial_services.gateway.dpop.nonce_strategy}}</NonceStrategy>
+            {% endif %}
+            {% if financial_services.gateway.dpop.nonce_ttl_seconds is defined %}
+            <NonceTtlSeconds>{{financial_services.gateway.dpop.nonce_ttl_seconds}}</NonceTtlSeconds>
+            {% endif %}
+            {% if financial_services.gateway.dpop.nonce_rotate_after_uses is defined %}
+            <NonceRotateAfterUses>{{financial_services.gateway.dpop.nonce_rotate_after_uses}}</NonceRotateAfterUses>
+            {% endif %}
+            {% if financial_services.gateway.dpop.nonce_max_tracked_clients is defined %}
+            <NonceMaxTrackedClients>{{financial_services.gateway.dpop.nonce_max_tracked_clients}}</NonceMaxTrackedClients>
+            {% endif %}
+            {% if financial_services.gateway.dpop.https_required is defined %}
+            <HttpsRequired>{{financial_services.gateway.dpop.https_required}}</HttpsRequired>
+            {% endif %}
+            {% if financial_services.gateway.dpop.strip_dpop_header is defined %}
+            <StripDpopHeader>{{financial_services.gateway.dpop.strip_dpop_header}}</StripDpopHeader>
+            {% endif %}
+            {% if financial_services.gateway.dpop.introspection_cache_ttl_seconds is defined %}
+            <IntrospectionCacheTtlSeconds>{{financial_services.gateway.dpop.introspection_cache_ttl_seconds}}</IntrospectionCacheTtlSeconds>
+            {% endif %}
+            {% if financial_services.gateway.dpop.cache_provider_class is defined %}
+            <CacheProviderClass>{{financial_services.gateway.dpop.cache_provider_class}}</CacheProviderClass>
+            {% endif %}
+        </DPoP>
     </Gateway>
     <KeyManager>
         {% if financial_services.keymanager.extension.impl is defined %}

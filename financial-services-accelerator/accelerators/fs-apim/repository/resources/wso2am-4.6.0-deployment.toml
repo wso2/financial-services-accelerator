@@ -194,9 +194,6 @@ key = ""
 
 [apim.key_manager]
 enable_lightweight_apikey_generation = true
-service_url = "https://IS_HOSTNAME:9446/services/"
-username = "IS_ADMIN_USERNAME"
-password = "IS_ADMIN_PASSWORD"
 allow_subscription_validation_disabling = true
 #service_url = "https://localhost:${mgt.transport.https.port}/services/"
 #username = "$ref{super_admin.username}"

@@ -52,15 +52,19 @@ Before running the suite you need:
 
 ---
 
-## Step 1 – Setup Environment
+## Environment Setup
 
-1. Follow the steps given in [Open Banking Accelerator Documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/prerequisites/) to set up WSO2 IS and APIM with the accelerator pack.
+1. Follow the steps given in [Open Banking Accelerator Documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/prerequisites/) to set up WSO2 IS and APIM with the accelerator pack. 
 2. Install Firefox or Chrome and configure the PATH variable.
 3. Download Firefox or Chrome specific web-driver according to the installed Browser. Make-sure to use the web-driver which support your Browser version and the operating system. Downloaded web-driver should be placed in the relevant folder inside fs-integration-test-suite/test-artifacts/selenium-libs.
 
 ---
 
-## Step 2 – Configure `TestConfiguration.xml`
+## Running the Test Suite
+
+## Method 1 - Manual Execution to run IS tests and Gateway tests separately.
+
+### Step 1 - Configure `TestConfiguration.xml`
 
 The test framework reads all settings from `TestConfiguration.xml`, which must be placed at:
 
@@ -69,7 +73,7 @@ fs-integration-test-suite/accelerator-test-framework/src/main/resources/TestConf
 ```
 
 Take a copy of the [SampleTestConfiguration.xml](accelerator-test-framework%2Fsrc%2Fmain%2Fresources%2FSampleTestConfiguration.xml) file and place it in fs-integration-test-suite/accelerator-test-framework/src/main/resources folder with the name `TestConfiguration.xml`.
-Then fill in your values. For further reference, we have provided sample values next to each configuration in the SampleTestConfiguration.xml file. Default values are already filled; you only need to fill in the placeholders.
+Then fill in your values. For further reference, we have provided sample values next to each configuration in the SampleTestConfiguration.xml file. Default values are already filled; you only need to fill in the placeholders. Additionally, either copy the appropriate client truststore (APIM or IS) to the `test-artifacts/client-truststore` directory or configure the truststore location as described in the [**`<Transport>` – Truststore**](#transport--truststore) section.
 
 ```bash
 cp fs-integration-test-suite/accelerator-test-framework/src/main/resources/SampleTestConfiguration.xml \
@@ -80,7 +84,7 @@ The `[test.sh](end-to-end-test-suite-execution%2Ftest.sh)` script automates fill
 
 ---
 
-### `<Common>` – General Settings
+#### `<Common>` – General Settings
 
 | XML Element | Description | Example Value |
 |---|---|---|
@@ -93,7 +97,7 @@ The `[test.sh](end-to-end-test-suite-execution%2Ftest.sh)` script automates fill
 
 ---
 
-### `<Server>` – Server URLs
+#### `<Server>` – Server URLs
 
 | XML Element | Description | Example Value |
 |---|---|---|
@@ -103,7 +107,7 @@ The `[test.sh](end-to-end-test-suite-execution%2Ftest.sh)` script automates fill
 
 ---
 
-### `<Provisioning>` – API Provisioning
+#### `<Provisioning>` – API Provisioning
 
 | XML Element | Description | Example Value |
 |---|---|---|
@@ -112,7 +116,7 @@ The `[test.sh](end-to-end-test-suite-execution%2Ftest.sh)` script automates fill
 
 ---
 
-### `<ApplicationConfigList>` – TPP Application Configs
+#### `<ApplicationConfigList>` – TPP Application Configs
 
 Two applications (TPP1 and TPP2) must be configured. Each `<AppConfig>` block has:
 
@@ -155,7 +159,7 @@ Two applications (TPP1 and TPP2) must be configured. Each `<AppConfig>` block ha
 
 ---
 
-### `<Transport>` – Truststore
+#### `<Transport>` – Truststore
 
 Points to the IS or APIM `client-truststore.jks`, which must already contain the server's public certificate.
 If you are running IS tests, make sure to point to the IS client truststore; for gateway tests, point to the APIM client truststore. Alternatively, you can either use the server’s client truststore directly or copy the respective client truststore file to the test-artifacts/client-truststore folder.
@@ -168,7 +172,7 @@ If you are running IS tests, make sure to point to the IS client truststore; for
 
 ---
 
-### `<NonRegulatoryApplication>` – Non-Regulatory App
+#### `<NonRegulatoryApplication>` – Non-Regulatory App
 
 | XML Element | Description |
 |---|---|
@@ -178,7 +182,7 @@ If you are running IS tests, make sure to point to the IS client truststore; for
 
 ---
 
-### `<PSUList>` – Payment Service Users
+#### `<PSUList>` – Payment Service Users
 
 List one or more PSU credentials for browser automation consent flows:
 
@@ -195,11 +199,11 @@ List one or more PSU credentials for browser automation consent flows:
 
 ---
 
-### `<TPPInfo>` and `<KeyManagerAdmin>`
+#### `<TPPInfo>` and `<KeyManagerAdmin>`
 
 ---
 
-### `<BrowserAutomation>` – Selenium WebDriver
+#### `<BrowserAutomation>` – Selenium WebDriver
 
 | XML Element | Description | Example |
 |---|---|---|
@@ -209,7 +213,7 @@ List one or more PSU credentials for browser automation consent flows:
 
 ---
 
-### `<ConsentApi>` – Audience
+#### `<ConsentApi>` – Audience
 
 | XML Element | Example Value |
 |---|---|
@@ -217,7 +221,7 @@ List one or more PSU credentials for browser automation consent flows:
 
 ---
 
-### `<ISSetup>` – IS Admin Credentials
+#### `<ISSetup>` – IS Admin Credentials
 
 This block is appended after `</ConsentApi>`:
 
@@ -230,7 +234,7 @@ This block is appended after `</ConsentApi>`:
 
 ---
 
-## Step 3 – Build the Test Framework
+### Step 2 – Build the Test Framework
 
 From within `fs-integration-test-suite/`:
 
@@ -246,14 +250,13 @@ The parent `pom.xml` builds three modules in order:
 
 ---
 
-## Step 4 – Run the IS Test Suite
+### Step 3 – Run the IS Test Suite or Gateway Test Suite
 
 ```bash
 cd fs-integration-test-suite/accelerator-tests/is-tests
 mvn clean install
 ```
 
-## Step 5 – Run the Gateway Test Suite
 
 ```bash
 cd fs-integration-test-suite/accelerator-tests/gateway-tests
@@ -262,15 +265,17 @@ mvn clean install
 
 ---
 
-## Step 6 – Run via `test.sh` (Full Automated Run)
+## Method 2 – Full Automated Run
 
-1. Fill the [deployment.properties](end-to-end-test-suite-execution%2Fdeployment.properties) with the relevant server hostnames and versions.
+1. Fill the [deployment.properties](end-to-end-test-suite-execution%2Fdeployment.properties) with the relevant server hostnames, versions and OS.
 
-2. The `fs-integration-test-suite/end-to-end-test-suite-execution/test.sh` script reads a `deployment.properties` file and performs all configuration + test execution end-to-end.
+2. Copy the APIM client truststore files to the `test-artifacts/client-truststore` directory.
 
-3. Goto `fs-integration-test-suite/end-to-end-test-suite-execution` folder. 
+3. The `fs-integration-test-suite/end-to-end-test-suite-execution/test.sh` script reads a `deployment.properties` file and performs all configuration + test execution end-to-end.
 
-4. Then execute the test.sh script.
+4. Goto `fs-integration-test-suite/end-to-end-test-suite-execution` folder. 
+
+5. Then execute the test.sh script.
 
 ```bash
 ./test.sh --input-dir <path_to_end-to-end-test-suite-execution_folder> --output-dir <path_to_output_reports>
@@ -307,4 +312,6 @@ As an example:
 - The `pre-configuration-step` module (`CommonApplicationCreation`) registers a DCR application and writes the resulting `ClientID` back into `TestConfiguration.xml`, so it must run **before** tests that depend on a pre-registered client ID.
 
 - Browser automation uses Selenium with Firefox and can be run in headless mode by setting `<HeadlessEnabled>true</HeadlessEnabled>`.
+
+- Before re-running the automated test suite, clean up all resources created during the previous run - applications, key manager, user roles, and API resources.
 

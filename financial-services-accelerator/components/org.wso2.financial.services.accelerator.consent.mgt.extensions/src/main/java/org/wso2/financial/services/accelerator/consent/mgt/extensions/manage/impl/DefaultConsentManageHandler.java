@@ -220,10 +220,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                         receiptJSON, consent));
             }
             consentManageData.setResponseStatus(ResponseStatus.OK);
-        } catch (ConsentManagementException | JSONException e) {
+        } catch (JSONException e) {
             log.error("Error Occurred while retrieving the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error Occurred while retrieving the consent", ConsentOperationEnum.CONSENT_RETRIEVE);
+        } catch (ConsentManagementException e) {
+            log.error("Error Occurred while retrieving the consent", e);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_RETRIEVE);
         } catch (FinancialServicesException e) {
             log.error("Error Occurred while retrieving the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -297,9 +300,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
                             validationResponse.getErrorMessage());
                 }
 
+                String consentStatus = ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS;
+                if (consentManageData.getRequestPath().contains(ConsentExtensionConstants.FILE)) {
+                    consentStatus = ConsentExtensionConstants.AWAIT_UPLOAD_STATUS;
+                }
                 ConsentResource requestedConsent = new ConsentResource(consentManageData.getClientId(),
-                        consentManageData.getPayload().toString(), consentType,
-                        ConsentExtensionConstants.AWAIT_AUTHORISE_STATUS);
+                        consentManageData.getPayload().toString(), consentType, consentStatus);
                 requestedConsent.setValidityPeriod(ConsentManageUtils.getValidityTime(consentManageData.getPayload(),
                         consentType));
 
@@ -345,8 +351,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while creating the consent", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while creating the consent", ConsentOperationEnum.CONSENT_CREATE);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_CREATE);
         } catch (FinancialServicesException e) {
             log.error("Error Occurred while creating the consent", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
@@ -459,8 +464,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
             log.error("Error occurred while deleting the consent", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error occurred while deleting the consent", ConsentOperationEnum.CONSENT_DELETE);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_DELETE);
         } catch (FinancialServicesException e) {
             log.error(e.getMessage().replaceAll("[\r\n]+", ""));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -539,8 +543,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
 
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while updating the consent", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while updating the consent", ConsentOperationEnum.CONSENT_UPDATE);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_UPDATE);
         }
     }
 
@@ -596,6 +599,12 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             if (consentResource == null) {
                 log.error("Provided consent id is not found");
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Provided consent id is not found",
+                        ConsentOperationEnum.CONSENT_FILE_UPLOAD);
+            }
+
+            if (!consentResource.getClientID().equals(consentManageData.getClientId())) {
+                log.error(ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR);
+                throw new ConsentException(ResponseStatus.BAD_REQUEST, ConsentManageConstants.CLIENT_ID_MISMATCH_ERROR,
                         ConsentOperationEnum.CONSENT_FILE_UPLOAD);
             }
 
@@ -660,8 +669,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             consentManageData.setResponseStatus(ResponseStatus.OK);
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while uploading consent file", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while uploading consent file", ConsentOperationEnum.CONSENT_FILE_UPLOAD);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_FILE_UPLOAD);
         } catch (FinancialServicesException e) {
             log.error("Error Occurred while uploading consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
@@ -739,10 +747,13 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             }
             consentManageData.setResponsePayload(consentFile.getConsentFile());
             consentManageData.setResponseStatus(ResponseStatus.OK);
-        } catch (ConsentManagementException | JSONException e) {
+        } catch (JSONException e) {
             log.error("Error Occurred while retrieving consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error Occurred while retrieving consent file", ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
+        } catch (ConsentManagementException e) {
+            log.error("Error Occurred while retrieving consent file", e);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_FILE_RETRIEVAL);
         } catch (FinancialServicesException e) {
             log.error("Error Occurred while retrieving consent file", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
@@ -760,8 +771,7 @@ public class DefaultConsentManageHandler implements ConsentManageHandler {
             return consentCoreService.storeDetailedConsentResource(detailedConsentResource);
         } catch (ConsentManagementException e) {
             log.error("Error persisting consent", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error persisting consent",
-                    ConsentOperationEnum.CONSENT_CREATE);
+            throw ConsentExtensionUtils.toConsentException(e, ConsentOperationEnum.CONSENT_CREATE);
         }
     }
 

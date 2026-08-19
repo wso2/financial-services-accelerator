@@ -83,6 +83,7 @@ public class UtilsTest {
     public void tearDown() {
         // Close the mocked static
         mockedStatic.close();
+        configParser.close();
     }
 
     @Test(description = "if valid request sent, return json response")
@@ -198,6 +199,20 @@ public class UtilsTest {
         Assert.assertTrue(Utils
                 .getHttpUriRequest(REQUEST_URL, "DELETE", "/consentmgr/scp/admin/revoke",
                         "?query=query") instanceof HttpDelete);
+    }
+
+    @Test
+    public void testGetHttpUriRequestWithNullQueryString() {
+        HttpGet request = (HttpGet) Utils.getHttpUriRequest(REQUEST_URL, "GET",
+                "/consentmgr/scp/admin/search", null);
+        Assert.assertFalse(request.getURI().toString().contains("?"));
+    }
+
+    @Test
+    public void testGetHttpUriRequestWithEmptyQueryString() {
+        HttpGet request = (HttpGet) Utils.getHttpUriRequest(REQUEST_URL, "GET",
+                "/consentmgr/scp/admin/search", "");
+        Assert.assertFalse(request.getURI().toString().contains("?"));
     }
 
     @Test

@@ -24,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
@@ -36,9 +35,11 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.internal.ConsentExtensionsDataHolder;
 import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
@@ -79,8 +80,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                    consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+            boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
             if (log.isDebugEnabled()) {
                 log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
             }
@@ -108,8 +109,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         } catch (ConsentManagementException e) {
             log.error(e.getMessage().replaceAll("\n\r", ""), e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Exception occurred while persisting consent");
+            throw ConsentExtensionUtils.toConsentException(e);
         }
     }
 
@@ -131,8 +131,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }

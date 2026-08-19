@@ -145,11 +145,11 @@ public class IdempotencyValidator {
             }
         } catch (IdempotencyValidationException e) {
             log.error(ErrorConstants.IDEMPOTENCY_KEY_FRAUDULENT, e);
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage(), consentOperationEnum);
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, e.getMessage(),
+                    consentOperationEnum);
         } catch (ConsentManagementException e) {
             log.error("Error Occurred while handling the request", e);
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error Occurred while handling the request", consentOperationEnum);
+            throw ConsentExtensionUtils.toConsentException(e, consentOperationEnum);
         } catch (FinancialServicesException e) {
             log.error("Error Occurred while handling the request", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage(),

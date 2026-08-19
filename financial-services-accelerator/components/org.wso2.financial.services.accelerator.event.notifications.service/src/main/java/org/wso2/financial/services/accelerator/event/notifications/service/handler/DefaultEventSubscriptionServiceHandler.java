@@ -133,6 +133,15 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
 
+            if (!clientId.equals(eventSubscription.getClientId())) {
+                log.error(EventNotificationConstants.CLIENT_ID_MISMATCH_ERROR);
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST,
+                        EventNotificationConstants.CLIENT_ID_MISMATCH_ERROR));
+                return eventSubscriptionResponse;
+            }
+
             EventSubscriptionResponse externalServiceResponse =  handleValidation(new JSONObject(eventSubscription),
                     EventSubscriptionOperationEnum.SingleSubscriptionRetrieval);
             if (externalServiceResponse != null) {
@@ -250,6 +259,18 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
 
         try {
 
+            EventSubscription existingEventSubscription = eventSubscriptionService.
+                    getEventSubscriptionBySubscriptionId(eventSubscriptionUpdateRequestDto.getSubscriptionId());
+
+            if (!eventSubscriptionUpdateRequestDto.getClientId().equals(existingEventSubscription.getClientId())) {
+                log.error(EventNotificationConstants.CLIENT_ID_MISMATCH_ERROR);
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST,
+                        EventNotificationConstants.CLIENT_ID_MISMATCH_ERROR));
+                return eventSubscriptionResponse;
+            }
+
             EventSubscriptionResponse externalServiceResponse = handleValidation(
                     new JSONObject(eventSubscriptionUpdateRequestDto),
                     EventSubscriptionOperationEnum.SubscriptionUpdate);
@@ -286,10 +307,17 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
             return eventSubscriptionResponse;
         } catch (FSEventNotificationException e) {
             log.error("Error occurred while updating event subscription", e);
-            eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
-                    EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
-            return eventSubscriptionResponse;
+            if (e.getMessage().equals(EventNotificationConstants.EVENT_SUBSCRIPTION_NOT_FOUND)) {
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+                return eventSubscriptionResponse;
+            } else {
+                eventSubscriptionResponse.setResponseStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST, e.getMessage()));
+                return eventSubscriptionResponse;
+            }
         }
     }
 
@@ -308,6 +336,15 @@ public class DefaultEventSubscriptionServiceHandler implements EventSubscription
 
             EventSubscription eventSubscription = eventSubscriptionService.
                     getEventSubscriptionBySubscriptionId(subscriptionId);
+
+            if (!clientId.equals(eventSubscription.getClientId())) {
+                log.error(EventNotificationConstants.CLIENT_ID_MISMATCH_ERROR);
+                eventSubscriptionResponse.setResponseStatus(org.apache.commons.httpclient.HttpStatus.SC_BAD_REQUEST);
+                eventSubscriptionResponse.setResponseBody(EventNotificationServiceUtil.getErrorDTO(
+                        EventNotificationConstants.INVALID_REQUEST,
+                        EventNotificationConstants.CLIENT_ID_MISMATCH_ERROR));
+                return eventSubscriptionResponse;
+            }
 
             EventSubscriptionResponse externalServiceResponse = handleValidation(new JSONObject(eventSubscription),
                     EventSubscriptionOperationEnum.SubscriptionDelete);
