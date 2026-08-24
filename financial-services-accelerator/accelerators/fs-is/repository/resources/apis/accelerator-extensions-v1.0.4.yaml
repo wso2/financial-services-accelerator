@@ -1868,6 +1868,14 @@ components:
           $ref: '#/components/schemas/DetailedConsentResourceDataWithAmendments'
     DetailedConsentResourceData:
       type: object
+      required:
+        - type
+        - status
+        - receipt
+        - recurringIndicator
+        - frequency
+        - validityTime
+        - authorizations
       properties:
         type:
           type: string
@@ -1978,6 +1986,9 @@ components:
           type: string
     Authorization:
       type: object
+      required:
+      - type
+      - status
       properties:
         userId:
           type: string
