@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.wso2.carbon.identity.oauth.rar.util.AuthorizationDetailsConstants;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
@@ -41,13 +42,16 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -933,5 +937,38 @@ public class ConsentAuthorizeUtil {
         isReauthorization = isReauthorization != null && isReauthorization;
 
         consentPersistPayload.put(ConsentAuthorizeConstants.IS_REAUTHORIZATION, Boolean.TRUE.equals(isReauthorization));
+    }
+
+    /**
+     * Remove the commonAuthId consent attribute from any consent it is already mapped to.
+     * <p>
+     * The commonAuthId cookie is issued per browser session, so every authorization performed in the same
+     * browser session carries the same value even if the user logs in again. Since the consent ID bound to the
+     * authorization code is resolved by looking up this attribute, leaving it on previously authorized consents
+     * makes that lookup ambiguous and the wrong consent ID can end up in the access token. Clearing the stale
+     * mappings before the new one is stored keeps exactly one consent mapped to the cookie value.
+     *
+     * @param consentCoreService consent core service
+     * @param commonAuthId       commonAuthId cookie value of the current authorization
+     * @throws ConsentManagementException thrown if an error occurs while retrieving or deleting the attribute
+     */
+    public static void removeCommonAuthIdFromExistingConsents(ConsentCoreService consentCoreService,
+                                                              String commonAuthId)
+            throws ConsentManagementException {
+
+        if (StringUtils.isBlank(commonAuthId)) {
+            return;
+        }
+
+        ArrayList<String> existingConsentIds = consentCoreService.getConsentIdByConsentAttributeNameAndValue(
+                ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
+        for (String existingConsentId : existingConsentIds) {
+            consentCoreService.deleteConsentAttributes(existingConsentId,
+                    new ArrayList<>(Collections.singletonList(ConsentExtensionConstants.COMMON_AUTH_ID)));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Removed the commonAuthId attribute from consent: %s",
+                        existingConsentId.replaceAll("[\r\n]", "")));
+            }
+        }
     }
 }
