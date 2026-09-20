@@ -17,6 +17,7 @@
     <modules>
         <module>accounts</module>
         <module>dcr</module>
+        <module>encryption</module>
     </modules>
 
     <properties>
