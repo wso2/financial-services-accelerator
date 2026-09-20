@@ -45,4 +45,5 @@ public class ConsentConstants {
 
         public static final String AUTHORIZATION = "authorization";
         public static final String CUSTOMER_CARE_OFFICER_SCOPE = "consents:read_all";
+        public static final String LOGGED_IN_USER = "loggedInUser";
 }

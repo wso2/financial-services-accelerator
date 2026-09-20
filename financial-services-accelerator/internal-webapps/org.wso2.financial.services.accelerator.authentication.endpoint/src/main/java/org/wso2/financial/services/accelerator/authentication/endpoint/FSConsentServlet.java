@@ -141,6 +141,17 @@ public class FSConsentServlet extends HttpServlet {
         session.setAttribute(Constants.DISPLAY_SCOPES,
                 Boolean.parseBoolean(getServletContext().getInitParameter(Constants.DISPLAY_SCOPES)));
 
+        // Store userId in session for OTP verification (extracted from consent retrieval response)
+        // The userId (SCIM ID) is now added to the response JSON by ConsentAuthorizeEndpoint
+        if (dataSet.has(Constants.USER_ID)) {
+            String userId = dataSet.getString(Constants.USER_ID);
+            session.setAttribute(Constants.USER_ID, userId);
+            log.debug("Stored userId in session: " + userId);
+        } else {
+            log.warn("userId not found in consent data response");
+        }
+        // s
+
         // set strings to request
         ResourceBundle resourceBundle = AuthenticationUtils.getResourceBundle(request.getLocale());
 
