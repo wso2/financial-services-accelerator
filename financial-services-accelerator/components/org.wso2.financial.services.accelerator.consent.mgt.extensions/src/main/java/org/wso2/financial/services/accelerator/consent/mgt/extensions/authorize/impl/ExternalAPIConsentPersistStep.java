@@ -141,6 +141,9 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 if (consentPersistData.getBrowserCookies() != null) {
                     String commonAuthId = consentPersistData.getBrowserCookies().get(
                             ConsentExtensionConstants.COMMON_AUTH_ID);
+                    // Detach the commonAuthId from the consents it is already mapped to, so that only the consent
+                    // being persisted now is resolvable using the commonAuthId of this browser session.
+                    ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreService, commonAuthId);
                     consentData.getMetaDataMap().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
                 }
             }

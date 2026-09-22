@@ -184,11 +184,10 @@ public class OAuthService {
         cookie.setSecure(true);
         cookie.setMaxAge(maxAge);
         cookie.setPath(path);
-        // Access token halves must stay JS-readable: the frontend reads them to send the
-        // Authorization header (SplitTokenValve CSRF pattern) and to reconstruct the token for
-        // Popup.jsx's device registration call. Everything else (id token, refresh token,
-        // validity marker) is only ever read server-side, so it can be locked down.
-        cookie.setHttpOnly(!cookieName.startsWith(Constants.ACCESS_TOKEN_COOKIE_NAME));
+        // One half of the Access token must stay JS-readable: the frontend reads it to send the
+        // Authorization header (SplitTokenValve CSRF pattern). Everything else (remaining half of the access token,
+        // id token, refresh token, validity marker) is only ever read server-side, so it can be locked down.
+        cookie.setHttpOnly(!(Constants.ACCESS_TOKEN_COOKIE_NAME + "_P1").equals(cookieName));
 
         resp.addCookie(cookie);
     }
