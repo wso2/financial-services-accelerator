@@ -1900,7 +1900,7 @@ public class ConsentMgtCoreServiceTests {
 
         doReturn(detailedConsentResources).when(mockedConsentCoreDAO)
                 .searchConsents(any(), any(), any(), any(), any(),
-                        any(), anyLong(), anyLong(), anyInt(), anyInt());
+                        any(), any(), any(), any(), any());
         doNothing().when(mockedConsentCoreDAO).updateConsentStatus(any(), anyString(),
                 anyString());
         doReturn(ConsentMgtServiceTestData.getSampleStoredTestConsentStatusAuditRecord(sampleID,
@@ -1914,6 +1914,8 @@ public class ConsentMgtCoreServiceTests {
                 Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CONSENT_TYPE),
                 Collections.singletonList(ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS),
                 ConsentMgtServiceTestData.SAMPLE_CURRENT_STATUS, true));
+        tokenRevocationUtilMockedStatic.verify(() -> TokenRevocationUtil.revokeTokens(
+                eq(detailedConsentResources.get(0)), eq(ConsentMgtServiceTestData.SAMPLE_USER_ID)));
     }
 
     @Test

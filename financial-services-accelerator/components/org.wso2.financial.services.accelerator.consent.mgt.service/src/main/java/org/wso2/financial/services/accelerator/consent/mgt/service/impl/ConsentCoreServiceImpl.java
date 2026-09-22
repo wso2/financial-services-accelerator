@@ -1605,20 +1605,31 @@ public class ConsentCoreServiceImpl implements ConsentCoreService {
                                 resource.getConsentID().replaceAll("[\r\n]", "")));
                     }
 
-                    for (AuthorizationResource authorizationResource : resource.getAuthorizationResources()) {
-                        String authResourceUserId = authorizationResource.getUserID();
-
-                        if (shouldRevokeTokens) {
-                            TokenRevocationUtil.revokeTokens(resource, authResourceUserId);
-                        }
-
-                        // Create an audit record execute state change listener
+                    List<AuthorizationResource> authorizationResources = resource.getAuthorizationResources();
+                    if (authorizationResources.isEmpty()) {
+                        // Create an audit record even when the consent has no authorization resources
                         HashMap<String, Object> consentDataMap = new HashMap<>();
                         consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, resource);
                         ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO, resource.getConsentID(),
-                                authResourceUserId, revokedConsentStatus, previousConsentStatus,
+                                userID, revokedConsentStatus, previousConsentStatus,
                                 ConsentCoreServiceConstants.CONSENT_REVOKE_REASON, resource.getClientID(),
                                 consentDataMap);
+                    } else {
+                        for (AuthorizationResource authorizationResource : authorizationResources) {
+                            String authResourceUserId = authorizationResource.getUserID();
+
+                            if (shouldRevokeTokens) {
+                                TokenRevocationUtil.revokeTokens(resource, authResourceUserId);
+                            }
+
+                            // Create an audit record execute state change listener
+                            HashMap<String, Object> consentDataMap = new HashMap<>();
+                            consentDataMap.put(ConsentCoreServiceConstants.DETAILED_CONSENT_RESOURCE, resource);
+                            ConsentCoreServiceUtil.postStateChange(connection, consentCoreDAO,
+                                    resource.getConsentID(), authResourceUserId, revokedConsentStatus,
+                                    previousConsentStatus, ConsentCoreServiceConstants.CONSENT_REVOKE_REASON,
+                                    resource.getClientID(), consentDataMap);
+                        }
                     }
 
                     // Extract account mapping IDs for retrieved applicable consents
