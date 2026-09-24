@@ -1,0 +1,10 @@
+# Generated test output — do not commit
+results/*.html
+results/*.json
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
