@@ -150,8 +150,13 @@ public class FinancialServicesUtils {
 
         if (!containsUUID(userID)) {
             // If the user ID doesn't have a UUID that means request has sent the username,
-            // return the same user ID as the username.
-            return userID;
+            // return the same user ID as the username, without the super tenant domain suffix.
+            String tenantSuffix = "@" + FinancialServicesConstants.TENANT_DOMAIN;
+            String username = userID;
+            while (username != null && username.endsWith(tenantSuffix)) {
+                username = username.substring(0, username.length() - tenantSuffix.length());
+            }
+            return username;
         }
 
         String extractedUUID = extractUUID(userID);

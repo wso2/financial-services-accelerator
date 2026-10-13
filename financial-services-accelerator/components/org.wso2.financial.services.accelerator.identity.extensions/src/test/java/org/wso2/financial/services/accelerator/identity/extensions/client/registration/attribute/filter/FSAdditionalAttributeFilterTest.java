@@ -264,6 +264,54 @@ public class FSAdditionalAttributeFilterTest {
     }
 
     @Test
+    public void testProcessDCRGetAttributesConvertsStoredArrays() throws DCRMClientException {
+
+        Map<String, String> ssaParams = new HashMap<>();
+        ssaParams.put("hashMulti", "code#token#refresh_token");
+        ssaParams.put("hashSingle", "code#");
+        ssaParams.put("bracketMulti", "[code, token]");
+        ssaParams.put("bracketSingle", "[code]");
+        ssaParams.put("bracketEmpty", "[]");
+        ssaParams.put("plain", "private_key_jwt");
+
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .isInvokeExternalService(any())).thenReturn(false);
+        Map<String, Object> resultMap;
+        try {
+            resultMap = fsAdditionalAttributeFilter.processDCRGetAttributes(ssaParams);
+        } finally {
+            serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                    .isInvokeExternalService(any())).thenReturn(true);
+        }
+
+        Assert.assertEquals(resultMap.get("hashMulti"), List.of("code", "token", "refresh_token"));
+        Assert.assertEquals(resultMap.get("hashSingle"), List.of("code"));
+        Assert.assertEquals(resultMap.get("bracketMulti"), List.of("code", "token"));
+        Assert.assertEquals(resultMap.get("bracketSingle"), List.of("code"));
+        Assert.assertEquals(resultMap.get("bracketEmpty"), new ArrayList<>());
+        Assert.assertEquals(resultMap.get("plain"), "private_key_jwt");
+    }
+
+    @Test
+    public void testProcessDCRGetAttributesFromExternalServiceConvertsStoredArrays() throws Exception {
+
+        JsonNode rootNode = new ObjectMapper().readTree("{\"clientData\": {"
+                + "\"grant_types\": \"authorization_code#refresh_token\","
+                + "\"response_types\": \"[code id_token]\","
+                + "\"software_id\": \"testSoftwareId\"}}");
+        serviceExtensionUtilsMockedStatic.when(() -> ServiceExtensionUtils
+                .invokeExternalServiceCall(any(), any())).thenReturn(new ExternalServiceResponse("testId",
+                StatusEnum.SUCCESS, rootNode));
+
+        Map<String, Object> resultMap = fsAdditionalAttributeFilter
+                .processDCRGetAttributes(TestConstants.getSSAParamMapForRetrieval());
+
+        Assert.assertEquals(resultMap.get("grant_types"), List.of("authorization_code", "refresh_token"));
+        Assert.assertEquals(resultMap.get("response_types"), List.of("code id_token"));
+        Assert.assertEquals(resultMap.get("software_id"), "testSoftwareId");
+    }
+
+    @Test
     public void testGetResponseAttributeKeys() {
 
         List<String> resultMap = fsAdditionalAttributeFilter.getResponseAttributeKeys();
