@@ -92,5 +92,30 @@ class RestAsRequestBuilder {
                 .relaxedHTTPSValidation()
                 .urlEncodingEnabled(true);
     }
+
+    public static RequestSpecification buildRequestForEncryptedPayload() throws TestFrameworkException {
+
+        if (configurationService.getAppTransportMLTSEnable()) {
+            RestAssuredConfig config = null;
+            SSLSocketFactory sslSocketFactory = CommonTestUtil.getSslSocketFactory()
+            if (sslSocketFactory != null) {
+                config = RestAssuredConfig.newConfig().sslConfig(RestAssured.config()
+                        .getSSLConfig()
+                        .sslSocketFactory(CommonTestUtil.getSslSocketFactory()));
+            } else {
+                throw new TestFrameworkException("Unable to retrieve the SSL socket factory");
+            }
+            return RestAssured.given()
+                    .config(config.encoderConfig(EncoderConfig.encoderConfig()
+                            .encodeContentTypeAs("application/jose+jwe"
+                                    , ContentType.TEXT)))
+                    .urlEncodingEnabled(true);
+        } else {
+            // Use relaxed HTTPS validation if MTLS is disabled.
+            return RestAssured.given()
+                    .relaxedHTTPSValidation()
+                    .urlEncodingEnabled(true);
+        }
+    }
 }
 
