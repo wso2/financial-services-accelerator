@@ -402,6 +402,7 @@ public class IdentityCommonUtils {
                 return Boolean.parseBoolean(regulatoryProperty.toString());
             } else {
                 log.debug("Regulatory property missing. Treating as non-regulatory application.");
+                log.debug("Test build.");
                 return false;
             }
         } else {
