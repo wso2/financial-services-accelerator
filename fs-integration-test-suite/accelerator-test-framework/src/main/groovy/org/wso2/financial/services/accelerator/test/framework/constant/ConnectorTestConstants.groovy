@@ -319,6 +319,7 @@ class ConnectorTestConstants extends Constants{
     static final String ACCOUNT_SINGLE_PATH = ACCOUNTS_PATH + "/" + accountID
     static final String BALANCES_SINGLE_PATH = ACCOUNTS_PATH + "/" + accountID + "/balances"
     static final String TRANSACTIONS_SINGLE_PATH = ACCOUNTS_PATH + "/" + accountID + "/transactions"
+    static final String ACCOUNT_SINGLE_PATH_WITH_INVALID_ACCOUNT_ID = ACCOUNTS_PATH + "/1234"
     static final String OBIE_ERROR_HEADER_INVALID="UK.OBIE.Header.Invalid"
     static final String OBIE_ERROR_HEADER_MISSING="UK.OBIE.Header.Missing"
     static final String X_JWS_SIGNATURE_MISSING = "x-jws-signature missing"
