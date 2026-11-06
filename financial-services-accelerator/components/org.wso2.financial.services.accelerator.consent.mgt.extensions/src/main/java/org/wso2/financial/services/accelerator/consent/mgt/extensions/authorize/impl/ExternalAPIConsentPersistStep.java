@@ -66,6 +66,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private final ConsentCoreService consentCoreService;
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentPersistStep.class);
     private static final Gson gson = new Gson();
 
@@ -75,6 +76,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -111,7 +113,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
             }
 
             boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
-                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
             if (log.isDebugEnabled()) {
                 log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
             }
@@ -247,7 +249,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                                 ConsentData consentData) throws ConsentManagementException {
 
         boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
-                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
 
         if (isPreInitiatedConsentFlow) {
             // Get the existing authorization resource for the initiated consent

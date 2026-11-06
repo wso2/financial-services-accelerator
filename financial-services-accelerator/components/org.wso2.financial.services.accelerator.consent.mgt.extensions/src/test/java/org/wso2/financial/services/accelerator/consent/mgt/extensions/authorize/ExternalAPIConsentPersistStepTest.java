@@ -77,6 +77,7 @@ public class ExternalAPIConsentPersistStepTest {
         ConsentData data = new ConsentData("sessionKey", userId, REQUEST_OBJECT_SCOPE_ACCOUNTS, "scope", "myApp",
                 Map.of());
         data.setConsentId(consentId);
+        data.setRegulatory(true);
         data.setRedirectURI(new URI("https://localhost/redirect"));
         data.setState("xyz");
         if (withAuthResource) {
@@ -237,6 +238,7 @@ public class ExternalAPIConsentPersistStepTest {
 
         ConsentData consentData = new ConsentData("sessionKey", "user2", REQUEST_OBJECT_SCOPE_SCOPE, "scope", "appX",
                 new HashMap<>());
+        consentData.setRegulatory(true);
         consentData.setRedirectURI(new URI("https://localhost/return"));
         consentData.setState("state-x");
         consentData.setMetaDataMap(getValidMetadataMap());
