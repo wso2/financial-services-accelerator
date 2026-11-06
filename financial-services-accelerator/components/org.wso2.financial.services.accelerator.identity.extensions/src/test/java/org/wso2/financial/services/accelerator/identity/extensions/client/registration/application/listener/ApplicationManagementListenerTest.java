@@ -32,8 +32,8 @@ import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.api.resource.mgt.APIResourceMgtException;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.APIResource;
-import org.wso2.carbon.identity.application.common.model.IdentityProvider;
 import org.wso2.carbon.identity.application.common.model.LocalAndOutboundAuthenticationConfig;
+import org.wso2.carbon.identity.application.common.model.LocalAuthenticatorConfig;
 import org.wso2.carbon.identity.application.common.model.RequestPathAuthenticatorConfig;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty;
@@ -222,10 +222,11 @@ public class ApplicationManagementListenerTest {
     @Test
     public void testSetAuthenticators() throws IdentityApplicationManagementException, FinancialServicesException {
 
-        IdentityProvider[] federatedIdPs = new IdentityProvider[1];
-        IdentityProvider identityProvider = new IdentityProvider();
-        identityProvider.setIdentityProviderName("SMSAuthentication");
-        federatedIdPs[0] = identityProvider;
+        LocalAuthenticatorConfig[] localAuthenticatorConfigs = new LocalAuthenticatorConfig[1];
+        LocalAuthenticatorConfig identityProvider = new LocalAuthenticatorConfig();
+        identityProvider.setDisplayName("SMSAuthentication");
+        identityProvider.setName("SMSAuthentication");
+        localAuthenticatorConfigs[0] = identityProvider;
 
         Map<String, Object> confMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_STEP, "2");
@@ -234,8 +235,8 @@ public class ApplicationManagementListenerTest {
         LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig =
                 new LocalAndOutboundAuthenticationConfig();
 
-        Mockito.when(applicationManagementService.getAllIdentityProviders(anyString())).
-                thenReturn(federatedIdPs);
+        Mockito.when(applicationManagementService.getAllLocalAuthenticators(anyString())).
+                thenReturn(localAuthenticatorConfigs);
         applicationUpdaterImpl.setAuthenticators(true, "carbon@super", serviceProvider,
                 localAndOutboundAuthenticationConfig);
         Assert.assertNotNull(localAndOutboundAuthenticationConfig.getAuthenticationSteps());
@@ -246,10 +247,11 @@ public class ApplicationManagementListenerTest {
     public void testSetAuthenticatorsWithFederatedIdp() throws IdentityApplicationManagementException,
             FinancialServicesException {
 
-        IdentityProvider[] federatedIdPs = new IdentityProvider[1];
-        IdentityProvider identityProvider = new IdentityProvider();
-        identityProvider.setIdentityProviderName("SMSAuthentication");
-        federatedIdPs[0] = identityProvider;
+        LocalAuthenticatorConfig[] localAuthenticatorConfigs = new LocalAuthenticatorConfig[1];
+        LocalAuthenticatorConfig identityProvider = new LocalAuthenticatorConfig();
+        identityProvider.setDisplayName("SMSAuthentication");
+        identityProvider.setName("SMSAuthentication");
+        localAuthenticatorConfigs[0] = identityProvider;
 
         Map<String, Object> confMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
         confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_STEP, "1");
@@ -258,8 +260,8 @@ public class ApplicationManagementListenerTest {
         LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig =
                 new LocalAndOutboundAuthenticationConfig();
 
-        Mockito.when(applicationManagementService.getAllIdentityProviders(anyString())).
-                thenReturn(federatedIdPs);
+        Mockito.when(applicationManagementService.getAllLocalAuthenticators(anyString())).
+                thenReturn(localAuthenticatorConfigs);
         applicationUpdaterImpl.setAuthenticators(true, "carbon@super", serviceProvider,
                 localAndOutboundAuthenticationConfig);
         Assert.assertNotNull(localAndOutboundAuthenticationConfig.getAuthenticationSteps());
