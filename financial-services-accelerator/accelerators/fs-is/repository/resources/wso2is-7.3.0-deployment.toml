@@ -661,3 +661,8 @@ event_notification_request_generator="org.wso2.financial.services.accelerator.ev
 [agent_identity]
 enabled=false
 
+[compatibility_setting.basic_auth.disable_basic_auth]
+default_value = "true"
+
+[compatibility_setting.basic_auth.allowed_endpoints]
+default_value = "(/t/[^/]+)?/api/fs/consent/.*, (/t/[^/]+)?/api/identity/oauth2/dcr/v1[.]1/register.*, (/t/[^/]+)?/api/identity/oauth2/v1[.]0/scopes.*, (/t/[^/]+)?/api/server/v1/applications.*, (/t/[^/]+)?/api/server/v1/api-resources.*, (/t/[^/]+)?/scim2/users.*, (/t/[^/]+)?/scim2/v2/roles.*, (/t/[^/]+)?/oauth2/introspect, (/t/[^/]+)?/api/server/v1/(claim-dialects|oidc|workflows|workflow-associations|identity-governance|branding-preference).*, (/t/[^/]+)?/api/identity/consent-mgt/.*, (/t/[^/]+)?/scim2/.*"
