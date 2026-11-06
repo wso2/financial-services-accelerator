@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.AuthenticationStep;
-import org.wso2.carbon.identity.application.common.model.IdentityProvider;
 import org.wso2.carbon.identity.application.common.model.LocalAndOutboundAuthenticationConfig;
 import org.wso2.carbon.identity.application.common.model.LocalAuthenticatorConfig;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
@@ -84,15 +83,15 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
             String idpStep = configMap.get(FinancialServicesConstants.IDENTITY_PROVIDER_STEP) == null
                     ? null : configMap.get(FinancialServicesConstants.IDENTITY_PROVIDER_STEP).toString();
 
-            IdentityProvider configuredIdentityProvider = null;
+            LocalAuthenticatorConfig configuredIdentityProvider = null;
 
             if (StringUtils.isNotEmpty(idpName)) {
                 try {
-                    IdentityProvider[] federatedIdPs = identityExtensionsDataHolder
-                            .getApplicationManagementService().getAllIdentityProviders(tenantDomain);
-                    if (federatedIdPs != null && federatedIdPs.length > 0) {
-                        for (IdentityProvider identityProvider : federatedIdPs) {
-                            if (idpName.equals(identityProvider.getIdentityProviderName())) {
+                    LocalAuthenticatorConfig[] localAuthenticatorConfigs = identityExtensionsDataHolder
+                            .getApplicationManagementService().getAllLocalAuthenticators(tenantDomain);
+                    if (localAuthenticatorConfigs != null) {
+                        for (LocalAuthenticatorConfig identityProvider : localAuthenticatorConfigs) {
+                            if (idpName.equals(identityProvider.getDisplayName())) {
                                 configuredIdentityProvider = identityProvider;
                                 break;
                             }
@@ -107,14 +106,18 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
             if (StringUtils.isNotEmpty(idpStep) && idpStep.equals("1")) {
                 //Step 1 - Federated Authentication
                 if (configuredIdentityProvider != null) {
-                    IdentityProvider[] identityProviders = new IdentityProvider[1];
-                    identityProviders[0] = configuredIdentityProvider;
-
+                    LocalAuthenticatorConfig[] localAuthenticatorConfigs1 = new LocalAuthenticatorConfig[1];
                     AuthenticationStep federatedAuthStep = new AuthenticationStep();
+
+                    localAuthenticatorConfigs1[0] = configuredIdentityProvider;
+
                     federatedAuthStep.setStepOrder(1);
-                    federatedAuthStep.setFederatedIdentityProviders(identityProviders);
-                    //set step 1
+                    federatedAuthStep.setLocalAuthenticatorConfigs(localAuthenticatorConfigs1);
+                    federatedAuthStep.setAttributeStep(true);
+                    federatedAuthStep.setSubjectStep(true);
+                    //set step 2
                     authSteps.add(federatedAuthStep);
+
                     if (logger.isDebugEnabled()) {
                         logger.debug(String.format("Authentication step 1 added: %s",
                                 idpName.replaceAll("[\r\n]", "")));
@@ -154,12 +157,15 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
 
                 //Step 2 - federated authentication
                 if (configuredIdentityProvider != null) {
-                    IdentityProvider[] identityProviders = new IdentityProvider[1];
-                    identityProviders[0] = configuredIdentityProvider;
-
+                    LocalAuthenticatorConfig[] localAuthenticatorConfigs1 = new LocalAuthenticatorConfig[1];
                     AuthenticationStep federatedAuthStep = new AuthenticationStep();
+
+                    localAuthenticatorConfigs1[0] = configuredIdentityProvider;
+
                     federatedAuthStep.setStepOrder(2);
-                    federatedAuthStep.setFederatedIdentityProviders(identityProviders);
+                    federatedAuthStep.setLocalAuthenticatorConfigs(localAuthenticatorConfigs1);
+                    federatedAuthStep.setAttributeStep(true);
+                    federatedAuthStep.setSubjectStep(true);
                     //set step 2
                     authSteps.add(federatedAuthStep);
                     if (logger.isDebugEnabled()) {
