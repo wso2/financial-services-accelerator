@@ -32,6 +32,8 @@ import org.wso2.carbon.identity.api.resource.mgt.APIResourceManager;
 import org.wso2.carbon.identity.api.resource.mgt.APIResourceMgtException;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.APIResource;
+import org.wso2.carbon.identity.application.common.model.AuthenticationStep;
+import org.wso2.carbon.identity.application.common.model.IdentityProvider;
 import org.wso2.carbon.identity.application.common.model.LocalAndOutboundAuthenticationConfig;
 import org.wso2.carbon.identity.application.common.model.LocalAuthenticatorConfig;
 import org.wso2.carbon.identity.application.common.model.RequestPathAuthenticatorConfig;
@@ -315,6 +317,37 @@ public class ApplicationManagementListenerTest {
         serviceProvider.setRequestPathAuthenticatorConfigs(new RequestPathAuthenticatorConfig[0]);
         applicationUpdaterImpl.doPreUpdateApplication(true, oAuthConsumerAppDTO, serviceProvider,
                 localAndOutboundAuthenticationConfig, "carbon@super", "admin");
+    }
+
+    @Test
+    public void testSetAuthenticatorsWithConfiguredFederatedIdp() throws IdentityApplicationManagementException,
+            FinancialServicesException {
+
+        IdentityProvider[] federatedIdPs = new IdentityProvider[1];
+        IdentityProvider identityProvider = new IdentityProvider();
+        identityProvider.setIdentityProviderName("SMSAuthentication");
+        federatedIdPs[0] = identityProvider;
+
+        Map<String, Object> confMap = IdentityExtensionsDataHolder.getInstance().getConfigurationMap();
+        confMap.put(FinancialServicesConstants.IDENTITY_PROVIDER_STEP, "2");
+        IdentityExtensionsDataHolder.getInstance().setConfigurationMap(confMap);
+
+        LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig =
+                new LocalAndOutboundAuthenticationConfig();
+
+        // No matching local authenticator is available. Therefore, the configured federated IdP should be used.
+        Mockito.when(applicationManagementService.getAllLocalAuthenticators(anyString()))
+                .thenReturn(new LocalAuthenticatorConfig[0]);
+        Mockito.when(applicationManagementService.getAllIdentityProviders(anyString())).thenReturn(federatedIdPs);
+        applicationUpdaterImpl.setAuthenticators(true, "carbon@super", serviceProvider,
+                localAndOutboundAuthenticationConfig);
+
+        AuthenticationStep[] authenticationSteps = localAndOutboundAuthenticationConfig.getAuthenticationSteps();
+        Assert.assertNotNull(authenticationSteps);
+        Assert.assertEquals(authenticationSteps.length, 2);
+        Assert.assertEquals(authenticationSteps[1].getFederatedIdentityProviders().length, 1);
+        Assert.assertEquals(authenticationSteps[1].getFederatedIdentityProviders()[0].getIdentityProviderName(),
+                "SMSAuthentication");
     }
 
 }

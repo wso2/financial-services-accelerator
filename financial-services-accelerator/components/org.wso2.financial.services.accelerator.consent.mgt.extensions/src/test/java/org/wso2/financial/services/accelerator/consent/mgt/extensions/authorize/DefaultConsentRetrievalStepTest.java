@@ -88,6 +88,9 @@ public class DefaultConsentRetrievalStepTest {
                 TestConstants.SAMPLE_AUTH_ID));
         doReturn(authResources).when(consentCoreServiceMock).searchAuthorizations(anyString());
 
+        // Scope string is read from consent data when resolving the consent flow type.
+        doReturn("openid accounts payments fundsconfirmations").when(consentDataMock).getScopeString();
+
         String consentId = "12345677654321234234";
         financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
         financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(any()))

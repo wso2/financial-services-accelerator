@@ -345,13 +345,15 @@ public class ConsentAuthorizeUtil {
                 // Extract parameters from request object
                 String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
                 JSONObject requestParameters = getRequestObjectJson(requestObject);
-                scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
+                scope = consentData.getScopeString();
                 authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
                         .AUTHORIZATION_DETAILS);
             }
         } else {
             scope = consentData.getScopeString();
-            authorizationDetails = new JSONArray();
+            JSONObject requestParameters = ConsentAuthorizeUtil.getQueryParamJson(consentData.getSpQueryParams());
+            authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
+                    .AUTHORIZATION_DETAILS);
         }
 
         return FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
