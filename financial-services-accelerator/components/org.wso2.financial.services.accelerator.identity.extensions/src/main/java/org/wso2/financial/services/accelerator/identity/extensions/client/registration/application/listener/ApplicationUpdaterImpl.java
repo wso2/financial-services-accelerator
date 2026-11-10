@@ -195,8 +195,7 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
      * @return the constructed authentication step
      */
     private static AuthenticationStep buildIdPAuthenticationStep(int stepOrder,
-                                                                 LocalAuthenticatorConfig
-                                                                         configuredLocalAuthenticator,
+                                                                 LocalAuthenticatorConfig configuredLocalAuthenticator,
                                                                  IdentityProvider configuredFederatedIdP) {
 
         AuthenticationStep authenticationStep = new AuthenticationStep();
