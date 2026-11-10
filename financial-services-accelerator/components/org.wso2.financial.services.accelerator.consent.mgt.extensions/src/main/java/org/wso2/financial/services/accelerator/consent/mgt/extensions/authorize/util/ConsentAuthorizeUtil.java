@@ -339,7 +339,7 @@ public class ConsentAuthorizeUtil {
             if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
                 // Extract parameters from query
                 JSONObject requestParameters = ConsentAuthorizeUtil.getQueryParamJson(consentData.getSpQueryParams());
-                scope = (String) requestParameters.get(FinancialServicesConstants.SCOPE);
+                scope = requestParameters.optString(FinancialServicesConstants.SCOPE);
                 authorizationDetails = new JSONArray();
             } else {
                 // Extract parameters from request object
