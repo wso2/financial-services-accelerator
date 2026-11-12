@@ -88,6 +88,7 @@ public class ConsentAuthorizeEndpoint {
     private static FinancialServicesConfigParser configParser = null;
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static List<ConsentPersistStep> consentPersistSteps = null;
     private static List<ConsentRetrievalStep> consentRetrievalSteps = null;
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
@@ -98,6 +99,7 @@ public class ConsentAuthorizeEndpoint {
         configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
         initializeConsentSteps();
     }
 
@@ -220,7 +222,7 @@ public class ConsentAuthorizeEndpoint {
 
         executeRetrieval(consentData, jsonObject);
         boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
-                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
         if (isPreInitiatedConsentFlow && consentData.getType() == null) {
             log.error(ConsentConstants.ERROR_NO_CONSENT_TYPE);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,

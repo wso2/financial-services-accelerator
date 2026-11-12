@@ -48,6 +48,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
 
     public DefaultConsentRetrievalStep() {
@@ -55,6 +56,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -71,7 +73,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         ConsentResource consentResource;
 
         boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
-                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
 
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);

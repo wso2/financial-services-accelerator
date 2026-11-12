@@ -149,11 +149,13 @@ public class ConsentAuthorizeUtilTest {
                 ".sig";
         ConsentData consentData = new ConsentData("sessionKey", "user1", "request=" + requestObject,
                 "accounts", "app", Map.of());
+        consentData.setRegulatory(true);
 
         // Even though "accounts" is configured as a pre-initiated scope, the authorization_details claim
         // must take precedence and force a non-pre-initiated (RAR-based) result.
         boolean result = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(consentData,
-                Collections.singletonList("accounts"), Collections.emptyList());
+                Collections.singletonList("accounts"), Collections.emptyList(),
+                FinancialServicesConstants.REQUEST_OBJECT);
 
         assertFalse(result);
     }
@@ -165,9 +167,11 @@ public class ConsentAuthorizeUtilTest {
         String requestObject = "eyJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6ImFjY291bnRzIn0.sig";
         ConsentData consentData = new ConsentData("sessionKey", "user1", "request=" + requestObject,
                 "accounts", "app", Map.of());
+        consentData.setRegulatory(true);
 
         boolean result = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(consentData,
-                Collections.singletonList("accounts"), Collections.emptyList());
+                Collections.singletonList("accounts"), Collections.emptyList(),
+                FinancialServicesConstants.REQUEST_OBJECT);
 
         assertTrue(result);
     }

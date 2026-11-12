@@ -58,6 +58,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(DefaultConsentPersistStep.class);
 
     public DefaultConsentPersistStep() {
@@ -65,6 +66,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -81,7 +83,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             }
 
             boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
-                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
             if (log.isDebugEnabled()) {
                 log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
             }
@@ -132,7 +134,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
         boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
-                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes);
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }

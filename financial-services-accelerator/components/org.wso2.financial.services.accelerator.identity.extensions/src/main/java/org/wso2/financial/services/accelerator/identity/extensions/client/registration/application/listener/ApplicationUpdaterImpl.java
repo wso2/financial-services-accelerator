@@ -68,7 +68,7 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
     }
 
     public void setAuthenticators(boolean isRegulatoryApp, String tenantDomain, ServiceProvider serviceProvider,
-                                   LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig)
+                                  LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig)
             throws FinancialServicesException {
 
         IdentityExtensionsDataHolder identityExtensionsDataHolder = IdentityExtensionsDataHolder.getInstance();
@@ -84,17 +84,35 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
             String idpStep = configMap.get(FinancialServicesConstants.IDENTITY_PROVIDER_STEP) == null
                     ? null : configMap.get(FinancialServicesConstants.IDENTITY_PROVIDER_STEP).toString();
 
-            IdentityProvider configuredIdentityProvider = null;
+            LocalAuthenticatorConfig configuredLocalAuthenticator = null;
+            IdentityProvider configuredFederatedIdP = null;
 
             if (StringUtils.isNotEmpty(idpName)) {
                 try {
-                    IdentityProvider[] federatedIdPs = identityExtensionsDataHolder
-                            .getApplicationManagementService().getAllIdentityProviders(tenantDomain);
-                    if (federatedIdPs != null && federatedIdPs.length > 0) {
-                        for (IdentityProvider identityProvider : federatedIdPs) {
-                            if (idpName.equals(identityProvider.getIdentityProviderName())) {
-                                configuredIdentityProvider = identityProvider;
+                    ApplicationManagementService applicationManagementService = identityExtensionsDataHolder
+                            .getApplicationManagementService();
+                    // Check whether the configured identity provider is a local authenticator.
+                    LocalAuthenticatorConfig[] localAuthenticatorConfigs = applicationManagementService
+                            .getAllLocalAuthenticators(tenantDomain);
+                    if (localAuthenticatorConfigs != null) {
+                        for (LocalAuthenticatorConfig localAuthenticatorConfig : localAuthenticatorConfigs) {
+                            if (idpName.equals(localAuthenticatorConfig.getDisplayName())) {
+                                configuredLocalAuthenticator = localAuthenticatorConfig;
                                 break;
+                            }
+                        }
+                    }
+                    // If the configured identity provider is not a local authenticator, check whether it is a
+                    // federated identity provider.
+                    if (configuredLocalAuthenticator == null) {
+                        IdentityProvider[] federatedIdPs = applicationManagementService
+                                .getAllIdentityProviders(tenantDomain);
+                        if (federatedIdPs != null) {
+                            for (IdentityProvider identityProvider : federatedIdPs) {
+                                if (idpName.equals(identityProvider.getIdentityProviderName())) {
+                                    configuredFederatedIdP = identityProvider;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -104,17 +122,15 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
 
             }
 
+            boolean isIdPConfigured = configuredLocalAuthenticator != null || configuredFederatedIdP != null;
+
             if (StringUtils.isNotEmpty(idpStep) && idpStep.equals("1")) {
                 //Step 1 - Federated Authentication
-                if (configuredIdentityProvider != null) {
-                    IdentityProvider[] identityProviders = new IdentityProvider[1];
-                    identityProviders[0] = configuredIdentityProvider;
-
-                    AuthenticationStep federatedAuthStep = new AuthenticationStep();
-                    federatedAuthStep.setStepOrder(1);
-                    federatedAuthStep.setFederatedIdentityProviders(identityProviders);
+                if (isIdPConfigured) {
                     //set step 1
-                    authSteps.add(federatedAuthStep);
+                    authSteps.add(buildIdPAuthenticationStep(1, configuredLocalAuthenticator,
+                            configuredFederatedIdP));
+
                     if (logger.isDebugEnabled()) {
                         logger.debug(String.format("Authentication step 1 added: %s",
                                 idpName.replaceAll("[\r\n]", "")));
@@ -153,15 +169,10 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
                 }
 
                 //Step 2 - federated authentication
-                if (configuredIdentityProvider != null) {
-                    IdentityProvider[] identityProviders = new IdentityProvider[1];
-                    identityProviders[0] = configuredIdentityProvider;
-
-                    AuthenticationStep federatedAuthStep = new AuthenticationStep();
-                    federatedAuthStep.setStepOrder(2);
-                    federatedAuthStep.setFederatedIdentityProviders(identityProviders);
+                if (isIdPConfigured) {
                     //set step 2
-                    authSteps.add(federatedAuthStep);
+                    authSteps.add(buildIdPAuthenticationStep(2, configuredLocalAuthenticator,
+                            configuredFederatedIdP));
                     if (logger.isDebugEnabled()) {
                         logger.debug(String.format("Authentication step 2 added: %s",
                                 idpName.replaceAll("[\r\n]", "")));
@@ -171,6 +182,33 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
                         new AuthenticationStep[0]));
             }
         }
+    }
+
+    /**
+     * Build the authentication step for the configured identity provider. The identity provider can either be a
+     * local authenticator or a federated identity provider.
+     *
+     * @param stepOrder                    order of the authentication step
+     * @param configuredLocalAuthenticator configured local authenticator, null if a federated IdP is configured
+     * @param configuredFederatedIdP       configured federated identity provider, null if a local authenticator
+     *                                     is configured
+     * @return the constructed authentication step
+     */
+    private static AuthenticationStep buildIdPAuthenticationStep(int stepOrder,
+                                                                 LocalAuthenticatorConfig configuredLocalAuthenticator,
+                                                                 IdentityProvider configuredFederatedIdP) {
+
+        AuthenticationStep authenticationStep = new AuthenticationStep();
+        authenticationStep.setStepOrder(stepOrder);
+        if (configuredLocalAuthenticator != null) {
+            authenticationStep.setLocalAuthenticatorConfigs(
+                    new LocalAuthenticatorConfig[]{configuredLocalAuthenticator});
+            authenticationStep.setAttributeStep(true);
+            authenticationStep.setSubjectStep(true);
+        } else {
+            authenticationStep.setFederatedIdentityProviders(new IdentityProvider[]{configuredFederatedIdP});
+        }
+        return authenticationStep;
     }
 
     public void setConditionalAuthScript(boolean isRegulatoryApp, ServiceProvider serviceProvider,
@@ -204,8 +242,8 @@ public class ApplicationUpdaterImpl extends AbstractApplicationUpdater {
     }
 
     public void doPostCreateApplication(boolean isRegulatoryApp, ServiceProvider serviceProvider,
-                                       LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig,
-                                       String tenantDomain, String userName) throws FinancialServicesException {
+                                        LocalAndOutboundAuthenticationConfig localAndOutboundAuthenticationConfig,
+                                        String tenantDomain, String userName) throws FinancialServicesException {
 
     }
 

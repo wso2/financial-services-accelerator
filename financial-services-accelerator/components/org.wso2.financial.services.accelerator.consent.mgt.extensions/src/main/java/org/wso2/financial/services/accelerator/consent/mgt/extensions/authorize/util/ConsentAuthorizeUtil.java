@@ -331,13 +331,30 @@ public class ConsentAuthorizeUtil {
      * @return  true if pre-initiated consent flow should be used
      */
     public static boolean isPreInitiatedConsentFlow(ConsentData consentData, List<String> preInitiatedConsentScopes,
-                                                    List<String> scopeBasedConsentScopes) {
+                                                List<String> scopeBasedConsentScopes, String authFlowConsentIdSource) {
 
-        String requestObject = extractRequestObject(consentData.getSpQueryParams());
-        JSONObject requestParameters = getRequestObjectJson(requestObject);
-        String scope = extractField(requestObject, FinancialServicesConstants.SCOPE);
-        JSONArray authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
-                .AUTHORIZATION_DETAILS);
+        String scope;
+        JSONArray authorizationDetails;
+        if (consentData.isRegulatory()) {
+            if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
+                // Extract parameters from query
+                JSONObject requestParameters = ConsentAuthorizeUtil.getQueryParamJson(consentData.getSpQueryParams());
+                scope = consentData.getScopeString();
+                authorizationDetails = new JSONArray();
+            } else {
+                // Extract parameters from request object
+                String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+                JSONObject requestParameters = getRequestObjectJson(requestObject);
+                scope = consentData.getScopeString();
+                authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
+                        .AUTHORIZATION_DETAILS);
+            }
+        } else {
+            scope = consentData.getScopeString();
+            JSONObject requestParameters = ConsentAuthorizeUtil.getQueryParamJson(consentData.getSpQueryParams());
+            authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
+                    .AUTHORIZATION_DETAILS);
+        }
 
         return FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
                 preInitiatedConsentScopes, scopeBasedConsentScopes);
