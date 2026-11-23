@@ -26,19 +26,34 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.util.TestUtil;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Test class for ConsentAuthorizeUtil.
@@ -122,6 +137,88 @@ public class ConsentAuthorizeUtilTest {
                 TestConstants.PAYMENT_INITIATION, TestConstants.AWAITING_AUTH_STATUS);
         JSONObject consentJson = ConsentAuthorizeUtil.getConsentDataForPreInitiatedConsent(consentResource);
         assertNotNull(consentJson);
+    }
+
+    @Test
+    public void testIsPreInitiatedConsentFlowReturnsFalseWhenRarBased() {
+
+        // JWT payload: {"scope":"accounts","authorization_details":[{"type":"payment_initiation"}]}
+        String requestObject = "eyJhbGciOiJIUzI1NiJ9." +
+                "eyJzY29wZSI6ImFjY291bnRzIiwiYXV0aG9yaXphdGlvbl9kZXRhaWxzIjpbeyJ0eXBlIjoicGF5bWVudF9pbml0" +
+                "aWF0aW9uIn1dfQ" +
+                ".sig";
+        ConsentData consentData = new ConsentData("sessionKey", "user1", "request=" + requestObject,
+                "accounts", "app", Map.of());
+        consentData.setRegulatory(true);
+
+        // Even though "accounts" is configured as a pre-initiated scope, the authorization_details claim
+        // must take precedence and force a non-pre-initiated (RAR-based) result.
+        boolean result = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(consentData,
+                Collections.singletonList("accounts"), Collections.emptyList(),
+                FinancialServicesConstants.REQUEST_OBJECT);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testIsPreInitiatedConsentFlowFallsBackToScopeWhenNoAuthorizationDetails() {
+
+        // JWT payload: {"scope":"accounts"} - no authorization_details claim at all.
+        String requestObject = "eyJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6ImFjY291bnRzIn0.sig";
+        ConsentData consentData = new ConsentData("sessionKey", "user1", "request=" + requestObject,
+                "accounts", "app", Map.of());
+        consentData.setRegulatory(true);
+
+        boolean result = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(consentData,
+                Collections.singletonList("accounts"), Collections.emptyList(),
+                FinancialServicesConstants.REQUEST_OBJECT);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void testRemoveCommonAuthIdFromExistingConsents() throws ConsentManagementException {
+
+        ConsentCoreService consentCoreServiceMock = mock(ConsentCoreService.class);
+        ArrayList<String> existingConsentIds = new ArrayList<>(Arrays.asList("consent-1", "consent-2"));
+        doReturn(existingConsentIds).when(consentCoreServiceMock).getConsentIdByConsentAttributeNameAndValue(
+                ConsentExtensionConstants.COMMON_AUTH_ID, "sample-common-auth-id");
+
+        ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreServiceMock,
+                "sample-common-auth-id");
+
+        ArrayList<String> expectedAttributeKeys = new ArrayList<>(
+                Collections.singletonList(ConsentExtensionConstants.COMMON_AUTH_ID));
+        verify(consentCoreServiceMock).deleteConsentAttributes("consent-1", expectedAttributeKeys);
+        verify(consentCoreServiceMock).deleteConsentAttributes("consent-2", expectedAttributeKeys);
+    }
+
+    @Test
+    public void testRemoveCommonAuthIdFromExistingConsentsWithNoExistingConsents()
+            throws ConsentManagementException {
+
+        ConsentCoreService consentCoreServiceMock = mock(ConsentCoreService.class);
+        doReturn(new ArrayList<String>()).when(consentCoreServiceMock)
+                .getConsentIdByConsentAttributeNameAndValue(ConsentExtensionConstants.COMMON_AUTH_ID,
+                        "sample-common-auth-id");
+
+        ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreServiceMock,
+                "sample-common-auth-id");
+
+        verify(consentCoreServiceMock, never()).deleteConsentAttributes(anyString(), any());
+    }
+
+    @Test
+    public void testRemoveCommonAuthIdFromExistingConsentsWithBlankCommonAuthId()
+            throws ConsentManagementException {
+
+        ConsentCoreService consentCoreServiceMock = mock(ConsentCoreService.class);
+
+        ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreServiceMock, null);
+        ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreServiceMock, "");
+
+        verify(consentCoreServiceMock, never()).getConsentIdByConsentAttributeNameAndValue(anyString(), anyString());
+        verify(consentCoreServiceMock, never()).deleteConsentAttributes(anyString(), any());
     }
 
     private static String decodeRequestObjectPayload(String requestObject) {

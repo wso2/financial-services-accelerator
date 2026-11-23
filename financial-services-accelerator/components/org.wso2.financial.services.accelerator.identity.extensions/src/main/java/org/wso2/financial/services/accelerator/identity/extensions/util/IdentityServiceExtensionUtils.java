@@ -81,8 +81,8 @@ public class IdentityServiceExtensionUtils {
             throws FinancialServicesException {
 
         // Construct the payload
-        org.json.JSONObject data = new org.json.JSONObject();
-        data.put(FinancialServicesConstants.REQUEST_OBJECT, fsRequestObject.getClaimsSet().toJSONObject());
+        JSONObject data = new JSONObject();
+        data.put(FinancialServicesConstants.REQUEST_OBJECT, new JSONObject(fsRequestObject.getClaimsSet().toString()));
 
         ExternalServiceRequest externalServiceRequest = new ExternalServiceRequest(UUID.randomUUID().toString(), data);
 

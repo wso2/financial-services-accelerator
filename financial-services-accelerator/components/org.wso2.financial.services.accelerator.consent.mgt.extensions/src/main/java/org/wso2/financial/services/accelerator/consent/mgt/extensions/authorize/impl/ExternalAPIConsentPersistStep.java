@@ -32,7 +32,6 @@ import org.wso2.financial.services.accelerator.common.extension.model.ExternalSe
 import org.wso2.financial.services.accelerator.common.extension.model.ExternalServiceResponse;
 import org.wso2.financial.services.accelerator.common.extension.model.ServiceExtensionTypeEnum;
 import org.wso2.financial.services.accelerator.common.extension.model.StatusEnum;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.common.util.ServiceExtensionUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -67,6 +66,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private final ConsentCoreService consentCoreService;
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(ExternalAPIConsentPersistStep.class);
     private static final Gson gson = new Gson();
 
@@ -76,6 +76,7 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -111,8 +112,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                    consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+            boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
             if (log.isDebugEnabled()) {
                 log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
             }
@@ -142,6 +143,9 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
                 if (consentPersistData.getBrowserCookies() != null) {
                     String commonAuthId = consentPersistData.getBrowserCookies().get(
                             ConsentExtensionConstants.COMMON_AUTH_ID);
+                    // Detach the commonAuthId from the consents it is already mapped to, so that only the consent
+                    // being persisted now is resolvable using the commonAuthId of this browser session.
+                    ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreService, commonAuthId);
                     consentData.getMetaDataMap().put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
                 }
             }
@@ -244,8 +248,8 @@ public class ExternalAPIConsentPersistStep implements ConsentPersistStep {
     private void persistConsent(ExternalAPIConsentResourceResponseDTO responseConsentResource,
                                 ConsentData consentData) throws ConsentManagementException {
 
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
 
         if (isPreInitiatedConsentFlow) {
             // Get the existing authorization resource for the initiated consent

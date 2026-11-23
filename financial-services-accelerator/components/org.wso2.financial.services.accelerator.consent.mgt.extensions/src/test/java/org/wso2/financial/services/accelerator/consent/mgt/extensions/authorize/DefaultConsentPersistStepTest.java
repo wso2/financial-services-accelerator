@@ -246,6 +246,7 @@ public class DefaultConsentPersistStepTest {
         doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
         doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentDataMock).getConsentId();
         doReturn("sample-user").when(consentDataMock).getUserId();
+        doReturn("request=eyJhbGciOiJIUzI1NiJ9.e30.sig").when(consentDataMock).getSpQueryParams();
         doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
         doReturn(TestUtil.getSampleAuthorizationResource(TestConstants.SAMPLE_CONSENT_ID,
                 TestConstants.SAMPLE_AUTH_ID)).when(consentDataMock).getAuthResource();

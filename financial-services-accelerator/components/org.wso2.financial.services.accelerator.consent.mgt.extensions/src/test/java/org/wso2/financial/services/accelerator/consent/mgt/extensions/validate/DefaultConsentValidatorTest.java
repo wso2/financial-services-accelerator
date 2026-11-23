@@ -348,6 +348,10 @@ public class DefaultConsentValidatorTest {
         doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
         doReturn("/accounts/invalid-account-id").when(consentValidateDataMock).getRequestPath();
+        HashMap<String, String> resourceParams = new HashMap<>();
+        resourceParams.put(ConsentExtensionConstants.RESOURCE,
+                "/open-banking/v3.1/aisp/accounts/invalid-account-id");
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
 
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
@@ -385,6 +389,10 @@ public class DefaultConsentValidatorTest {
         doReturn(TestConstants.SAMPLE_USER_ID).when(consentValidateDataMock).getUserId();
         doReturn(TestConstants.SAMPLE_CLIENT_ID).when(consentValidateDataMock).getClientId();
         doReturn("/accounts/" + TestConstants.SAMPLE_ACCOUNT_ID).when(consentValidateDataMock).getRequestPath();
+        HashMap<String, String> resourceParams = new HashMap<>();
+        resourceParams.put(ConsentExtensionConstants.RESOURCE,
+                "/open-banking/v3.1/aisp/accounts/" + TestConstants.SAMPLE_ACCOUNT_ID);
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
 
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 
@@ -426,6 +434,10 @@ public class DefaultConsentValidatorTest {
         doReturn("/accounts/" + TestConstants.SAMPLE_ACCOUNT_ID + "/transactions")
                 .when(consentValidateDataMock).getRequestPath();
         doReturn(TestConstants.SAMPLE_CONSENT_ID).when(consentValidateDataMock).getConsentId();
+        HashMap<String, String> resourceParams = new HashMap<>();
+        resourceParams.put(ConsentExtensionConstants.RESOURCE,
+                "/open-banking/v3.1/aisp/accounts/" + TestConstants.SAMPLE_ACCOUNT_ID + "/transactions");
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
 
         validator.validate(consentValidateDataMock, consentValidationResultMock);
 

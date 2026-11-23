@@ -27,8 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.carbon.identity.oauth.rar.util.AuthorizationDetailsConstants;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
+import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
 import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.AccountDTO;
@@ -40,13 +42,16 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ResponseStatus;
+import org.wso2.financial.services.accelerator.consent.mgt.service.ConsentCoreService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -314,6 +319,45 @@ public class ConsentAuthorizeUtil {
         consentDataJSON.put(ConsentAuthorizeConstants.ALLOW_MULTIPLE_ACCOUNTS, true);
 
         return consentDataJSON;
+    }
+
+    /**
+     * Utility method to determine whether the pre-initiated consent flow should be used, given the full
+     * consent data.
+     *
+     * @param consentData                   consent data
+     * @param preInitiatedConsentScopes     List of scopes configured for pre-initiated consent flow
+     * @param scopeBasedConsentScopes       List of scopes configured for scope-based consent flow
+     * @return  true if pre-initiated consent flow should be used
+     */
+    public static boolean isPreInitiatedConsentFlow(ConsentData consentData, List<String> preInitiatedConsentScopes,
+                                                List<String> scopeBasedConsentScopes, String authFlowConsentIdSource) {
+
+        String scope;
+        JSONArray authorizationDetails;
+        if (consentData.isRegulatory()) {
+            if (FinancialServicesConstants.REQUEST_PARAM.equals(authFlowConsentIdSource)) {
+                // Extract parameters from query
+                JSONObject requestParameters = ConsentAuthorizeUtil.getQueryParamJson(consentData.getSpQueryParams());
+                scope = consentData.getScopeString();
+                authorizationDetails = new JSONArray();
+            } else {
+                // Extract parameters from request object
+                String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
+                JSONObject requestParameters = getRequestObjectJson(requestObject);
+                scope = consentData.getScopeString();
+                authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
+                        .AUTHORIZATION_DETAILS);
+            }
+        } else {
+            scope = consentData.getScopeString();
+            JSONObject requestParameters = ConsentAuthorizeUtil.getQueryParamJson(consentData.getSpQueryParams());
+            authorizationDetails = requestParameters.optJSONArray(AuthorizationDetailsConstants
+                    .AUTHORIZATION_DETAILS);
+        }
+
+        return FinancialServicesUtils.isPreInitiatedConsentFlow(scope, authorizationDetails,
+                preInitiatedConsentScopes, scopeBasedConsentScopes);
     }
 
     /**
@@ -913,15 +957,35 @@ public class ConsentAuthorizeUtil {
     }
 
     /**
-     * Utility method to retrieve scopes from consent data.
+     * Remove the commonAuthId consent attribute from any consent it is already mapped to.
+     * <p>
+     * The commonAuthId cookie is issued per browser session, so every authorization performed in the same
+     * browser session carries the same value even if the user logs in again. Since the consent ID bound to the
+     * authorization code is resolved by looking up this attribute, leaving it on previously authorized consents
+     * makes that lookup ambiguous and the wrong consent ID can end up in the access token. Clearing the stale
+     * mappings before the new one is stored keeps exactly one consent mapped to the cookie value.
      *
-     * @param consentData  consent data
-     * @return scopes
+     * @param consentCoreService consent core service
+     * @param commonAuthId       commonAuthId cookie value of the current authorization
+     * @throws ConsentManagementException thrown if an error occurs while retrieving or deleting the attribute
      */
-    public static String retrieveScopes(ConsentData consentData) {
+    public static void removeCommonAuthIdFromExistingConsents(ConsentCoreService consentCoreService,
+                                                              String commonAuthId)
+            throws ConsentManagementException {
 
-        log.debug("Retrieving scopes from request object");
-        String requestObject = ConsentAuthorizeUtil.extractRequestObject(consentData.getSpQueryParams());
-        return ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
+        if (StringUtils.isBlank(commonAuthId)) {
+            return;
+        }
+
+        ArrayList<String> existingConsentIds = consentCoreService.getConsentIdByConsentAttributeNameAndValue(
+                ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
+        for (String existingConsentId : existingConsentIds) {
+            consentCoreService.deleteConsentAttributes(existingConsentId,
+                    new ArrayList<>(Collections.singletonList(ConsentExtensionConstants.COMMON_AUTH_ID)));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Removed the commonAuthId attribute from consent: %s",
+                        existingConsentId.replaceAll("[\r\n]", "")));
+            }
+        }
     }
 }

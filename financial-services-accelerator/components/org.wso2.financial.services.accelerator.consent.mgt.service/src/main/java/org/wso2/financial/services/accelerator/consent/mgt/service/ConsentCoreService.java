@@ -527,6 +527,24 @@ public interface ConsentCoreService {
             throws ConsentManagementException;
 
     /**
+     * This method is used to revoke existing consents for the given clientID, userID, consent types and statuses
+     * combination. Also revokes the tokens related to the consents which are revoked if the flag
+     * 'shouldRevokeTokens' is true.
+     *
+     * @param clientID ID of the client
+     * @param userID ID of the user
+     * @param consentTypes list of consent types
+     * @param applicableStatusesToRevoke list of statuses that a consent should have for revoking
+     * @param revokedConsentStatus the status should be updated the consent with after revoking
+     * @return returns true if successful
+     * @throws ConsentManagementException thrown if an error occurs in the process
+     */
+    boolean revokeExistingApplicableConsents(String clientID, String userID, List<String> consentTypes,
+                                             List<String> applicableStatusesToRevoke, String revokedConsentStatus,
+                                             boolean shouldRevokeTokens)
+            throws ConsentManagementException;
+
+    /**
      * This method is used in consent re-authorization scenarios to update the account mappings according to the
      * additional/removed accounts from the new  authorization. Also, the consent status is updated with a provided
      * status. Also, can be used to amend accounts.

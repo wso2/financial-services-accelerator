@@ -88,6 +88,9 @@ public class DefaultConsentRetrievalStepTest {
                 TestConstants.SAMPLE_AUTH_ID));
         doReturn(authResources).when(consentCoreServiceMock).searchAuthorizations(anyString());
 
+        // Scope string is read from consent data when resolving the consent flow type.
+        doReturn("openid accounts payments fundsconfirmations").when(consentDataMock).getScopeString();
+
         String consentId = "12345677654321234234";
         financialServicesUtilsMock = Mockito.mockStatic(FinancialServicesUtils.class);
         financialServicesUtilsMock.when(() -> FinancialServicesUtils.getConsentIdFromEssentialClaims(any()))
@@ -173,7 +176,7 @@ public class DefaultConsentRetrievalStepTest {
             doReturn(request).when(consentDataMock).getSpQueryParams();
 
             financialServicesUtilsMock.when(() -> FinancialServicesUtils.isPreInitiatedConsentFlow(anyString(),
-                    any(), any())).thenReturn(true);
+                    any(), any(), any())).thenReturn(true);
 
             new DefaultConsentRetrievalStep().execute(consentDataMock, jsonObject);
             assertNotNull(jsonObject.get("consentData"));
@@ -191,7 +194,7 @@ public class DefaultConsentRetrievalStepTest {
             configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
             financialServicesUtilsMock.when(() -> FinancialServicesUtils.isPreInitiatedConsentFlow(anyString(),
-                    any(), any())).thenReturn(false);
+                    any(), any(), any())).thenReturn(false);
 
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
             JSONObject jsonObject = new JSONObject();
@@ -217,7 +220,7 @@ public class DefaultConsentRetrievalStepTest {
             configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
             financialServicesUtilsMock.when(() -> FinancialServicesUtils.isPreInitiatedConsentFlow(anyString(),
-                    any(), any())).thenReturn(true);
+                    any(), any(), any())).thenReturn(true);
 
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
             doReturn(request).when(consentDataMock).getSpQueryParams();
@@ -242,7 +245,7 @@ public class DefaultConsentRetrievalStepTest {
             configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
             financialServicesUtilsMock.when(() -> FinancialServicesUtils.isPreInitiatedConsentFlow(anyString(),
-                    any(), any())).thenReturn(true);
+                    any(), any(), any())).thenReturn(true);
 
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
             doReturn(request).when(consentDataMock).getSpQueryParams();
@@ -269,7 +272,7 @@ public class DefaultConsentRetrievalStepTest {
             configParserStaticMock.when(FinancialServicesConfigParser::getInstance).thenReturn(configParserMock);
 
             financialServicesUtilsMock.when(() -> FinancialServicesUtils.isPreInitiatedConsentFlow(anyString(),
-                    any(), any())).thenReturn(true);
+                           any(), any(), any())).thenReturn(true);
 
             String request = "request=" + TestConstants.VALID_REQUEST_OBJECT;
             doReturn(request).when(consentDataMock).getSpQueryParams();

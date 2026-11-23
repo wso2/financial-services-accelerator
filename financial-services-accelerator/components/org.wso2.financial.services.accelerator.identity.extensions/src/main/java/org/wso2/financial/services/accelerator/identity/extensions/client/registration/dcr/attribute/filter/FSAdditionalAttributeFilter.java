@@ -42,6 +42,7 @@ import org.wso2.financial.services.accelerator.identity.extensions.internal.Iden
 import org.wso2.financial.services.accelerator.identity.extensions.util.IdentityCommonConstants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
             IdentityExtensionsDataHolder.getInstance().getConfigurationService();
     private static final Log log = LogFactory.getLog(FSAdditionalAttributeFilter.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String ARRAY_DELIMITER = "#";
 
     @Override
     public Map<String, Object> filterDCRRegisterAttributes(ApplicationRegistrationRequest appRegistrationRequest,
@@ -132,10 +134,48 @@ public class FSAdditionalAttributeFilter implements AdditionalAttributeFilter {
 
         if (ServiceExtensionUtils.isInvokeExternalService(ServiceExtensionTypeEnum.PRE_PROCESS_CLIENT_RETRIEVAL)) {
             log.debug("Executing external service call to get custom attributes to store");
-            return DCRUtils.callExternalServiceForRetrieval(ssaParams);
+            return expandDelimitedValues(DCRUtils.callExternalServiceForRetrieval(ssaParams));
         }
         // Filtering the attributes to be returned in the response.
-        return new HashMap<>(ssaParams);
+        return expandDelimitedValues(new HashMap<>(ssaParams));
+    }
+
+    /**
+     * Convert "value1#value2#value3" formatted string values back to arrays for retrieval responses.
+     *
+     * @param attributes Attributes retrieved from storage
+     * @return Attributes with delimited string values converted to lists
+     */
+    private static Map<String, Object> expandDelimitedValues(Map<String, ?> attributes) {
+
+        Map<String, Object> result = new HashMap<>();
+        if (attributes == null) {
+            return result;
+        }
+        for (Map.Entry<String, ?> entry : attributes.entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                String strValue = ((String) value).trim();
+                if (strValue.startsWith("[") && strValue.endsWith("]")) {
+                    // Apps created in the new version store arrays as "[value1, value2]".
+                    String inner = strValue.substring(1, strValue.length() - 1).trim();
+                    List<String> items = new ArrayList<>();
+                    if (!inner.isEmpty()) {
+                        for (String item : inner.split(",")) {
+                            items.add(item.trim());
+                        }
+                    }
+                    result.put(entry.getKey(), items);
+                    continue;
+                } else if (strValue.contains(ARRAY_DELIMITER)) {
+                    // Migrated apps store arrays as "value1#value2#value3".
+                    result.put(entry.getKey(), new ArrayList<>(Arrays.asList(strValue.split(ARRAY_DELIMITER))));
+                    continue;
+                }
+            }
+            result.put(entry.getKey(), value);
+        }
+        return result;
     }
 
     @Override

@@ -66,7 +66,7 @@ public class DefaultConsentValidator implements ConsentValidator {
     private static final String TRANSACTIONS_REGEX = "/accounts/[^/?]*/transactions";
     private static final String BALANCES_REGEX = "/accounts/[^/?]*/balances";
     private static final Pattern ACCOUNT_ID_PATH_PATTERN =
-            Pattern.compile("^/accounts/([^/?]+)(?:/transactions|/balances)?$");
+            Pattern.compile("^/open-banking/v3.1/aisp/accounts/([^/?]+)(?:/transactions|/balances)?$");
     private static final String COF_SUBMISSION_PATH = "/funds-confirmations";
     private static final String PERMISSION_MISMATCH_ERROR = "Permission mismatch. Consent does not contain necessary " +
             "permissions";
@@ -301,7 +301,7 @@ public class DefaultConsentValidator implements ConsentValidator {
 
         // Perform Account Id Validation for endpoints that carry an account id in the request path.
         if (!uri.matches(ACCOUNTS_BULK_REGEX)) {
-            String accountId = extractAccountIdFromPath(uri);
+            String accountId = extractAccountIdFromPath(consentValidateData.getResourceParams().get("resource"));
             if (StringUtils.isBlank(accountId) ||
                     !isAccountIdConsented(accountId, consentValidateData.getComprehensiveConsent())) {
                 log.error(INVALID_ACCOUNT_ID_ERROR);
@@ -549,6 +549,9 @@ public class DefaultConsentValidator implements ConsentValidator {
      */
     private static String extractAccountIdFromPath(String uri) {
 
+        if (StringUtils.isBlank(uri)) {
+            return null;
+        }
         Matcher matcher = ACCOUNT_ID_PATH_PATTERN.matcher(uri);
         if (matcher.matches()) {
             return matcher.group(1);

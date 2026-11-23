@@ -31,11 +31,12 @@ export const Login = () => {
 
   useEffect(() => {
     // this object contains user details
-    let user = new User();
-    setLoggedUser(user);
-    setIsLoggedIn(user.isLogged);
-    setIsLoading(false);
-    setContextUser(user);
+    User.load().then((user) => {
+      setLoggedUser(user);
+      setIsLoggedIn(user.isLogged);
+      setIsLoading(false);
+      setContextUser(user);
+    });
   },[]);
 
   const renderLoading = () => {

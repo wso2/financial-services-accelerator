@@ -85,6 +85,24 @@ public class ResourceInterceptorService implements Serializable {
         return Optional.empty();
     }
 
+    /**
+     * Reads and rejoins the id_token halves from the OB_SCP_IT_P1/P2 cookies.
+     */
+    @SuppressFBWarnings("COOKIE_USAGE")
+    // Suppressed content - idTokenPart1.get().getValue()
+    // Suppression reason - False Positive : The cookie values are only read and here. No sensitive info is added to
+    //                      the cookie in this step.
+    // Suppressed warning count - 1
+    public Optional<String> constructIdTokenFromCookies(HttpServletRequest req) {
+        Optional<Cookie> idTokenPart1 = Utils.getCookieFromRequest(req, Constants.ID_TOKEN_COOKIE_NAME + "_P1");
+        Optional<Cookie> idTokenPart2 = Utils.getCookieFromRequest(req, Constants.ID_TOKEN_COOKIE_NAME + "_P2");
+
+        if (idTokenPart1.isPresent() && idTokenPart2.isPresent()) {
+            return Optional.of(idTokenPart1.get().getValue() + idTokenPart2.get().getValue());
+        }
+        return Optional.empty();
+    }
+
     public void forwardRequest(HttpServletResponse resp, HttpUriRequest httpRequest, Map<String, String> headers)
             throws TokenGenerationException, URISyntaxException {
 

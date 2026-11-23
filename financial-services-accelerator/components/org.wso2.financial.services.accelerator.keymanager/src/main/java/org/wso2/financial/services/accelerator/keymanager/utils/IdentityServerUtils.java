@@ -140,7 +140,7 @@ public class IdentityServerUtils {
             HttpPatch httpPatch = new HttpPatch(builder.build());
 
             JSONObject appUpdatePayload = constructAppUpdatePayload(certificate);
-            StringEntity params = new StringEntity(appUpdatePayload.toString());
+            StringEntity params = new StringEntity(appUpdatePayload.toString(), StandardCharsets.UTF_8);
             httpPatch.setEntity(params);
             httpPatch.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
                     FinancialServicesConstants.JSON_CONTENT_TYPE);
@@ -194,7 +194,7 @@ public class IdentityServerUtils {
             String url = getKeyManagerBaseUrl(keyManagerConfiguration) + FSKeyManagerConstants.DCR_EP + clientId;
             URIBuilder builder = new URIBuilder(url);
             HttpPut httpPut = new HttpPut(builder.build());
-            StringEntity params = new StringEntity(spApplication.toString());
+            StringEntity params = new StringEntity(spApplication.toString(), StandardCharsets.UTF_8);
             httpPut.setEntity(params);
             httpPut.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
                     FinancialServicesConstants.JSON_CONTENT_TYPE);

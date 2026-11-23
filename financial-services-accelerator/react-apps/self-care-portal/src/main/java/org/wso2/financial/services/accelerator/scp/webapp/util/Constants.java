@@ -66,6 +66,8 @@ public class Constants {
     public static final String PATH_LOGOUT = "/oidc/logout";
     public static final String PATH_CALLBACK = "/consentmgr/scp_oauth2_callback";
     public static final String PATH_AUTHORIZE = "/oauth2/authorize";
+    public static final String ID_TOKEN_HINT = "id_token_hint";
+    public static final String POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri";
     public static final String PREFIX_CONSENT_MANAGER = "/consentmgr/scp";
     public static final String PREFIX_OB_CONSENT = "/api/fs/consent";
     public static final String PATH_APP_RETRIEVAL = "/api/server/v1/applications?attributes=advancedConfigurations," +

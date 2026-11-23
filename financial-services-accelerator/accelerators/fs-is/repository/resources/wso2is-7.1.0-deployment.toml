@@ -262,7 +262,7 @@ scopes=[]
 
 [oauth]
 drop_unregistered_scopes = true
-authorize_all_scopes = true
+authorize_all_scopes = false
 
 [oauth.endpoints.v2]
 oauth2_consent_page = "${carbon.protocol}://IS_HOSTNAME:${carbon.management.port}/fs/authenticationendpoint/oauth2_authz.do"

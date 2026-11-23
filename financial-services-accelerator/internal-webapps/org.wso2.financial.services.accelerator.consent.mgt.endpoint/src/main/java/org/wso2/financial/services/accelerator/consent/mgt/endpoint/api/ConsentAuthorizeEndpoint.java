@@ -42,6 +42,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.builder.ConsentStepsBuilder;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentData;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.ConsentPersistData;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -87,6 +88,7 @@ public class ConsentAuthorizeEndpoint {
     private static FinancialServicesConfigParser configParser = null;
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static List<ConsentPersistStep> consentPersistSteps = null;
     private static List<ConsentRetrievalStep> consentRetrievalSteps = null;
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
@@ -97,6 +99,7 @@ public class ConsentAuthorizeEndpoint {
         configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
         initializeConsentSteps();
     }
 
@@ -218,8 +221,8 @@ public class ConsentAuthorizeEndpoint {
         }
 
         executeRetrieval(consentData, jsonObject);
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scopeString,
-                preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
         if (isPreInitiatedConsentFlow && consentData.getType() == null) {
             log.error(ConsentConstants.ERROR_NO_CONSENT_TYPE);
             throw new ConsentException(redirectURI, AuthErrorCode.SERVER_ERROR,

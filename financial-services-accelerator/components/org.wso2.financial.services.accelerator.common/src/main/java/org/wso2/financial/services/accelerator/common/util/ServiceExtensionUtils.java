@@ -103,7 +103,7 @@ public class ServiceExtensionUtils {
                 }
 
                 HttpPost httpPost = new HttpPost(constructedUrl);
-                StringEntity params = new StringEntity(externalServicesPayload);
+                StringEntity params = new StringEntity(externalServicesPayload, StandardCharsets.UTF_8);
                 httpPost.setEntity(params);
                 httpPost.setHeader(FinancialServicesConstants.CONTENT_TYPE_TAG,
                         FinancialServicesConstants.JSON_CONTENT_TYPE);

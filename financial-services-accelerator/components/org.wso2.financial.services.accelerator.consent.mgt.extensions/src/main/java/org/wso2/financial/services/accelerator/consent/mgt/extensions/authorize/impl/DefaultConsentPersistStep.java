@@ -24,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentPersistStep;
@@ -36,6 +35,7 @@ import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PermissionDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.model.PopulateConsentAuthorizeScreenDTO;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeConstants;
+import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.util.ConsentAuthorizeUtil;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.AuthErrorCode;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentException;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.common.ConsentExtensionConstants;
@@ -58,6 +58,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(DefaultConsentPersistStep.class);
 
     public DefaultConsentPersistStep() {
@@ -65,6 +66,7 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -80,8 +82,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
                         "Consent data is not available");
             }
 
-            boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                    consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+            boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                    consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
             if (log.isDebugEnabled()) {
                 log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
             }
@@ -131,8 +133,8 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
 
         ConsentCoreService consentCoreService = ConsentExtensionsDataHolder.getInstance().getConsentCoreService();
 
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(
-                consentData.getScopeString(), preInitiatedConsentScopes, scopeBasedConsentScopes);
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }
@@ -156,6 +158,9 @@ public class DefaultConsentPersistStep implements ConsentPersistStep {
             if (consentPersistData.getBrowserCookies() != null) {
                 String commonAuthId = consentPersistData.getBrowserCookies().get(
                         ConsentExtensionConstants.COMMON_AUTH_ID);
+                // Detach the commonAuthId from the consents it is already mapped to, so that only the consent
+                // being persisted now is resolvable using the commonAuthId of this browser session.
+                ConsentAuthorizeUtil.removeCommonAuthIdFromExistingConsents(consentCoreService, commonAuthId);
                 Map<String, String> consentAttributes = new HashMap<>();
                 consentAttributes.put(ConsentExtensionConstants.COMMON_AUTH_ID, commonAuthId);
                 consentCoreService.storeConsentAttributes(consentId, consentAttributes);

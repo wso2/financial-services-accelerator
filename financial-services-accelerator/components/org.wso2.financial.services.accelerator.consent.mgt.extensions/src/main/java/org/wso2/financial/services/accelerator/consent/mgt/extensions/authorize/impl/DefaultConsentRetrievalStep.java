@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import org.wso2.financial.services.accelerator.common.config.FinancialServicesConfigParser;
 import org.wso2.financial.services.accelerator.common.constant.FinancialServicesConstants;
 import org.wso2.financial.services.accelerator.common.exception.ConsentManagementException;
-import org.wso2.financial.services.accelerator.common.util.FinancialServicesUtils;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import org.wso2.financial.services.accelerator.consent.mgt.dao.models.ConsentResource;
 import org.wso2.financial.services.accelerator.consent.mgt.extensions.authorize.ConsentRetrievalStep;
@@ -49,6 +48,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
 
     private final List<String> preInitiatedConsentScopes;
     private final List<String> scopeBasedConsentScopes;
+    private final String authFlowConsentIdSource;
     private static final Log log = LogFactory.getLog(DefaultConsentRetrievalStep.class);
 
     public DefaultConsentRetrievalStep() {
@@ -56,6 +56,7 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         FinancialServicesConfigParser configParser = FinancialServicesConfigParser.getInstance();
         preInitiatedConsentScopes = configParser.getPreInitiatedConsentScopes();
         scopeBasedConsentScopes = configParser.getScopeBasedConsentScopes();
+        authFlowConsentIdSource = configParser.getAuthFlowConsentIdSource();
     }
 
     @Override
@@ -70,8 +71,10 @@ public class DefaultConsentRetrievalStep implements ConsentRetrievalStep {
         String scope = ConsentAuthorizeUtil.extractField(requestObject, FinancialServicesConstants.SCOPE);
         JSONObject consentDataJSON;
         ConsentResource consentResource;
-        boolean isPreInitiatedConsentFlow = FinancialServicesUtils.isPreInitiatedConsentFlow(scope,
-                preInitiatedConsentScopes, scopeBasedConsentScopes);
+
+        boolean isPreInitiatedConsentFlow = ConsentAuthorizeUtil.isPreInitiatedConsentFlow(
+                consentData, preInitiatedConsentScopes, scopeBasedConsentScopes, authFlowConsentIdSource);
+
         if (log.isDebugEnabled()) {
             log.debug("Pre-initiated consent flow check result: " + isPreInitiatedConsentFlow);
         }
