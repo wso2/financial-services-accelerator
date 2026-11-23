@@ -133,6 +133,17 @@ else
     sed -i -e "s|BrowserAutomation.WebDriverLocation|${TEST_ARTIFACTS}/selenium-libs/ubuntu/geckodriver|g" $TEST_CONFIG_FILE
 fi
 
+# Firefox binary location. Picked from deployment.properties when configured, else the OS default location.
+FIREFOX_BINARY_LOCATION=$(get_prop "BrowserAutomation.FirefoxBinaryLocation")
+if [ -z "${FIREFOX_BINARY_LOCATION}" ]; then
+    if [ $(get_prop "OSName") == "mac" ]; then
+        FIREFOX_BINARY_LOCATION="/Applications/Firefox.app/Contents/MacOS/firefox"
+    else
+        FIREFOX_BINARY_LOCATION="/usr/bin/firefox"
+    fi
+fi
+sed -i -e "s|BrowserAutomation.FirefoxBinaryLocation|${FIREFOX_BINARY_LOCATION}|g" $TEST_CONFIG_FILE
+
 #----------------Install geckodriver------------------------#
 export DEBIAN_FRONTEND=noninteractive
 if [ $(get_prop "InstallGeckodriver") == true ]; then

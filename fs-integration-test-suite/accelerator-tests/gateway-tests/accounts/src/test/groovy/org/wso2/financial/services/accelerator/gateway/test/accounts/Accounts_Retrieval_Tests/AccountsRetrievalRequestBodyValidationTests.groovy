@@ -185,4 +185,28 @@ class AccountsRetrievalRequestBodyValidationTests extends FSAPIMConnectorTest {
 
         Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_200)
     }
+
+    @Test
+    void "Account retrieval request with account id not in consent"() {
+
+        doDefaultAccountInitiation()
+        doAccountConsentAuthorisation()
+
+        def retrievalResponse = FSRestAsRequestBuilder.buildRequest()
+                .contentType(ContentType.JSON)
+                .header(ConnectorTestConstants.X_FAPI_FINANCIAL_ID, ConnectorTestConstants.X_FAPI_FINANCIAL_ID_VALUE)
+                .accept(ConnectorTestConstants.CONTENT_TYPE_JSON)
+                .header(ConnectorTestConstants.CHARSET, ConnectorTestConstants.CHARSET_TYPE)
+                .header(ConnectorTestConstants.AUTHORIZATION_HEADER, "Bearer ${userAccessToken}")
+                .baseUri(configuration.getServerBaseURL())
+                .get(ConnectorTestConstants.ACCOUNT_SINGLE_PATH_WITH_INVALID_ACCOUNT_ID)
+
+        Assert.assertEquals(retrievalResponse.statusCode(), ConnectorTestConstants.STATUS_CODE_401)
+        def errorMessage = TestUtil.parseResponseBody(retrievalResponse, ConnectorTestConstants.ERROR_ERRORS_DESCRIPTION)
+        Assert.assertTrue(errorMessage.contains("Account Id requested is not consented for the user"))
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_CODE),
+                ConnectorTestConstants.ERROR_CODE_UNAUTHORIZED)
+        Assert.assertEquals(TestUtil.parseResponseBody(retrievalResponse,ConnectorTestConstants.ERROR_ERRORS_MSG),
+                "Consent Enforcement Error")
+    }
 }

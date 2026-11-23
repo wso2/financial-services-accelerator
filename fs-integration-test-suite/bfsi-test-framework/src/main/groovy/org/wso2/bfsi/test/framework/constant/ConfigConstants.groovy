@@ -111,6 +111,7 @@ class ConfigConstants {
     public static final String BROWSER_AUTOMATION_PREFERENCE = "BrowserPreference";
     public static final String BROWSER_AUTOMATION_HEADLESS_ENABLE = "HeadlessEnabled";
     public static final String BROWSER_AUTOMATION_WEB_DRIVER_LOCATION = "WebDriverLocation";
+    public static final String BROWSER_AUTOMATION_FIREFOX_BINARY_LOCATION = "FirefoxBinaryLocation";
 
     // Consent API config constants
     public static final String CONSENT_API = "ConsentApi";

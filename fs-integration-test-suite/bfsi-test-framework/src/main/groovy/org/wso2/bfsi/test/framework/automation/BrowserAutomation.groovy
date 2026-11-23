@@ -18,13 +18,15 @@
 
 package org.wso2.bfsi.test.framework.automation
 
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
-import org.openqa.selenium.firefox.FirefoxBinary
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.wso2.bfsi.test.framework.configuration.CommonConfigurationService
+import org.wso2.bfsi.test.framework.constant.ConfigConstants
 import org.wso2.bfsi.test.framework.constant.Constants
 
 import java.util.concurrent.TimeUnit
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit
  */
 class BrowserAutomation {
 
+    private static final Logger log = LogManager.getLogger(BrowserAutomation.class.getName())
     private CommonConfigurationService obConfiguration = new CommonConfigurationService()
     private String FIREFOX_DRIVER_NAME = "webdriver.gecko.driver"
     private String CHROME_DRIVER_NAME = "webdriver.chrome.driver"
@@ -69,13 +72,48 @@ class BrowserAutomation {
      * @return
      */
     RemoteWebDriver getFireFoxWebDriver() {
-        FirefoxBinary firefoxBinary = new FirefoxBinary()
-        if (obConfiguration.getBrowserHeadlessEnabled()) {
-            firefoxBinary.addCommandLineOptions(Constants.HEADLESS_TAG)
-        }
         FirefoxOptions firefoxOptions = new FirefoxOptions()
-        firefoxOptions.setBinary(firefoxBinary)
+        if (obConfiguration.getBrowserHeadlessEnabled()) {
+            firefoxOptions.addArguments(Constants.HEADLESS_TAG)
+        }
+        File firefoxBinary = locateFirefoxBinary()
+        if (firefoxBinary != null) {
+            firefoxOptions.setBinary(firefoxBinary.getAbsolutePath())
+        }
         return new FirefoxDriver(firefoxOptions)
+    }
+
+    /**
+     * Locate the Firefox executable.
+     *
+     * Selenium 3 can only discover Firefox through the legacy "firefox-bin" executable or the PATH, and recent
+     * Firefox releases ship neither. Hence the location is read from the BrowserAutomation.FirefoxBinaryLocation
+     * configuration. It can also be overridden with -Dwebdriver.firefox.bin=<path to the firefox executable>,
+     * which takes precedence over the configured value.
+     *
+     * @return the Firefox executable, or null to let Selenium fall back to its own resolution.
+     */
+    private File locateFirefoxBinary() {
+
+        String binaryPath = System.getProperty("webdriver.firefox.bin")
+        if (binaryPath == null || binaryPath.trim().isEmpty()) {
+            binaryPath = obConfiguration.getFirefoxBinaryLocation()
+        }
+
+        if (binaryPath == null || binaryPath.trim().isEmpty()) {
+            log.warn("Firefox binary location is not configured under " + ConfigConstants.BROWSER_AUTOMATION + "." +
+                    ConfigConstants.BROWSER_AUTOMATION_FIREFOX_BINARY_LOCATION +
+                    ". Falling back to the Selenium default resolution.")
+            return null
+        }
+
+        File firefoxBinary = new File(binaryPath.trim())
+        if (!firefoxBinary.isFile() || !firefoxBinary.canExecute()) {
+            log.warn("Configured Firefox binary ${firefoxBinary.getAbsolutePath()} is not an executable file. " +
+                    "Falling back to the Selenium default resolution.")
+            return null
+        }
+        return firefoxBinary
     }
 
     /**

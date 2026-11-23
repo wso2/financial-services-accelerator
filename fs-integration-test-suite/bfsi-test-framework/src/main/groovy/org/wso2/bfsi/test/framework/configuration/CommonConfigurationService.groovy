@@ -306,6 +306,14 @@ class CommonConfigurationService {
     }
 
     /**
+     * Get Browser Automation Firefox Binary Location
+     */
+    String getFirefoxBinaryLocation() {
+        return configuration.get(ConfigConstants.BROWSER_AUTOMATION + "." +
+                ConfigConstants.BROWSER_AUTOMATION_FIREFOX_BINARY_LOCATION)
+    }
+
+    /**
      * Get Consent API Audience Value
      */
     String getConsentAudienceValue() {
