@@ -307,6 +307,11 @@
         <!--Sample Value from firefox: <Path to financial-open-banking>/integration-test-suite/test-artifacts/selenium-libs/geckodriver -->
         <!--Sample Value from chrome: <Path to financial-open-banking>/integration-test-suite/test-artifacts/selenium-libs/chromedriver -->
         <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
+
+        <!--Sample Value for mac: /Applications/Firefox.app/Contents/MacOS/firefox -->
+        <!--Sample Value for linux: /usr/bin/firefox -->
+        <!--Sample Value for windows: C:\Program Files\Mozilla Firefox\firefox.exe -->
+        <FirefoxBinaryLocation>BrowserAutomation.FirefoxBinaryLocation</FirefoxBinaryLocation>
     </BrowserAutomation>
 
     <ConsentApi>
