@@ -220,7 +220,7 @@ class ApiPublisherRequestBuilder extends FSAPIMConnectorTest {
                 .header(ConnectorTestConstants.AUTHORIZATION_HEADER_KEY, ConnectorTestConstants.BEARER + " $accessToken")
                 .contentType(ConnectorTestConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .queryParam("revisionId", revisionID)
-                .body(getDeployRevisionPayload(host, revisionID))
+                .body(getDeployRevisionPayload("localhost", revisionID))
                 .post(apiEndpoint)
 
         Assert.assertEquals(response.statusCode(), HTTPResponse.SC_CREATED)
