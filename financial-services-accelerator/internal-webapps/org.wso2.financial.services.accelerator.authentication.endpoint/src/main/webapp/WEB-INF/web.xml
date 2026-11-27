@@ -131,4 +131,15 @@
         <url-pattern>/fs_default.do</url-pattern>
     </servlet-mapping>
 
+    <!-- Verify consent page - shows a review & verify step before submitting the consent form -->
+    <servlet>
+        <servlet-name>FSVerifyServlet</servlet-name>
+        <servlet-class>org.wso2.financial.services.accelerator.authentication.endpoint.FSVerifyServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FSVerifyServlet</servlet-name>
+        <url-pattern>/consent_smsotp.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>
